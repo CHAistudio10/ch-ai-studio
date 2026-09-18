@@ -62,6 +62,21 @@ app.post("/api/generate", async (req, res) => {
   }
 });
 
+// 404 for unmatched API routes (static assets are served by Vercel's CDN from public/**)
+app.use("/api", (req, res) => {
+  res.status(404).json({ error: "Endpoint tidak ditemukan." });
+});
+
+// Global error handler. Vercel's native Express runtime turns the app into a single
+// Function; an unhandled error can leave that Function in an undefined state, so we
+// always convert errors into a clean JSON response instead of letting Express swallow them.
+app.use((err, req, res, next) => {
+  console.error(err);
+  if (res.headersSent) return next(err);
+  res.status(500).json({ error: err?.message || "Terjadi kesalahan pada server." });
+});
+
+// Only bind a port when running locally. On Vercel the default export is used directly.
 if (process.env.VERCEL !== "1") {
   app.listen(PORT, () => {
     console.log(`CH AI Studio berjalan di http://localhost:${PORT}`);
