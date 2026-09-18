@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>CH AI Studio — AI Image & Video</title>
+  <meta name="description" content="CH AI Studio - workspace AI untuk membuat gambar dan video.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="brand-mark">CH</div>
+      <div><b>ch ai studio</b><small>creative workspace</small></div>
+    </div>
+    <nav>
+      <button data-page="home" class="nav-item active">⌂ <span>Beranda</span></button>
+      <button data-page="projects" class="nav-item">▱ <span>Project Saya</span></button>
+      <button data-page="assets" class="nav-item">▧ <span>Asset</span></button>
+      <button data-page="templates" class="nav-item">✦ <span>Template</span></button>
+      <button data-page="generate" class="nav-item">✧ <span>Generate</span></button>
+      <button data-page="instant" class="nav-item">⚡ <span>Instant</span></button>
+      <button data-page="pricing" class="nav-item">▣ <span>Harga</span></button>
+    </nav>
+    <div class="side-bottom">
+      <div class="credit-box">
+        <span>Saldo kredit</span>
+        <strong id="sideCredits">20</strong>
+      </div>
+      <button class="account" onclick="showToast('Akun demo CH AI Studio')">
+        <div class="avatar">C</div><div><b>Cahya</b><small>Akun saya</small></div>
+      </button>
+    </div>
+  </aside>
+
+  <main>
+    <header class="topbar">
+      <button class="hamburger" onclick="toggleSidebar()">☰</button>
+      <div class="mobile-logo">CH AI STUDIO</div>
+      <div class="top-actions">
+        <span class="credits">◈ <b id="topCredits">20</b> kredit</span>
+        <button class="upgrade" onclick="go('pricing')">Tambah kredit</button>
+      </div>
+    </header>
+
+    <section id="page-home" class="page active">
+      <div class="hero">
+        <p class="eyebrow">CH AI STUDIO</p>
+        <h1>Mau bikin apa<br><span>hari ini?</span></h1>
+        <p class="muted">Wujudkan ide lewat gambar dan video.</p>
+      </div>
+      <div class="quick-grid">
+        <button class="quick-card" onclick="go('generate'); setMode('image')">
+          <div class="icon">▧</div><b>Generate Gambar</b><span>Buat visual dari prompt & referensi.</span>
+        </button>
+        <button class="quick-card" onclick="go('generate'); setMode('video')">
+          <div class="icon">▶</div><b>Generate Video</b><span>Siapkan konsep video dari ide kamu.</span>
+        </button>
+        <button class="quick-card" onclick="go('templates')">
+          <div class="icon">✦</div><b>Pakai Template</b><span>Mulai dari konsep siap edit.</span>
+        </button>
+      </div>
+      <div class="section-title"><h2>Terbaru</h2><button class="text-btn" onclick="go('assets')">Lihat semua →</button></div>
+      <div id="recentGrid" class="result-grid empty-state"><p>Belum ada hasil. Coba buat gambar pertama kamu.</p></div>
+    </section>
+
+    <section id="page-generate" class="page">
+      <div class="page-head"><div><p class="eyebrow">CREATE</p><h2>Generate</h2><p class="muted">Ubah ide menjadi visual.</p></div></div>
+      <div class="tabs">
+        <button id="tabImage" class="tab active" onclick="setMode('image')">Gambar</button>
+        <button id="tabVideo" class="tab" onclick="setMode('video')">Video</button>
+      </div>
+      <div class="generator">
+        <div class="prompt-wrap">
+          <label>Prompt</label>
+          <textarea id="prompt" placeholder="Contoh: model pria memakai kaos distro C.H, berdiri di jalan Tokyo saat malam, cinematic, editorial fashion..."></textarea>
+          <div class="upload-row">
+            <label class="upload">
+              <input type="file" id="refFile" accept="image/*" onchange="previewRef(event)">
+              <span>＋ Tambah referensi</span>
+            </label>
+            <div id="refPreview" class="ref-preview hidden"><img id="refImg"><button onclick="clearRef()">×</button></div>
+          </div>
+        </div>
+        <div class="options">
+          <div class="option"><label>Model</label><select id="model"><option>CH Image Demo</option><option>Photoreal Studio</option><option>Anime / Illustration</option></select></div>
+          <div class="option"><label>Rasio</label><select id="ratio"><option>9:16</option><option>1:1</option><option>16:9</option></select></div>
+          <div class="option"><label>Resolusi</label><select id="resolution"><option>1K</option><option>2K</option></select></div>
+          <div class="option"><label>Jumlah</label><select id="count"><option value="1">1 hasil</option><option value="2">2 hasil</option></select></div>
+        </div>
+        <div class="generate-bar">
+          <span>Biaya demo: <b id="cost">2</b> kredit</span>
+          <button class="generate-btn" onclick="generate()">✦ Generate</button>
+        </div>
+      </div>
+      <div class="section-title"><h2>Hasil</h2></div>
+      <div id="results" class="result-grid empty-state"><p>Hasil generate akan muncul di sini.</p></div>
+    </section>
+
+    <section id="page-projects" class="page"><div class="page-head"><p class="eyebrow">WORKSPACE</p><h2>Project Saya</h2></div><div id="projectList" class="card-list"></div></section>
+    <section id="page-assets" class="page"><div class="page-head"><p class="eyebrow">LIBRARY</p><h2>Asset</h2></div><div id="assetGrid" class="result-grid empty-state"><p>Belum ada asset.</p></div></section>
+
+    <section id="page-templates" class="page">
+      <div class="page-head"><p class="eyebrow">START FAST</p><h2>Template</h2><p class="muted">Pilih ide, lalu edit prompt-nya.</p></div>
+      <div class="template-grid">
+        <button class="template" onclick="useTemplate('Model kaos distro C.H, studio fashion premium, background abu gelap, cinematic lighting, full body')"><b>Fashion Distro</b><span>Model + produk</span></button>
+        <button class="template" onclick="useTemplate('Poster retro comic 1950s, halftone, distressed texture, bold black ink, limited colors, dramatic composition')"><b>Retro Comic</b><span>Poster vintage</span></button>
+        <button class="template" onclick="useTemplate('Cinematic night street Jakarta, motorcycle rider, wet asphalt, neon lights, documentary photography')"><b>Street Night</b><span>POV jalanan</span></button>
+        <button class="template" onclick="useTemplate('Minimal product photography of a premium black t-shirt on marble, soft studio light, clean commercial composition')"><b>Product Shot</b><span>Foto produk</span></button>
+      </div>
+    </section>
+
+    <section id="page-instant" class="page">
+      <div class="page-head"><p class="eyebrow">INSTANT</p><h2>Quick Create</h2><p class="muted">Satu klik untuk konsep cepat.</p></div>
+      <div class="instant-box"><h3>Generate ide konten kaos</h3><p>Tekan tombol untuk membuat 5 ide konten berdasarkan brand C.H.</p><button class="generate-btn" onclick="instantIdeas()">⚡ Buat ide</button><div id="ideas"></div></div>
+    </section>
+
+    <section id="page-pricing" class="page">
+      <div class="page-head"><p class="eyebrow">CREDIT</p><h2>Harga</h2><p class="muted">Paket demo untuk rancangan aplikasi.</p></div>
+      <div class="price-grid">
+        <div class="price"><h3>Starter</h3><strong>Rp10K</strong><p>50 kredit</p><button onclick="buyCredits(50)">Pilih paket</button></div>
+        <div class="price featured"><span class="badge">POPULER</span><h3>Creator</h3><strong>Rp25K</strong><p>150 kredit</p><button onclick="buyCredits(150)">Pilih paket</button></div>
+        <div class="price"><h3>Pro</h3><strong>Rp50K</strong><p>400 kredit</p><button onclick="buyCredits(400)">Pilih paket</button></div>
+      </div>
+      <div class="notice">⚠️ Pembayaran pada versi ini masih demo. Hubungkan Midtrans/Xendit sebelum dipakai menerima uang asli.</div>
+    </section>
+  </main>
+
+  <div id="toast" class="toast"></div>
+  <script src="app.js"></script>
+</body>
+</html>
