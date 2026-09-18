@@ -8,6 +8,10 @@ app.use(cors());
 app.use(express.json({ limit: "15mb" }));
 app.use(express.static("public"));
 
+app.get("/", (req, res) => {
+  res.sendFile(process.cwd() + "/public/index.html");
+});
+
 app.get("/api/health", (req, res) => {
   res.json({
     ok: true,
