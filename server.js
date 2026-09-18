@@ -58,6 +58,10 @@ app.post("/api/generate", async (req, res) => {
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`CH AI Studio berjalan di http://localhost:${PORT}`);
-});
+if (process.env.VERCEL !== "1") {
+  app.listen(PORT, () => {
+    console.log(`CH AI Studio berjalan di http://localhost:${PORT}`);
+  });
+}
+
+export default app;
