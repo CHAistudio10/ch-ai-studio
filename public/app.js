@@ -1,282 +1,668 @@
-const KEY='ch_ai_studio_state_v1';
 
-let state=JSON.parse(localStorage.getItem(KEY)||'null')||{
-  credits:20,
-  assets:[],
-  projects:[],
-  mode:'image'
+// =========================
+// REFERENCE IMAGE PREVIEW
+// =========================
+window.previewRef = function(event) {
+  const file = event?.target?.files?.[0];
+  if (!file) return;
+
+  if (!file.type.startsWith('image/')) {
+    alert('File harus berupa gambar.');
+    event.target.value = '';
+    return;
+  }
+
+  const reader = new FileReader();
+
+  reader.onload = function(e) {
+    let preview = document.getElementById('refPreview');
+
+    if (!preview) {
+      preview = document.createElement('img');
+      preview.id = 'refPreview';
+      preview.style.maxWidth = '180px';
+      preview.style.maxHeight = '180px';
+      preview.style.objectFit = 'cover';
+      preview.style.borderRadius = '12px';
+      preview.style.marginTop = '10px';
+
+      const input = document.getElementById('refFile');
+      if (input?.parentElement) {
+        input.parentElement.appendChild(preview);
+      }
+    }
+
+    preview.src = e.target.result;
+    preview.style.display = 'block';
+  };
+
+  reader.readAsDataURL(file);
 };
 
-function save(){
-  localStorage.setItem(KEY,JSON.stringify(state));
+const KEY = "ch_ai_studio_state";
+
+let state;
+
+try {
+  state = JSON.parse(localStorage.getItem(KEY)) || {
+    credits: 100,
+    assets: [],
+    projects: [],
+    mode: "image"
+  };
+} catch {
+  state = {
+    credits: 100,
+    assets: [],
+    projects: [],
+    mode: "image"
+  };
+}
+
+if (state.credits <= 0) {
+  state.credits = 20;
+}
+
+function save() {
+  localStorage.setItem(KEY, JSON.stringify(state));
   renderCredits();
   renderRecent();
   renderAssets();
   renderProjects();
 }
 
-function renderCredits(){
-  const a=document.getElementById('topCredits');
-  const b=document.getElementById('sideCredits');
-  if(a)a.textContent=state.credits;
-  if(b)b.textContent=state.credits;
+function renderCredits() {
+  const a = document.getElementById("topCredits");
+  const b = document.getElementById("sideCredits");
+
+  if (a) a.textContent = state.credits;
+  if (b) b.textContent = state.credits;
 }
 
-function go(page){
-  document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
-  const el=document.getElementById('page-'+page);
-  if(el)el.classList.add('active');
-}
+function renderRecent() {
+  const el = document.getElementById("recent");
+  if (!el) return;
 
-function toggleSidebar(){
-  const el=document.getElementById('sidebar');
-  if(el)el.classList.toggle('open');
-}
-
-function showToast(msg){
-  const t=document.getElementById('toast');
-  if(!t)return;
-  t.textContent=msg;
-  t.classList.add('show');
-  clearTimeout(window.toastTimer);
-  window.toastTimer=setTimeout(()=>t.classList.remove('show'),2200);
-}
-
-function setMode(mode){
-  state.mode=mode;
-  const a=document.getElementById('tabImage');
-  const b=document.getElementById('tabVideo');
-  const c=document.getElementById('cost');
-
-  if(a)a.classList.toggle('active',mode==='image');
-  if(b)b.classList.toggle('active',mode==='video');
-  if(c)c.textContent=mode==='image'?2:4;
-
-  save();
-}
-
-function previewRef(e){
-  const f=e.target.files[0];
-  if(!f)return;
-
-  const url=URL.createObjectURL(f);
-  const img=document.getElementById('refImg');
-  const box=document.getElementById('refPreview');
-
-  if(img)img.src=url;
-  if(box)box.classList.remove('hidden');
-}
-
-function clearRef(){
-  const f=document.getElementById('refFile');
-  const box=document.getElementById('refPreview');
-
-  if(f)f.value='';
-  if(box)box.classList.add('hidden');
-}
-
-async function generate(){
-  const prompt=document.getElementById('prompt').value.trim();
-
-  if(!prompt){
-    showToast('Tulis prompt dulu.');
+  if (!state.assets.length) {
+    el.innerHTML = "<p>Belum ada hasil AI.</p>";
     return;
   }
 
-  if(state.mode==='video'){
-    showToast('Saat ini baru bisa membuat gambar.');
+  el.innerHTML = state.assets
+    .slice(0, 6)
+    .map(
+      item => `
+        <div class="asset-card">
+          <img src="${item.image}" alt="AI Image">
+          <div>
+            <small>${item.prompt}</small>
+          </div>
+        </div>
+      `
+    )
+    .join("");
+}
+
+function renderAssets() {
+  const el = document.getElementById("assets");
+  if (!el) return;
+
+  if (!state.assets.length) {
+    el.innerHTML = "<p>Belum ada asset.</p>";
     return;
   }
 
-  const cost=2;
+  el.innerHTML = state.assets
+    .map(
+      item => `
+        <div class="asset-card">
+          <img src="${item.image}" alt="AI Image">
+          <p>${item.prompt}</p>
+          <a href="${item.image}" download="ch-ai-studio.jpg">
+            Download
+          </a>
+        </div>
+      `
+    )
+    .join("");
+}
 
-  if(state.credits<cost){
-    showToast('Kredit tidak cukup.');
-    go('pricing');
+function renderProjects() {
+  const el = document.getElementById("projects");
+  if (!el) return;
+
+  if (!state.projects.length) {
+    el.innerHTML = "<p>Belum ada project.</p>";
     return;
   }
 
-  const btn=document.querySelector('.generate-btn');
-  const oldText=btn?btn.textContent:'Generate';
+  el.innerHTML = state.projects
+    .map(
+      project => `
+        <div class="project-card">
+          <h3>${project.name}</h3>
+          <p>${project.created}</p>
+        </div>
+      `
+    )
+    .join("");
+}
 
-  if(btn){
-    btn.disabled=true;
-    btn.textContent='⏳ Membuat AI...';
+async function generateImage() {
+  const input =
+    document.getElementById("prompt") ||
+    document.querySelector("textarea");
+
+  if (!input) {
+    alert("Kolom prompt tidak ditemukan.");
+    return;
   }
 
-  try{
-    const ratioEl=document.getElementById('ratio');
-    const ratio=ratioEl?ratioEl.value:'9:16';
+  const prompt = input.value.trim();
 
-    const response=await fetch('/api/generate',{
-      method:'POST',
-      headers:{
-        'Content-Type':'application/json'
+  if (!prompt) {
+    alert("Tulis prompt terlebih dahulu.");
+    input.focus();
+    return;
+  }
+
+  if (state.credits <= 0) {
+    alert("Credit kamu sudah habis.");
+    return;
+  }
+
+  const button =
+    document.getElementById("generateBtn") ||
+    document.querySelector("[data-generate]");
+
+  if (button) {
+    button.disabled = true;
+    button.textContent = "Membuat gambar...";
+  }
+
+  try {
+    const refFile = document.getElementById("refFile");
+    let referenceImage = null;
+
+    if (refFile && refFile.files && refFile.files[0]) {
+      referenceImage = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(refFile.files[0]);
+      });
+    }
+
+    const response = await fetch("/api/generate", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
       },
-      body:JSON.stringify({
-        prompt:prompt,
-        ratio:ratio
+      body: JSON.stringify({
+        prompt,
+        ratio: "9:16",
+        image_b64: referenceImage
       })
     });
 
-    const data=await response.json();
+    const data = await response.json();
 
-    if(!response.ok){
-      throw new Error(data.error||'Generate gagal.');
+    if (!response.ok || !data.image) {
+      throw new Error(data.error || "Gagal membuat gambar.");
     }
 
-    if(!data.image){
-      throw new Error('Server tidak mengirim gambar.');
-    }
+    state.credits--;
 
-    const item={
-      id:Date.now(),
-      prompt:prompt,
-      mode:'image',
-      ratio:ratio,
-      model:data.model||'Pollinations AI',
-      date:new Date().toLocaleString('id-ID'),
-      image:data.image
-    };
-
-    state.credits-=cost;
-    state.assets.unshift(item);
-
-    state.projects.unshift({
-      id:Date.now(),
-      name:prompt.slice(0,38)+(prompt.length>38?'…':''),
-      date:item.date,
-      type:'image'
+    state.assets.unshift({
+      image: data.image,
+      prompt,
+      created: new Date().toLocaleString("id-ID")
     });
 
-    state.projects=state.projects.slice(0,20);
+    state.projects.unshift({
+      name: prompt.slice(0, 40),
+      created: new Date().toLocaleString("id-ID")
+    });
 
     save();
-    renderResults([item]);
 
-    showToast('🎉 Gambar AI berhasil dibuat!');
-  }catch(err){
-    console.error(err);
-    showToast(err.message||'Generate gagal.');
-  }finally{
-    if(btn){
-      btn.disabled=false;
-      btn.textContent=oldText;
+    showGeneratedImage(data.image);
+
+  } catch (error) {
+    console.error(error);
+    alert(error.message || "Terjadi kesalahan saat membuat gambar.");
+  } finally {
+    if (button) {
+      button.disabled = false;
+      button.textContent = "Generate Image";
     }
   }
 }
 
-function renderResults(items){
-  const box=document.getElementById('results');
-  if(!box)return;
+function showGeneratedImage(image) {
+  state.lastGeneratedImage = image;
+  let result = document.getElementById("generatedResult");
 
-  box.innerHTML=items.map(card).join('');
-}
+  if (!result) {
+    result = document.createElement("div");
+    result.id = "generatedResult";
 
-function card(x){
-  const visual=x.image
-    ? '<img src="'+x.image+'" alt="AI Result" style="width:100%;height:100%;object-fit:cover">'
-    : '<div class="fake-image"><b>✦ CH AI STUDIO</b></div>';
+    const main =
+      document.querySelector("main") ||
+      document.body;
 
-  return '<article class="result-card">'+
-    '<div style="aspect-ratio:16/10;overflow:hidden">'+
-    visual+
-    '</div>'+
-    '<div class="result-info">'+
-    '<b>'+escapeHtml(x.prompt.slice(0,55))+'</b>'+
-    '<small>'+escapeHtml(x.model)+' · '+escapeHtml(x.date)+'</small>'+
-    '</div>'+
-    '</article>';
-}
-
-function escapeHtml(text){
-  return String(text)
-    .replace(/&/g,'&amp;')
-    .replace(/</g,'&lt;')
-    .replace(/>/g,'&gt;')
-    .replace(/"/g,'&quot;')
-    .replace(/'/g,'&#039;');
-}
-
-function renderRecent(){
-  const box=document.getElementById('recentGrid');
-  if(!box)return;
-
-  if(!state.assets.length){
-    box.className='result-grid empty-state';
-    box.innerHTML='<p>Belum ada hasil. Coba buat gambar pertama kamu.</p>';
-    return;
+    main.appendChild(result);
   }
 
-  box.className='result-grid';
-  box.innerHTML=state.assets.slice(0,3).map(card).join('');
+  result.innerHTML = `
+    <div class="generated-result">
+      <h3>Hasil AI</h3>
+      <img
+        src="${image}"
+        alt="Generated AI Image"
+        style="max-width:100%;border-radius:16px;"
+      >
+      <br><br>
+      <a href="${image}" download="ch-ai-studio.jpg">
+        Download Gambar
+      </a>
+    </div>
+  `;
 }
 
-function renderAssets(){
-  const box=document.getElementById('assetGrid');
-  if(!box)return;
+function setupGenerateButton() {
+  const button =
+    document.getElementById("generateBtn") ||
+    document.querySelector("[data-generate]");
 
-  if(!state.assets.length){
-    box.className='result-grid empty-state';
-    box.innerHTML='<p>Belum ada asset.</p>';
-    return;
-  }
-
-  box.className='result-grid';
-  box.innerHTML=state.assets.map(card).join('');
-}
-
-function renderProjects(){
-  const box=document.getElementById('projectList');
-  if(!box)return;
-
-  if(!state.projects.length){
-    box.innerHTML='<div class="empty-state">Belum ada project.</div>';
-    return;
-  }
-
-  box.innerHTML=state.projects.map(p=>
-    '<div class="card-item"><div><b>'+
-    escapeHtml(p.name)+
-    '</b><small style="display:block;color:#777;margin-top:5px">'+
-    escapeHtml(p.type)+' · '+escapeHtml(p.date)+
-    '</small></div></div>'
-  ).join('');
-}
-
-function useTemplate(p){
-  go('generate');
-  const el=document.getElementById('prompt');
-  if(el)el.value=p;
-  showToast('Template dimasukkan ke prompt');
-}
-
-function instantIdeas(){
-  const ideas=[
-    'Model memakai kaos C.H di jalan Jakarta saat malam',
-    'Behind the scenes proses desain kaos C.H',
-    'POV driver ojol menemukan fashion brand lokal',
-    'Street interview tentang arti tulisan di kaos C.H',
-    'Cinematic product reveal kaos dengan lampu neon'
-  ];
-
-  const box=document.getElementById('ideas');
-  if(box){
-    box.innerHTML=ideas.map((x,i)=>
-      '<div class="idea">'+(i+1)+'. '+escapeHtml(x)+'</div>'
-    ).join('');
+  if (button) {
+    button.addEventListener("click", generate);
   }
 }
 
-function buyCredits(n){
-  state.credits+=n;
-  save();
-  showToast('Demo: +'+n+' kredit ditambahkan');
-}
-
-document.addEventListener('DOMContentLoaded',()=>{
+document.addEventListener("DOMContentLoaded", () => {
   renderCredits();
   renderRecent();
   renderAssets();
   renderProjects();
+  setupGenerateButton();
 });
+
+
+async function generateVideo() {
+  const input = document.getElementById("prompt");
+  const button = document.getElementById("generateBtn");
+  const container = document.getElementById("results");
+
+  if (!input || !input.value.trim()) {
+    alert("Tulis prompt video terlebih dahulu.");
+    return;
+  }
+
+  if (state.credits <= 0) {
+    alert("Credit kamu sudah habis.");
+    return;
+  }
+
+  const prompt = input.value.trim();
+
+    const refFile = document.getElementById("refFile");
+    let referenceImage = null;
+
+    if (refFile && refFile.files && refFile.files[0]) {
+      referenceImage = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(refFile.files[0]);
+      });
+    }
+
+    if (!referenceImage && state.lastGeneratedImage) {
+      referenceImage = state.lastGeneratedImage;
+    }
+
+  if (button) {
+    button.disabled = true;
+    button.textContent = "✦ Generating...";
+  }
+
+  if (container) {
+    container.innerHTML = `
+      <div style="padding:35px 20px;text-align:center;border-radius:20px;background:rgba(255,255,255,.05);margin-top:20px;">
+        <div style="font-size:52px;">🎬</div>
+        <h3>Creating your video</h3>
+        <p style="opacity:.65;">AI sedang membuat video dari prompt kamu...</p>
+        <div style="width:100%;height:5px;background:rgba(255,255,255,.1);border-radius:10px;margin:25px 0;overflow:hidden;">
+          <div id="videoProgress" style="width:10%;height:100%;border-radius:10px;background:linear-gradient(90deg,#8b5cf6,#ec4899);transition:width 1s ease;"></div>
+        </div>
+        <small style="opacity:.45;">Jangan tutup halaman ini.</small>
+      </div>
+    `;
+  }
+
+  try {
+    const response = await fetch("/api/generate-video", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        prompt,
+        ratio: "9:16",
+        fps: 24,
+        duration: 6,
+        image_b64: referenceImage
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok || !data.pollingUrl) {
+      throw new Error(data.error || "Gagal memulai video.");
+    }
+
+    let videoUrl = null;
+
+    // Tunggu sampai video benar-benar selesai.
+    for (let i = 0; i < 180; i++) {
+
+      await new Promise(resolve =>
+        setTimeout(resolve, 5000)
+      );
+
+      const progress =
+        document.getElementById("videoProgress");
+
+      if (progress) {
+        progress.style.width =
+          Math.min(10 + (i / 180) * 85, 95) + "%";
+      }
+
+      let statusData = null;
+
+      // Retry jika koneksi status gagal.
+      for (let retry = 0; retry < 4; retry++) {
+        try {
+          const statusResponse = await fetch(
+            "/api/video-status",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify({
+                pollingUrl: data.pollingUrl
+              })
+            }
+          );
+
+          if (!statusResponse.ok) {
+            throw new Error(
+              "Status HTTP " + statusResponse.status
+            );
+          }
+
+          statusData = await statusResponse.json();
+          break;
+
+        } catch (err) {
+          console.log(
+            "Status check gagal, mencoba lagi:",
+            retry + 1
+          );
+
+          if (retry < 3) {
+            await new Promise(resolve =>
+              setTimeout(resolve, 3000)
+            );
+          }
+        }
+      }
+
+      // Jangan langsung gagal kalau satu polling bermasalah.
+      if (!statusData) {
+        continue;
+      }
+
+      console.log(
+        "VIDEO STATUS:",
+        statusData.status
+      );
+
+      if (statusData.status === "COMPLETED") {
+
+        const media =
+          statusData?.output?.media_url ||
+          statusData?.output?.mediaUrl ||
+          statusData?.output?.url;
+
+        videoUrl = Array.isArray(media)
+          ? media[0]
+          : media;
+
+        if (videoUrl) {
+          break;
+        }
+      }
+
+      if (
+        statusData.status === "FAILED" ||
+        statusData.status === "ERROR"
+      ) {
+        throw new Error(
+          statusData?.error ||
+          "Video gagal dibuat."
+        );
+      }
+    }
+
+    if (!videoUrl) {
+      throw new Error(
+        "Video belum selesai diproses. Silakan coba lagi."
+      );
+    }
+
+    state.credits--;
+
+    state.assets.unshift({
+      video: videoUrl,
+      prompt,
+      created: new Date().toLocaleString("id-ID")
+    });
+
+    state.projects.unshift({
+      name: prompt.slice(0, 40),
+      created: new Date().toLocaleString("id-ID")
+    });
+
+    save();
+
+    showGeneratedVideo(videoUrl);
+
+  } catch (error) {
+
+    console.error(
+      "VIDEO GENERATION ERROR:",
+      error
+    );
+
+    if (container) {
+      container.innerHTML = `
+        <div style="padding:30px;text-align:center;">
+          <h3>❌ Video gagal</h3>
+          <p>${error.message}</p>
+        </div>
+      `;
+    }
+
+  } finally {
+
+    if (button) {
+      button.disabled = false;
+      button.textContent =
+        state.mode === "video"
+          ? "✦ Generate Video"
+          : "✦ Generate Image";
+    }
+  }
+}
+
+function showGeneratedVideo(videoUrl) {
+  let container =
+    document.getElementById("result") ||
+    document.querySelector(".result") ||
+    document.querySelector(".output");
+
+  if (!container) {
+    console.warn("Container hasil tidak ditemukan.");
+    return;
+  }
+
+  container.innerHTML = `
+    <div class="generated-video">
+      <video
+        src="${videoUrl}"
+        controls
+        playsinline
+        style="width:100%;max-width:500px;border-radius:16px;">
+      </video>
+    </div>
+  `;
+
+  container.scrollIntoView({
+    behavior: "smooth",
+    block: "center"
+  });
+}
+
+function generate() { console.log("MODE SAAT GENERATE:", state.mode);
+  if (state.mode === "video") {
+    generateVideo();
+    return;
+  }
+
+  generateImage();
+}
+
+
+function instantIdeas() {
+  const ideas = [
+    "Model pria memakai kaos C.H di jalan Tokyo malam hari, cinematic fashion photography.",
+    "Video pendek transformasi desain kaos C.H dari sketsa menjadi produk nyata.",
+    "Model streetwear memakai kaos C.H di tengah suasana kota Jakarta saat malam.",
+    "Foto editorial kaos C.H dengan nuansa vintage retro dan lighting dramatis.",
+    "Konten POV ojol menemukan brand kaos lokal C.H dengan konsep street fashion."
+  ];
+
+  const el = document.getElementById("ideas");
+
+  if (!el) return;
+
+  el.innerHTML = ideas
+    .map((idea, index) => `
+      <div class="idea-item">
+        <b>${index + 1}.</b> ${idea}
+      </div>
+    `)
+    .join("");
+}
+
+
+function showToast(message) {
+  alert(message);
+}
+
+function toggleSidebar() {
+  const sidebar = document.querySelector(".sidebar");
+  if (sidebar) {
+    sidebar.classList.toggle("open"); document.body.classList.toggle("menu-open", sidebar.classList.contains("open"));
+  }
+}
+
+function go(page) {
+  const sidebar = document.querySelector(".sidebar"); if (sidebar) { sidebar.classList.remove("open"); document.body.classList.remove("menu-open"); }
+  document.querySelectorAll(".page").forEach(el => {
+    el.style.display = "none";
+  });
+
+  const target = document.getElementById("page-" + page);
+
+  if (target) {
+    target.style.display = "block";
+  }
+
+  document.querySelectorAll(".nav-item").forEach(el => {
+    el.classList.remove("active");
+  });
+
+  const nav = document.querySelector(`[data-page="${page}"]`);
+
+  if (nav) {
+    nav.classList.add("active");
+  }
+}
+
+function setMode(mode) {
+  state.mode = mode;
+  save();
+
+  document.querySelectorAll("[data-mode]").forEach(el => {
+    el.classList.toggle("active", el.dataset.mode === mode);
+  });
+
+  const modelOption = document.getElementById("modelOption");
+  const resolutionOption = document.getElementById("resolutionOption");
+  const countOption = document.getElementById("countOption");
+  const durationOption = document.getElementById("durationOption");
+  const fpsOption = document.getElementById("fpsOption");
+  const generateBtn = document.getElementById("generateBtn");
+  const cost = document.getElementById("cost");
+
+  if (mode === "video") {
+    if (modelOption) modelOption.style.display = "none";
+    if (resolutionOption) resolutionOption.style.display = "none";
+    if (countOption) countOption.style.display = "none";
+    if (durationOption) durationOption.style.display = "block";
+    if (fpsOption) fpsOption.style.display = "block";
+
+    if (generateBtn) generateBtn.textContent = "✦ Generate Video";
+    if (cost) cost.textContent = "2";
+  } else {
+    if (modelOption) modelOption.style.display = "block";
+    if (resolutionOption) resolutionOption.style.display = "block";
+    if (countOption) countOption.style.display = "block";
+    if (durationOption) durationOption.style.display = "none";
+    if (fpsOption) fpsOption.style.display = "none";
+
+    if (generateBtn) generateBtn.textContent = "✦ Generate Image";
+    if (cost) cost.textContent = "2";
+  }
+}
+
+function clearRef() {
+  const input = document.getElementById("reference");
+
+  if (input) {
+    input.value = "";
+  }
+}
+
+function useTemplate(template) {
+  const input = document.getElementById("prompt");
+
+  if (!input) return;
+
+  input.value = template;
+
+  go("generate");
+
+  input.focus();
+}
+
+function buyCredits(amount) {
+  alert(
+    `Pembelian ${amount} credit masih dalam tahap pengembangan.`
+  );
+}
+
