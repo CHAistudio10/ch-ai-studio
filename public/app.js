@@ -5,37 +5,20 @@
 window.previewRef = function(event) {
   const file = event?.target?.files?.[0];
   if (!file) return;
-
-  if (!file.type.startsWith('image/')) {
-    alert('File harus berupa gambar.');
-    event.target.value = '';
+  if (!file.type.startsWith("image/")) {
+    alert("File harus berupa gambar.");
+    event.target.value = "";
     return;
   }
-
   const reader = new FileReader();
-
   reader.onload = function(e) {
-    let preview = document.getElementById('refPreview');
-
-    if (!preview) {
-      preview = document.createElement('img');
-      preview.id = 'refPreview';
-      preview.style.maxWidth = '180px';
-      preview.style.maxHeight = '180px';
-      preview.style.objectFit = 'cover';
-      preview.style.borderRadius = '12px';
-      preview.style.marginTop = '10px';
-
-      const input = document.getElementById('refFile');
-      if (input?.parentElement) {
-        input.parentElement.appendChild(preview);
-      }
+    const preview = document.getElementById("refPreview");
+    const img = document.getElementById("refImg");
+    if (preview && img) {
+      img.src = e.target.result;
+      preview.classList.remove("hidden");
     }
-
-    preview.src = e.target.result;
-    preview.style.display = 'block';
   };
-
   reader.readAsDataURL(file);
 };
 
@@ -392,7 +375,7 @@ async function generateVideo() {
                 "Content-Type": "application/json"
               },
               body: JSON.stringify({
-                pollingUrl: data.pollingUrl
+                requestId: data.requestId
               })
             }
           );
