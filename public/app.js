@@ -493,7 +493,7 @@ async function generateVideo() {
 
 function showGeneratedVideo(videoUrl) {
   let container =
-    document.getElementById("result") ||
+    document.getElementById("results") ||
     document.querySelector(".result") ||
     document.querySelector(".output");
 
