@@ -125,7 +125,7 @@ app.post("/api/generate-video", async (req, res) => {
     form.append("prompt", prompt.trim());
     form.append("width", "512");
     form.append("height", "512");
-    form.append("frames", "49");
+    form.append("frames", "241");
     form.append("fps", "24");
     form.append("seed", String(Number(seed) || 42));
 
