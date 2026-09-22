@@ -30,3 +30,5 @@ info.json
 new.txt
 hasil_sse.txt
 server-*-backup*.js
+.vercel
+.env*
