@@ -531,11 +531,11 @@ function generate() { console.log("MODE SAAT GENERATE:", state.mode);
 
 function instantIdeas() {
   const ideas = [
-    "Model pria memakai kaos C.H di jalan Tokyo malam hari, cinematic fashion photography.",
-    "Video pendek transformasi desain kaos C.H dari sketsa menjadi produk nyata.",
-    "Model streetwear memakai kaos C.H di tengah suasana kota Jakarta saat malam.",
-    "Foto editorial kaos C.H dengan nuansa vintage retro dan lighting dramatis.",
-    "Konten POV ojol menemukan brand kaos lokal C.H dengan konsep street fashion."
+    "Kamera bergerak perlahan mendekati subjek, sementara subjek melakukan gerakan natural dan ekspresi halus. Pertahankan wajah, pakaian, bentuk tubuh, dan latar belakang sesuai gambar referensi. Durasi 10 detik, cinematic, smooth motion.",
+    "Subjek bergerak secara perlahan mengikuti pose pada gambar referensi dengan gerakan tubuh yang natural. Kamera melakukan slow pan dari kiri ke kanan dengan sedikit efek depth dan parallax. Pertahankan detail gambar asli. Durasi 10 detik.",
+    "Buat gambar referensi menjadi adegan hidup. Subjek bergerak secara realistis, rambut dan pakaian bergerak lembut mengikuti angin, sementara kamera perlahan melakukan zoom-in cinematic. Jangan mengubah identitas atau bentuk objek utama. Durasi 10 detik.",
+    "Kamera melakukan gerakan cinematic mengelilingi subjek secara perlahan, sementara subjek tetap melakukan gerakan natural dan tidak berlebihan. Tambahkan sedikit pergerakan lingkungan agar adegan terasa hidup. Pertahankan komposisi dan detail utama dari gambar referensi. Durasi 10 detik.",
+    "Ubah gambar referensi menjadi video cinematic yang realistis. Subjek melakukan gerakan sederhana dan natural dari awal hingga akhir, dengan kamera bergerak perlahan maju kemudian sedikit bergeser ke samping. Pertahankan wajah, pakaian, objek, warna, dan latar belakang. Durasi 10 detik, smooth realistic motion."
   ];
 
   const el = document.getElementById("ideas");
