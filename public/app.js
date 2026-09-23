@@ -306,20 +306,23 @@ async function generateVideo() {
   const prompt = input.value.trim();
 
     const refFile = document.getElementById("refFile");
-    let referenceImage = null;
+    let referenceImages = [];
 
-    if (refFile && refFile.files && refFile.files[0]) {
-      referenceImage = await new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = reject;
-        reader.readAsDataURL(refFile.files[0]);
-      });
+    if (refFile && refFile.files && refFile.files.length) {
+      const files = Array.from(refFile.files).slice(0, 5);
+
+      referenceImages = await Promise.all(
+        files.map(file => new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result);
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        }))
+      );
     }
 
-    if (!referenceImage && state.lastGeneratedImage) {
-      referenceImage = state.lastGeneratedImage;
-    }
+    // Tetap gunakan gambar hasil generate terakhir jika tidak ada referensi.
+    let referenceImage = referenceImages[0] || null;
 
   if (button) {
     button.disabled = true;
@@ -352,8 +355,8 @@ async function generateVideo() {
         ratio: document.getElementById("ratio")?.value || "9:16",
         resolution: document.getElementById("resolution")?.value || "1K",
         count: Number(document.getElementById("count")?.value || 1),
-        fps: 24,
-        duration: 6,
+        fps: Number(document.getElementById("fps")?.value || 24),
+        duration: Number(document.getElementById("duration")?.value || 10),
         image_b64: referenceImage
       })
     });
@@ -624,6 +627,7 @@ function setMode(mode) {
   const countOption = document.getElementById("countOption");
   const durationOption = document.getElementById("durationOption");
   const fpsOption = document.getElementById("fpsOption");
+  const videoReferenceOption = document.getElementById("videoReferenceOption");
   const generateBtn = document.getElementById("generateBtn");
   const cost = document.getElementById("cost");
 
@@ -633,6 +637,7 @@ function setMode(mode) {
     if (countOption) countOption.style.display = "none";
     if (durationOption) durationOption.style.display = "block";
     if (fpsOption) fpsOption.style.display = "block";
+    if (videoReferenceOption) videoReferenceOption.style.display = "block";
 
     if (generateBtn) generateBtn.textContent = "✦ Generate Video";
     const promptInput = document.getElementById("prompt"); if (promptInput) promptInput.placeholder = "Ayo bikin ide kamu dalam gambar menjadi video se-kreatif mungkin, sesuai keinginan kamu."; 
@@ -643,18 +648,45 @@ function setMode(mode) {
     if (countOption) countOption.style.display = "block";
     if (durationOption) durationOption.style.display = "none";
     if (fpsOption) fpsOption.style.display = "none";
+    if (videoReferenceOption) videoReferenceOption.style.display = "none";
 
     if (generateBtn) generateBtn.textContent = "✦ Generate Image";
     if (cost) cost.textContent = "2";
   }
 }
 
-function clearRef() {
-  const input = document.getElementById("reference");
+function previewRef(event) {
+  const input = event.target;
+  const preview = document.getElementById("refPreview");
+  const img = document.getElementById("refImg");
 
-  if (input) {
-    input.value = "";
+  if (!input || !preview || !img) return;
+
+  const file = input.files && input.files[0];
+
+  if (!file) {
+    clearRef();
+    return;
   }
+
+  const reader = new FileReader();
+
+  reader.onload = () => {
+    img.src = reader.result;
+    preview.classList.remove("hidden");
+  };
+
+  reader.readAsDataURL(file);
+}
+
+function clearRef() {
+  const input = document.getElementById("refFile");
+  const preview = document.getElementById("refPreview");
+  const img = document.getElementById("refImg");
+
+  if (input) input.value = "";
+  if (img) img.src = "";
+  if (preview) preview.classList.add("hidden");
 }
 
 function useTemplate(template) {
