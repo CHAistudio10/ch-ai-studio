@@ -141,12 +141,29 @@ app.post("/api/generate-video", async (req, res) => {
       }
     );
 
-    const data = await response.json();
+    const responseText = await response.text();
+
+    let data;
+    try {
+      data = JSON.parse(responseText);
+    } catch {
+      console.error("DEAPI VIDEO RAW RESPONSE:", responseText);
+      throw new Error(
+        "deAPI mengembalikan respons bukan JSON: " +
+        responseText.slice(0, 500)
+      );
+    }
 
     console.log("DEAPI VIDEO CREATE:", data);
 
-    if (!response.ok || !data?.data?.request_id)
-      throw new Error(data?.message || data?.error || "deAPI gagal membuat video.");
+    if (!response.ok || !data?.data?.request_id) {
+      throw new Error(
+        data?.message ||
+        data?.error ||
+        data?.detail ||
+        "deAPI gagal membuat video."
+      );
+    }
 
     const requestId = data.data.request_id;
 
@@ -154,13 +171,16 @@ app.post("/api/generate-video", async (req, res) => {
       ok: true,
       requestId,
       status: "PROCESSING",
-      pollingUrl: "/api/video-status?requestId=" + encodeURIComponent(requestId),
+      pollingUrl: "/api/video-status?requestId=" +
+        encodeURIComponent(requestId),
       model: "Ltx2_3_22B_Dist_INT8"
     });
 
   } catch (err) {
     console.error("DEAPI VIDEO ERROR:", err);
-    res.status(500).json({ error: err?.message || "Gagal membuat video." });
+    res.status(500).json({
+      error: err?.message || "Gagal membuat video."
+    });
   }
 });
 
