@@ -285,6 +285,9 @@ document.addEventListener("DOMContentLoaded", () => {
   renderAssets();
   renderProjects();
   setupGenerateButton();
+
+  // Mode awal Generate selalu Gambar.
+  setMode("image");
 });
 
 
@@ -591,8 +594,13 @@ function toggleSidebar() {
   }
 }
 
-function go(page) {
-  const sidebar = document.querySelector(".sidebar"); if (sidebar) { sidebar.classList.remove("open"); document.body.classList.remove("menu-open"); }
+function go(page, addHistory = true) {
+  const sidebar = document.querySelector(".sidebar");
+  if (sidebar) {
+    sidebar.classList.remove("open");
+    document.body.classList.remove("menu-open");
+  }
+
   document.querySelectorAll(".page").forEach(el => {
     el.style.display = "none";
   });
@@ -612,7 +620,18 @@ function go(page) {
   if (nav) {
     nav.classList.add("active");
   }
+
+  if (addHistory) {
+    history.pushState({ page }, "", "#" + page);
+  }
 }
+
+window.addEventListener("popstate", (event) => {
+  const page = event.state && event.state.page ? event.state.page : "home";
+  go(page, false);
+});
+
+history.replaceState({ page: "home" }, "", "#home");
 
 function setMode(mode) {
   state.mode = mode;
