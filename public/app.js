@@ -726,3 +726,17 @@ function buyCredits(amount) {
   );
 }
 
+
+function useVideoTemplate(name, prompt) {
+  go("generate");
+  setMode("video");
+
+  const promptInput = document.getElementById("prompt");
+
+  if (promptInput) {
+    promptInput.value = prompt;
+    promptInput.focus();
+  }
+
+  showToast(`${name} siap digunakan`);
+}
