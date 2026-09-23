@@ -24,7 +24,26 @@ app.get("/api/health", (req, res) => {
 
 app.post("/api/generate", async (req, res) => {
   try {
-    const { prompt, ratio = "9:16", model = "CH Image Demo", resolution = "1K" } = req.body || {};
+    const { prompt, ratio = "9:16", model = "CH Image Demo", resolution = "1K", count = 1 } = req.body || {};
+
+    const sizeMap = {
+      "1K": { short: 640, long: 1024 },
+      "2K": { short: 1024, long: 1536 }
+    };
+
+    const size = sizeMap[resolution] || sizeMap["1K"];
+    let width, height;
+
+    if (ratio === "1:1") {
+      width = size.short;
+      height = size.short;
+    } else if (ratio === "16:9") {
+      width = size.long;
+      height = Math.round(size.long * 9 / 16);
+    } else {
+      width = Math.round(size.long * 9 / 16);
+      height = size.long;
+    }
 
     if (!prompt || !prompt.trim()) {
       return res.status(400).json({
@@ -35,39 +54,49 @@ app.post("/api/generate", async (req, res) => {
     const finalPrompt =
       `USER REQUEST: ${prompt.trim()}. Follow the user request exactly. Preserve the main subject, clothing, pose, location, objects, colors, text, and composition requested by the user. Do not add unrelated subjects or objects. Generate only what is requested. Style/model: ${model}. Aspect ratio: ${ratio}. Resolution target: ${resolution}. High detail, accurate composition, professional lighting, clean image.`;
 
-    const response = await fetch("https://gateway.pixazo.ai/flux-1-schnell/v1/getData", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Ocp-Apim-Subscription-Key": process.env.PIXAZO_API_KEY
-      },
-      body: JSON.stringify({
-        prompt: finalPrompt,
-        num_steps: 8,
+    const results = [];
+    const total = Math.min(Math.max(Number(count) || 1, 1), 2);
+
+    for (let i = 0; i < total; i++) {
+      const response = await fetch("https://gateway.pixazo.ai/flux-1-schnell/v1/getData", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Ocp-Apim-Subscription-Key": process.env.PIXAZO_API_KEY
+        },
+        body: JSON.stringify({
+          prompt: finalPrompt,
+          num_steps: 8,
           num_frames: 240,
           frame_rate: 24,
-        width: 768,
-        height: 1024
-      })
-    });
+          width,
+          height
+        })
+      });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Pixazo gagal (${response.status}): ${errorText}`);
-    }
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Pixazo gagal (${response.status}): ${errorText}`);
+      }
 
-    const data = await response.json();
-    const imageUrl = data?.output || data?.image_url || data?.url || data?.output?.media_url?.[0];
+      const data = await response.json();
+      const imageUrl = data?.output || data?.image_url || data?.url || data?.output?.media_url?.[0];
 
-    if (!imageUrl) {
-      throw new Error("Pixazo tidak mengembalikan URL gambar.");
+      if (!imageUrl) {
+        throw new Error("Pixazo tidak mengembalikan URL gambar.");
+      }
+
+      results.push(imageUrl);
     }
 
     res.json({
       ok: true,
-      image: imageUrl,
+      image: results[0],
+      images: results,
+      count: results.length,
       model: "Pixazo Flux Schnell",
-      ratio
+      ratio,
+      resolution
     });
 
   } catch (err) {

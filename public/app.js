@@ -183,7 +183,10 @@ async function generateImage() {
       },
       body: JSON.stringify({
         prompt,
-        ratio: "9:16",
+        model: document.getElementById("model")?.value || "CH Image",
+        ratio: document.getElementById("ratio")?.value || "9:16",
+        resolution: document.getElementById("resolution")?.value || "1K",
+        count: Number(document.getElementById("count")?.value || 1),
         image_b64: referenceImage
       })
     });
@@ -209,7 +212,7 @@ async function generateImage() {
 
     save();
 
-    showGeneratedImage(data.image);
+    showGeneratedImage(data.images || [data.image]);
 
   } catch (error) {
     console.error(error);
@@ -222,8 +225,16 @@ async function generateImage() {
   }
 }
 
-function showGeneratedImage(image) {
-  state.lastGeneratedImage = image;
+function showGeneratedImage(images) {
+  const list = Array.isArray(images) ? images : [images];
+  const validImages = list.filter(Boolean);
+
+  if (!validImages.length) {
+    return;
+  }
+
+  state.lastGeneratedImage = validImages[0];
+
   let result = document.getElementById("generatedResult");
 
   if (!result) {
@@ -240,19 +251,24 @@ function showGeneratedImage(image) {
   result.innerHTML = `
     <div class="generated-result">
       <h3>Hasil AI</h3>
-      <img
-        src="${image}"
-        alt="Generated AI Image"
-        style="max-width:100%;border-radius:16px;"
-      >
-      <br><br>
-      <a href="${image}" download="ch-ai-studio.jpg">
-        Download Gambar
-      </a>
+      <div style="display:grid;gap:16px;">
+        ${validImages.map((image, index) => `
+          <div>
+            <img
+              src="${image}"
+              alt="Generated AI Image ${index + 1}"
+              style="max-width:100%;border-radius:16px;"
+            >
+            <br><br>
+            <a href="${image}" download="ch-ai-studio-${index + 1}.jpg">
+              Download Gambar ${index + 1}
+            </a>
+          </div>
+        `).join("")}
+      </div>
     </div>
   `;
 }
-
 function setupGenerateButton() {
   const button =
     document.getElementById("generateBtn") ||
@@ -332,14 +348,23 @@ async function generateVideo() {
       },
       body: JSON.stringify({
         prompt,
-        ratio: "9:16",
+        model: document.getElementById("model")?.value || "CH Image",
+        ratio: document.getElementById("ratio")?.value || "9:16",
+        resolution: document.getElementById("resolution")?.value || "1K",
+        count: Number(document.getElementById("count")?.value || 1),
         fps: 24,
         duration: 6,
         image_b64: referenceImage
       })
     });
 
-    const data = await response.json();
+    const responseText = await response.text();
+    let data;
+    try {
+      data = JSON.parse(responseText);
+    } catch {
+      throw new Error("Server video: " + responseText.slice(0, 500));
+    }
 
     if (!response.ok || !data.pollingUrl) {
       throw new Error(data.error || "Gagal memulai video.");
