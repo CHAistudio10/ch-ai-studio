@@ -740,3 +740,120 @@ function useVideoTemplate(name, prompt) {
 
   showToast(`${name} siap digunakan`);
 }
+
+/* ===== CH AI STUDIO CUSTOM AUTH ===== */
+let authMode = "signin";
+
+function openAuth(mode = "signin") {
+  authMode = mode;
+
+  const overlay = document.getElementById("authOverlay");
+  const title = document.getElementById("authTitle");
+  const subtitle = document.getElementById("authSubtitle");
+  const submit = document.getElementById("authSubmit");
+  const sw = document.getElementById("authSwitch");
+  const error = document.getElementById("authError");
+
+  if (!overlay) return;
+
+  error.classList.remove("show");
+  error.textContent = "";
+
+  if (authMode === "signup") {
+    title.textContent = "Buat Akun CH AI Studio";
+    subtitle.textContent = "Daftar untuk mulai membuat karya.";
+    submit.textContent = "Daftar";
+    sw.innerHTML = 'Sudah punya akun? <button onclick="switchAuth()">Masuk</button>';
+  } else {
+    title.textContent = "Masuk ke CH AI Studio";
+    subtitle.textContent = "Gunakan akun kamu untuk melanjutkan.";
+    submit.textContent = "Masuk";
+    sw.innerHTML = 'Belum punya akun? <button onclick="switchAuth()">Daftar</button>';
+  }
+
+  overlay.classList.add("show");
+  setTimeout(() => document.getElementById("authEmail")?.focus(), 100);
+}
+
+function closeAuth() {
+  document.getElementById("authOverlay")?.classList.remove("show");
+}
+
+function switchAuth() {
+  openAuth(authMode === "signin" ? "signup" : "signin");
+}
+
+async function submitAuth() {
+  const email = document.getElementById("authEmail")?.value.trim();
+  const password = document.getElementById("authPassword")?.value;
+  const button = document.getElementById("authSubmit");
+  const error = document.getElementById("authError");
+
+  error.classList.remove("show");
+  error.textContent = "";
+
+  if (!email || !password) {
+    error.textContent = "Email dan password wajib diisi.";
+    error.classList.add("show");
+    return;
+  }
+
+  button.disabled = true;
+  button.textContent = authMode === "signup" ? "Mendaftarkan..." : "Memproses...";
+
+  try {
+    if (authMode === "signin") {
+      const result = await Clerk.client.signIn.create({
+        identifier: email,
+        password
+      });
+
+      if (result.status === "complete") {
+        await Clerk.setActive({
+          session: result.createdSessionId
+        });
+        closeAuth();
+        showToast("Berhasil masuk");
+        location.reload();
+        return;
+      }
+
+      throw new Error("Login membutuhkan langkah verifikasi tambahan.");
+    }
+
+    const result = await Clerk.client.signUp.create({
+      emailAddress: email,
+      password
+    });
+
+    if (result.status === "complete") {
+      await Clerk.setActive({
+        session: result.createdSessionId
+      });
+      closeAuth();
+      showToast("Akun berhasil dibuat");
+      location.reload();
+      return;
+    }
+
+    if (result.status === "missing_requirements") {
+      if (result.unverifiedFields?.includes("email_address")) {
+        error.textContent = "Email perlu diverifikasi. Kita tambahkan layar kode verifikasi setelah ini.";
+      } else {
+        error.textContent = "Pendaftaran membutuhkan verifikasi tambahan.";
+      }
+      error.classList.add("show");
+      return;
+    }
+
+    throw new Error("Pendaftaran belum selesai.");
+
+  } catch (err) {
+    console.error("CH Auth:", err);
+    error.textContent = err?.errors?.[0]?.longMessage || err?.message || "Terjadi kesalahan.";
+    error.classList.add("show");
+  } finally {
+    button.disabled = false;
+    button.textContent = authMode === "signup" ? "Daftar" : "Masuk";
+  }
+}
