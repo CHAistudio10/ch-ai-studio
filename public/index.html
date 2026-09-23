@@ -176,12 +176,22 @@
         const el = document.getElementById("clerk-user-button");
         if (!el) return;
 
-        if (Clerk.user) {
-          Clerk.mountUserButton(el);
-        } else {
-          el.innerHTML = "<button class=\"account\" id=\"loginBtn\">Masuk / Daftar</button>";
-          document.getElementById("loginBtn").onclick = () => Clerk.openSignIn();
-        }
+        const renderAuth = () => {
+          el.innerHTML = "";
+
+          if (Clerk.user) {
+            Clerk.mountUserButton(el);
+          } else {
+            const btn = document.createElement("button");
+            btn.className = "account";
+            btn.textContent = "Masuk / Daftar";
+            btn.onclick = () => Clerk.openSignIn();
+            el.appendChild(btn);
+          }
+        };
+
+        renderAuth();
+        Clerk.addListener(() => renderAuth());
       } catch (error) {
         console.error("Clerk error:", error);
       }
