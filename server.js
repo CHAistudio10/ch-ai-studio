@@ -2,6 +2,30 @@ import crypto from "crypto";
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
+import { createClient } from "@supabase/supabase-js";
+import { verifyToken } from "@clerk/backend";
+
+const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
+
+async function getClerkUserId(req) {
+  const authHeader = req.headers.authorization || "";
+  if (!authHeader.startsWith("Bearer ")) return null;
+  const token = authHeader.slice(7);
+  try {
+    const payload = await verifyToken(token, { secretKey: process.env.CLERK_SECRET_KEY });
+    return payload.sub || null;
+  } catch {
+    return null;
+  }
+}
+async function getUserCredits(clerkUserId) {
+  const { data, error } = await supabase.rpc("get_or_create_user_credits", {
+    p_clerk_user_id: clerkUserId
+  });
+  if (error) throw error;
+  return Number(data || 0);
+}
+
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -12,6 +36,40 @@ app.use(express.static("public"));
 
 app.get("/", (req, res) => {
   res.sendFile(process.cwd() + "/public/index.html");
+});
+
+app.get("/api/credits", async (req, res) => {
+  try {
+    const clerkUserId = await getClerkUserId(req);
+    if (!clerkUserId) return res.status(401).json({ error: "Login diperlukan." });
+    const credits = await getUserCredits(clerkUserId);
+    res.json({ credits });
+  } catch (error) {
+    console.error("Credits error:", error);
+    res.status(500).json({ error: "Gagal mengambil credit." });
+  }
+});
+
+app.post("/api/use-credit", async (req, res) => {
+  try {
+    const clerkUserId = await getClerkUserId(req);
+    if (!clerkUserId) return res.status(401).json({ error: "Login diperlukan." });
+
+    const { data, error } = await supabase.rpc("use_user_credit", {
+      p_clerk_user_id: clerkUserId
+    });
+
+    if (error) throw error;
+
+    const result = Array.isArray(data) ? data[0] : data;
+    res.json({
+      success: Boolean(result?.success),
+      credits: Number(result?.credits || 0)
+    });
+  } catch (error) {
+    console.error("Use credit error:", error);
+    res.status(500).json({ error: "Gagal menggunakan credit." });
+  }
 });
 
 app.get("/api/health", (req, res) => {

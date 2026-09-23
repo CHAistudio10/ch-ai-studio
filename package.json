@@ -8,6 +8,8 @@
     "dev": "node server.js"
   },
   "dependencies": {
+    "@clerk/backend": "^3.19.0",
+    "@supabase/supabase-js": "^2.117.1",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^5.1.0",

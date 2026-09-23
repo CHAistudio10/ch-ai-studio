@@ -28,23 +28,20 @@ let state;
 
 try {
   state = JSON.parse(localStorage.getItem(KEY)) || {
-    credits: 100,
+    credits: 0,
     assets: [],
     projects: [],
     mode: "image"
   };
 } catch {
   state = {
-    credits: 100,
+    credits: 0,
     assets: [],
     projects: [],
     mode: "image"
   };
 }
 
-if (state.credits <= 0) {
-  state.credits = 20;
-}
 
 function save() {
   localStorage.setItem(KEY, JSON.stringify(state));
@@ -56,6 +53,51 @@ function save() {
 
 function renderCredits() {
   const a = document.getElementById("topCredits");
+async function syncCredits() {
+  if (!window.Clerk?.user) {
+    state.credits = 0;
+    renderCredits();
+    return;
+  }
+  try {
+    const token = await Clerk.session?.getToken();
+    if (!token) return;
+    const response = await fetch("/api/credits", {
+      headers: { Authorization: "Bearer " + token }
+    });
+    if (!response.ok) return;
+    const data = await response.json();
+    state.credits = Number(data.credits || 0);
+    localStorage.setItem(KEY, JSON.stringify(state));
+async function useCredit() {
+  if (!window.Clerk?.user) return false;
+  const token = await Clerk.session?.getToken();
+  if (!token) return false;
+  const response = await fetch("/api/use-credit", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + token
+    }
+  });
+  const data = await response.json();
+  if (!response.ok || !data.success) {
+    state.credits = Number(data.credits || 0);
+    renderCredits();
+    return false;
+  }
+  state.credits = Number(data.credits);
+  renderCredits();
+  localStorage.setItem(KEY, JSON.stringify(state));
+  return true;
+}
+
+    renderCredits();
+  } catch (error) {
+    console.error("Sync credits:", error);
+  }
+}
+
   const b = document.getElementById("sideCredits");
 
   if (a) a.textContent = state.credits;
@@ -149,10 +191,6 @@ async function generateImage() {
     return;
   }
 
-  if (state.credits <= 0) {
-    alert("Credit kamu sudah habis.");
-    return;
-  }
 
   const button =
     document.getElementById("generateBtn") ||
@@ -197,7 +235,7 @@ async function generateImage() {
       throw new Error(data.error || "Gagal membuat gambar.");
     }
 
-    state.credits--;
+    if (!(await useCredit())) { throw new Error("Credit tidak cukup."); }
 
     state.assets.unshift({
       image: data.image,
@@ -288,6 +326,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Mode awal Generate selalu Gambar.
   setMode("image");
+  syncCredits();
 });
 
 
@@ -301,10 +340,6 @@ async function generateVideo() {
     return;
   }
 
-  if (state.credits <= 0) {
-    alert("Credit kamu sudah habis.");
-    return;
-  }
 
   const prompt = input.value.trim();
 
@@ -477,7 +512,7 @@ async function generateVideo() {
       );
     }
 
-    state.credits--;
+    if (!(await useCredit())) { throw new Error("Credit tidak cukup."); }
 
     state.assets.unshift({
       video: videoUrl,
