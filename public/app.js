@@ -610,6 +610,7 @@ function setMode(mode) {
     if (fpsOption) fpsOption.style.display = "block";
 
     if (generateBtn) generateBtn.textContent = "✦ Generate Video";
+    const promptInput = document.getElementById("prompt"); if (promptInput) promptInput.placeholder = "Ayo bikin ide kamu dalam gambar menjadi video se-kreatif mungkin, sesuai keinginan kamu."; 
     if (cost) cost.textContent = "2";
   } else {
     if (modelOption) modelOption.style.display = "block";
