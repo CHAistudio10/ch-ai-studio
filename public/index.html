@@ -181,6 +181,12 @@
         <label>Password</label>
         <input id="authPassword" type="password" autocomplete="current-password" placeholder="Password">
       </div>
+      <div class="auth-socials">
+        <button class="auth-social google" onclick="socialAuth('oauth_google')"><span class="social-icon google-icon">G</span><span>Lanjutkan dengan Google</span></button>
+        <button class="auth-social facebook" onclick="socialAuth('oauth_facebook')"><span class="social-icon facebook-icon">f</span><span>Lanjutkan dengan Facebook</span></button>
+        <button class="auth-social tiktok" onclick="socialAuth('oauth_tiktok')" ><span class="social-icon tiktok-icon">♪</span><span>Lanjutkan dengan TikTok</span></button>
+      </div>
+      <div class="auth-divider"><span>atau</span></div>
       <button class="auth-button" id="authSubmit" onclick="submitAuth()">Masuk</button>
       <div class="auth-switch" id="authSwitch">Belum punya akun? <button onclick="switchAuth()">Daftar</button></div>
       <div class="auth-secured">Secured by Cahya Handika</div>

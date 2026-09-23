@@ -857,3 +857,21 @@ async function submitAuth() {
     button.textContent = authMode === "signup" ? "Daftar" : "Masuk";
   }
 }
+
+
+async function socialAuth(strategy) {
+  try {
+    await Clerk.client.signIn.authenticateWithRedirect({
+      strategy,
+      redirectUrl: window.location.origin,
+      redirectUrlComplete: window.location.origin
+    });
+  } catch (err) {
+    console.error("CH Social Auth:", err);
+    const error = document.getElementById("authError");
+    if (error) {
+      error.textContent = err?.errors?.[0]?.longMessage || err?.message || "Login sosial gagal.";
+      error.classList.add("show");
+    }
+  }
+}
