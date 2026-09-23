@@ -185,7 +185,7 @@
             const btn = document.createElement("button");
             btn.className = "account";
             btn.textContent = "Masuk / Daftar";
-            btn.onclick = () => Clerk.openSignIn();
+            btn.onclick = () => Clerk.openSignIn({ redirectUrl: window.location.origin });
             el.appendChild(btn);
           }
         };
