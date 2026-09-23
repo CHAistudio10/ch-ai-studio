@@ -11,7 +11,7 @@
   <aside class="sidebar" id="sidebar">
     <div class="brand">
       <div class="brand-mark">CH</div>
-      <div><b>ch ai studio</b><small>creative workspace</small></div>
+      <div><b>ch ai studio</b><small>Power by Cahya Handika</small></div>
     </div>
     <nav>
       <button data-page="home" onclick="go('home')" class="nav-item active">⌂ <span>Beranda</span></button>
@@ -84,7 +84,7 @@
           <div class="option" id="modelOption">
             <label>Model</label>
             <select id="model">
-              <option>CH Image Demo</option>
+              <option>CH Image</option>
               <option>Photoreal Studio</option>
               <option>Anime / Illustration</option>
             </select>
@@ -134,7 +134,7 @@
         </div>
 
         <div class="generate-bar">
-          <span>Biaya demo: <b id="cost">2</b> kredit</span>
+          <span>Biaya: <b id="cost">2</b> kredit</span>
           <button id="generateBtn" class="generate-btn">✦ Generate Image</button>
         </div>
       </div>
@@ -161,13 +161,13 @@
     </section>
 
     <section id="page-pricing" class="page">
-      <div class="page-head"><p class="eyebrow">CREDIT</p><h2>Harga</h2><p class="muted">Paket demo untuk rancangan aplikasi.</p></div>
+      <div class="page-head"><p class="eyebrow">CREDIT</p><h2>Harga</h2><p class="muted">Paket kredit untuk CH AI Studio.</p></div>
       <div class="price-grid">
         <div class="price"><h3>Starter</h3><strong>Rp10K</strong><p>50 kredit</p><button onclick="buyCredits(50)">Pilih paket</button></div>
         <div class="price featured"><span class="badge">POPULER</span><h3>Creator</h3><strong>Rp25K</strong><p>150 kredit</p><button onclick="buyCredits(150)">Pilih paket</button></div>
         <div class="price"><h3>Pro</h3><strong>Rp50K</strong><p>400 kredit</p><button onclick="buyCredits(400)">Pilih paket</button></div>
       </div>
-      <div class="notice">⚠️ Pembayaran pada versi ini masih demo. Hubungkan Midtrans/Xendit sebelum dipakai menerima uang asli.</div>
+      <div class="notice">Pembayaran kredit akan tersedia setelah sistem pembayaran diaktifkan.</div>
     </section>
   </main>
 
@@ -176,12 +176,19 @@
   <script async crossorigin="anonymous" data-clerk-publishable-key="pk_test_ZmluZS10b2FkLTYzNDYuY2xlcmsuYWNjb3VudHMuZGV2JA" src="https://cdn.jsdelivr.net/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"></script>
   <script>
     window.addEventListener("load", async () => {
-      await Clerk.load();
-      const el = document.getElementById("clerk-user-button");
-      if (Clerk.user) {
-        Clerk.mountUserButton(el);
-      } else {
-        el.innerHTML = '<button onclick="Clerk.openSignIn()">Masuk / Daftar</button>';
+      try {
+        await Clerk.load();
+        const el = document.getElementById("clerk-user-button");
+        if (!el) return;
+
+        if (Clerk.user) {
+          Clerk.mountUserButton(el);
+        } else {
+          el.innerHTML = "<button class=\"account\" id=\"loginBtn\">Masuk / Daftar</button>";
+          document.getElementById("loginBtn").onclick = () => Clerk.openSignIn();
+        }
+      } catch (error) {
+        console.error("Clerk error:", error);
       }
     });
   </script>
