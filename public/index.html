@@ -201,11 +201,11 @@
       await Clerk.load({ ui: { ClerkUI: window.__internal_ClerkUICtor } });
       const el = document.getElementById("clerk-user-button");
       if (Clerk.user) {
-        Clerk.mountUserButton(el);
+        const name = Clerk.user.firstName || Clerk.user.primaryEmailAddress?.emailAddress || "Akun";
+        el.innerHTML = "<div class=\"ch-account\"><button class=\"ch-account-btn\" onclick=\"toggleAccountMenu()\"><span class=\"ch-avatar\">"+name.charAt(0).toUpperCase()+"</span><span class=\"ch-account-name\">"+name+"</span><span>⌄</span></button><div id=\"chAccountMenu\" class=\"ch-account-menu\"><button onclick=\"logoutCH()\">Keluar</button></div></div>";
       } else {
-        el.innerHTML = '<button class="account" onclick="openAuth()">Masuk / Daftar</button>';
+        el.innerHTML = "<button class=\"account\" onclick=\"openAuth()\">Masuk / Daftar</button>";
       }
-    });
-  </script>
+    });  </script>
 </body>
 </html>

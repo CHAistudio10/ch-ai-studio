@@ -875,3 +875,17 @@ async function socialAuth(strategy) {
     }
   }
 }
+
+function toggleAccountMenu() {
+  document.getElementById("chAccountMenu")?.classList.toggle("show");
+}
+
+async function logoutCH() {
+  try {
+    await Clerk.signOut();
+    location.reload();
+  } catch (err) {
+    console.error("CH Logout:", err);
+    showToast("Gagal keluar");
+  }
+}

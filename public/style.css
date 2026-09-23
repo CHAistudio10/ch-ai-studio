@@ -246,3 +246,26 @@
   height:20px;
   display:block;
 }
+
+.ch-account{position:relative;width:100%}
+.ch-account-btn{
+  width:100%;height:46px;border:1px solid #292e3b;border-radius:12px;
+  background:#0a0d14;color:#fff;display:flex;align-items:center;
+  gap:10px;padding:0 12px;cursor:pointer;
+}
+.ch-avatar{
+  width:30px;height:30px;border-radius:50%;display:grid;place-items:center;
+  background:linear-gradient(135deg,#168cff,#713cff);font-weight:800;
+}
+.ch-account-name{flex:1;text-align:left;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ch-account-menu{
+  display:none;position:absolute;left:0;right:0;bottom:52px;
+  padding:6px;background:#101522;border:1px solid #292e3b;
+  border-radius:12px;box-shadow:0 12px 30px rgba(0,0,0,.35);
+}
+.ch-account-menu.show{display:block}
+.ch-account-menu button{
+  width:100%;border:0;background:none;color:#fff;text-align:left;
+  padding:11px 12px;border-radius:8px;cursor:pointer;
+}
+.ch-account-menu button:hover{background:#191e2b}
