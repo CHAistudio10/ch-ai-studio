@@ -5,7 +5,7 @@ import cors from "cors";
 import { createClient } from "@supabase/supabase-js";
 import { verifyToken } from "@clerk/backend";
 
-const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
+const supabase = process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY ? createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY) : null;
 
 async function getClerkUserId(req) {
   const authHeader = req.headers.authorization || "";
