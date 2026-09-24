@@ -715,7 +715,7 @@ function setMode(mode) {
 
     if (generateBtn) generateBtn.textContent = "✦ Generate Video";
     const promptInput = document.getElementById("prompt"); if (promptInput) promptInput.placeholder = "Ayo bikin ide kamu dalam gambar menjadi video se-kreatif mungkin, sesuai keinginan kamu."; 
-    if (cost) cost.textContent = "2";
+    if (cost) cost.textContent = "10";
   } else {
     if (modelOption) modelOption.style.display = "block";
     if (resolutionOption) resolutionOption.style.display = "block";
@@ -725,7 +725,7 @@ function setMode(mode) {
     if (videoReferenceOption) videoReferenceOption.style.display = "none";
 
     if (generateBtn) generateBtn.textContent = "✦ Generate Image";
-    if (cost) cost.textContent = "2";
+    if (cost) cost.textContent = "1";
   }
 }
 
