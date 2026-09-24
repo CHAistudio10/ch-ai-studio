@@ -53,11 +53,13 @@ app.get("/api/credits", async (req, res) => {
 
 app.post("/api/use-credit", async (req, res) => {
   try {
+    const { cost = 2 } = req.body || {};
     const clerkUserId = await getClerkUserId(req);
     if (!clerkUserId) return res.status(401).json({ error: "Login diperlukan." });
 
     const { data, error } = await supabase.rpc("use_user_credit", {
-      p_clerk_user_id: clerkUserId
+      p_clerk_user_id: clerkUserId,
+      p_cost: Number(cost)
     });
 
     if (error) throw error;

@@ -85,7 +85,7 @@ async function syncCredits() {
   }
 }
 
-async function useCredit() {
+async function useCredit(cost = 2) {
   if (!window.Clerk?.user) return false;
 
   const token = await Clerk.session?.getToken();
@@ -244,7 +244,7 @@ async function generateImage() {
       throw new Error(data.error || "Gagal membuat gambar.");
     }
 
-    if (!(await useCredit())) { throw new Error("Credit tidak cukup."); }
+    if (!(await useCredit(1))) { throw new Error("Credit tidak cukup."); }
 
     state.assets.unshift({
       image: data.image,
@@ -327,8 +327,9 @@ function setupGenerateButton() {
         showToast("Silakan login untuk mendapatkan 14 credit gratis.");
         return;
       }
-      if (Number(state.credits) < 2) {
-        showToast("Credit tidak cukup. Silakan tambah credit.");
+      const requiredCredits = state.mode === "video" ? 10 : 1;
+      if (Number(state.credits) < requiredCredits) {
+        showToast(`Credit tidak cukup. Butuh ${requiredCredits} credit.`);
         return;
       }
       await generate();
@@ -531,7 +532,7 @@ async function generateVideo() {
       );
     }
 
-    if (!(await useCredit())) { throw new Error("Credit tidak cukup."); }
+    if (!(await useCredit(10))) { throw new Error("Credit tidak cukup."); }
 
     state.assets.unshift({
       video: videoUrl,
