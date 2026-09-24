@@ -356,3 +356,28 @@
     max-width:100%;
   }
 }
+
+/* Fix ukuran Asset agar tidak menutupi layout */
+.asset-card{
+  min-width:0;
+  max-width:100%;
+  overflow:hidden;
+  box-sizing:border-box;
+}
+
+.asset-card img,
+.asset-card video{
+  display:block;
+  width:50%;
+  max-width:50%;
+  height:auto;
+  max-height:520px;
+  object-fit:contain;
+  box-sizing:border-box;
+  border-radius:12px;
+}
+
+.asset-card p{
+  overflow-wrap:anywhere;
+  word-break:break-word;
+}
