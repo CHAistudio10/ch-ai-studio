@@ -9,7 +9,6 @@ const supabase = process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_K
 
 async function getClerkUserId(req) {
   const authHeader = req.headers.authorization || "";
-    console.error("Clerk token verify error:", error?.name, error?.message);
   if (!authHeader.startsWith("Bearer ")) return null;
   const token = authHeader.slice(7);
   try {
