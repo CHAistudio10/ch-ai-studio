@@ -200,6 +200,7 @@
     window.addEventListener("load", async () => {
       await Clerk.load({ ui: { ClerkUI: window.__internal_ClerkUICtor } });
       await syncCredits();
+      Clerk.addListener(() => syncCredits());
       const el = document.getElementById("clerk-user-button");
       if (Clerk.user) {
         const name = Clerk.user.firstName || Clerk.user.primaryEmailAddress?.emailAddress || "Akun";
