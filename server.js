@@ -53,7 +53,7 @@ app.get("/api/credits", async (req, res) => {
 
 app.post("/api/use-credit", async (req, res) => {
   try {
-    const { cost = 2 } = req.body || {};
+    const { cost } = req.body || {};
     const clerkUserId = await getClerkUserId(req);
     if (!clerkUserId) return res.status(401).json({ error: "Login diperlukan." });
 
