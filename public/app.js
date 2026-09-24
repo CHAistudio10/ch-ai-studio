@@ -322,7 +322,17 @@ function setupGenerateButton() {
     document.querySelector("[data-generate]");
 
   if (button) {
-    button.addEventListener("click", generate);
+    button.addEventListener("click", async () => {
+      if (!window.Clerk?.user) {
+        showToast("Silakan login untuk mendapatkan 14 credit gratis.");
+        return;
+      }
+      if (Number(state.credits) < 2) {
+        showToast("Credit tidak cukup. Silakan tambah credit.");
+        return;
+      }
+      await generate();
+    });
   }
 }
 
