@@ -85,7 +85,7 @@ async function syncCredits() {
   }
 }
 
-async function useCredit(cost = 2) {
+async function useCredit(cost) {
   if (!window.Clerk?.user) return false;
 
   const token = await Clerk.session?.getToken();
