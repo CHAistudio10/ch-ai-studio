@@ -269,3 +269,90 @@
   padding:11px 12px;border-radius:8px;cursor:pointer;
 }
 .ch-account-menu button:hover{background:#191e2b}
+
+/* CH AI Studio - UI result & account fix */
+.generated-result,
+.generated-video{
+  width:100%;
+  max-width:100%;
+  min-width:0;
+  overflow:hidden;
+}
+
+.generated-result img{
+  display:block;
+  width:100%;
+  max-width:520px;
+  height:auto;
+  margin:0 auto;
+  object-fit:contain;
+}
+
+.generated-video video{
+  display:block;
+  width:100%;
+  max-width:520px;
+  height:auto;
+  margin:0 auto;
+  object-fit:contain;
+}
+
+#results{
+  width:100%;
+  min-width:0;
+  overflow:hidden;
+}
+
+#results .generated-result,
+#results .generated-video{
+  box-sizing:border-box;
+}
+
+.ch-account{
+  width:100%;
+  max-width:100%;
+  min-width:0;
+}
+
+.ch-account-btn{
+  max-width:100%;
+  min-width:0;
+  overflow:hidden;
+}
+
+.ch-account-name{
+  min-width:0;
+  max-width:calc(100% - 48px);
+}
+
+@media(max-width:800px){
+  .sidebar{
+    width:270px;
+    max-width:85vw;
+  }
+
+  .ch-account-btn{
+    height:44px;
+    padding:0 10px;
+  }
+
+  .ch-avatar{
+    width:28px;
+    height:28px;
+    min-width:28px;
+  }
+
+  .ch-account-name{
+    font-size:11px;
+  }
+
+  #results{
+    width:100%;
+    max-width:100%;
+  }
+
+  .generated-result img,
+  .generated-video video{
+    max-width:100%;
+  }
+}

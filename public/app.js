@@ -311,26 +311,14 @@ function showGeneratedImage(images) {
   const list = Array.isArray(images) ? images : [images];
   const validImages = list.filter(Boolean);
 
-  if (!validImages.length) {
-    return;
-  }
+  if (!validImages.length) return;
 
   state.lastGeneratedImage = validImages[0];
 
-  let result = document.getElementById("generatedResult");
+  const container = document.getElementById("results");
+  if (!container) return;
 
-  if (!result) {
-    result = document.createElement("div");
-    result.id = "generatedResult";
-
-    const main =
-      document.querySelector("main") ||
-      document.body;
-
-    main.appendChild(result);
-  }
-
-  result.innerHTML = `
+  container.innerHTML = `
     <div class="generated-result">
       <h3>Hasil AI</h3>
       <div style="display:grid;gap:16px;">
@@ -350,6 +338,11 @@ function showGeneratedImage(images) {
       </div>
     </div>
   `;
+
+  container.scrollIntoView({
+    behavior: "smooth",
+    block: "center"
+  });
 }
 function setupGenerateButton() {
   const button =
@@ -402,7 +395,7 @@ async function generateVideo() {
     let referenceImages = [];
 
     if (refFile && refFile.files && refFile.files.length) {
-      const files = Array.from(refFile.files).slice(0, 5);
+      const files = Array.from(refFile.files).slice(0, 1);
 
       referenceImages = await Promise.all(
         files.map(file => new Promise((resolve, reject) => {
@@ -725,7 +718,22 @@ window.addEventListener("popstate", (event) => {
 history.replaceState({ page: "home" }, "", "#home");
 
 function setMode(mode) {
+  const promptInput = document.getElementById("prompt");
+  const oldMode = state.mode || "image";
+  if (promptInput) {
+    if (oldMode === "video") {
+      state.videoPrompt = promptInput.value;
+    } else {
+      state.imagePrompt = promptInput.value;
+    }
+  }
   state.mode = mode;
+  if (promptInput) {
+    promptInput.value = mode === "video" ? (state.videoPrompt || "") : (state.imagePrompt || "");
+  }
+  const results = document.getElementById("results");
+  if (results) results.innerHTML = "<p>Hasil generate akan muncul di sini.</p>";
+  if (mode !== "video" && typeof clearRef === "function") clearRef();
   save();
 
   document.querySelectorAll("[data-mode]").forEach(el => {
@@ -750,7 +758,7 @@ function setMode(mode) {
     if (videoReferenceOption) videoReferenceOption.style.display = "block";
 
     if (generateBtn) generateBtn.textContent = "✦ Generate Video";
-    const promptInput = document.getElementById("prompt"); if (promptInput) promptInput.placeholder = "Ayo bikin ide kamu dalam gambar menjadi video se-kreatif mungkin, sesuai keinginan kamu."; 
+    if (promptInput) promptInput.placeholder = "Ayo bikin ide kamu dalam gambar menjadi video se-kreatif mungkin, sesuai keinginan kamu.";
     if (cost) cost.textContent = "10";
   } else {
     if (modelOption) modelOption.style.display = "block";
