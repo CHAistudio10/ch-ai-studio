@@ -22,7 +22,7 @@ window.previewRef = function(event) {
   reader.readAsDataURL(file);
 };
 
-const KEY = "ch_ai_studio_state";
+let KEY = "ch_ai_studio_state";
 
 let state;
 
@@ -61,9 +61,24 @@ function renderCredits() {
 
 async function syncCredits() {
   if (!window.Clerk?.user) {
-    state.credits = 0;
+    KEY = "ch_ai_studio_state";
+    state = { credits: 0, assets: [], projects: [], mode: "image" };
     renderCredits();
+    renderRecent();
+    renderAssets();
+    renderProjects();
     return;
+  }
+  const accountKey = "ch_ai_studio_state_" + Clerk.user.id;
+  if (KEY !== accountKey) {
+    const saved = JSON.parse(localStorage.getItem(accountKey) || "null");
+    KEY = accountKey;
+    state.assets = Array.isArray(saved?.assets) ? saved.assets : [];
+    state.projects = Array.isArray(saved?.projects) ? saved.projects : [];
+    state.mode = saved?.mode || "image";
+    renderRecent();
+    renderAssets();
+    renderProjects();
   }
 
   try {
@@ -113,9 +128,8 @@ async function useCredit(cost) {
   localStorage.setItem(KEY, JSON.stringify(state));
   return true;
 }
-
 function renderRecent() {
-  const el = document.getElementById("recent");
+  const el = document.getElementById("recentGrid");
   if (!el) return;
 
   if (!state.assets.length) {
@@ -125,21 +139,28 @@ function renderRecent() {
 
   el.innerHTML = state.assets
     .slice(0, 6)
-    .map(
-      item => `
+    .map(item => {
+      if (item.type === "video" || item.video) {
+        return `
+          <div class="asset-card">
+            <video src="${item.video}" controls playsinline style="width:100%;border-radius:12px;"></video>
+            <div><small>${item.prompt}</small></div>
+          </div>
+        `;
+      }
+
+      return `
         <div class="asset-card">
           <img src="${item.image}" alt="AI Image">
-          <div>
-            <small>${item.prompt}</small>
-          </div>
+          <div><small>${item.prompt}</small></div>
         </div>
-      `
-    )
+      `;
+    })
     .join("");
 }
 
 function renderAssets() {
-  const el = document.getElementById("assets");
+  const el = document.getElementById("assetGrid");
   if (!el) return;
 
   if (!state.assets.length) {
@@ -148,22 +169,34 @@ function renderAssets() {
   }
 
   el.innerHTML = state.assets
-    .map(
-      item => `
+    .map(item => {
+      if (item.type === "video" || item.video) {
+        return `
+          <div class="asset-card">
+            <video src="${item.video}" controls playsinline style="width:100%;border-radius:12px;"></video>
+            <p>${item.prompt}</p>
+            <a href="${item.video}" download="ch-ai-studio-video.mp4">
+              Download Video
+            </a>
+          </div>
+        `;
+      }
+
+      return `
         <div class="asset-card">
           <img src="${item.image}" alt="AI Image">
           <p>${item.prompt}</p>
           <a href="${item.image}" download="ch-ai-studio.jpg">
-            Download
+            Download Gambar
           </a>
         </div>
-      `
-    )
+      `;
+    })
     .join("");
 }
 
 function renderProjects() {
-  const el = document.getElementById("projects");
+  const el = document.getElementById("projectList");
   if (!el) return;
 
   if (!state.projects.length) {
@@ -249,6 +282,7 @@ async function generateImage() {
 
     state.assets.unshift({
       image: data.image,
+      type: "image",
       prompt,
       created: new Date().toLocaleString("id-ID")
     });
@@ -536,6 +570,7 @@ async function generateVideo() {
     if (!(await useCredit(10))) { throw new Error("Credit tidak cukup."); }
 
     state.assets.unshift({
+      type: "video",
       video: videoUrl,
       prompt,
       created: new Date().toLocaleString("id-ID")
