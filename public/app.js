@@ -53,26 +53,44 @@ function save() {
 
 function renderCredits() {
   const a = document.getElementById("topCredits");
+  const b = document.getElementById("sideCredits");
+
+  if (a) a.textContent = state.credits;
+  if (b) b.textContent = state.credits;
+}
+
 async function syncCredits() {
   if (!window.Clerk?.user) {
     state.credits = 0;
     renderCredits();
     return;
   }
+
   try {
     const token = await Clerk.session?.getToken();
     if (!token) return;
+
     const response = await fetch("/api/credits", {
       headers: { Authorization: "Bearer " + token }
     });
+
     if (!response.ok) return;
+
     const data = await response.json();
     state.credits = Number(data.credits || 0);
     localStorage.setItem(KEY, JSON.stringify(state));
+    renderCredits();
+  } catch (error) {
+    console.error("Sync credits:", error);
+  }
+}
+
 async function useCredit() {
   if (!window.Clerk?.user) return false;
+
   const token = await Clerk.session?.getToken();
   if (!token) return false;
+
   const response = await fetch("/api/use-credit", {
     method: "POST",
     headers: {
@@ -80,28 +98,19 @@ async function useCredit() {
       Authorization: "Bearer " + token
     }
   });
+
   const data = await response.json();
+
   if (!response.ok || !data.success) {
     state.credits = Number(data.credits || 0);
     renderCredits();
     return false;
   }
+
   state.credits = Number(data.credits);
   renderCredits();
   localStorage.setItem(KEY, JSON.stringify(state));
   return true;
-}
-
-    renderCredits();
-  } catch (error) {
-    console.error("Sync credits:", error);
-  }
-}
-
-  const b = document.getElementById("sideCredits");
-
-  if (a) a.textContent = state.credits;
-  if (b) b.textContent = state.credits;
 }
 
 function renderRecent() {
