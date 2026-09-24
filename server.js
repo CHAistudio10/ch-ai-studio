@@ -9,12 +9,14 @@ const supabase = process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_K
 
 async function getClerkUserId(req) {
   const authHeader = req.headers.authorization || "";
+    console.error("Clerk token verify error:", error?.name, error?.message);
   if (!authHeader.startsWith("Bearer ")) return null;
   const token = authHeader.slice(7);
   try {
     const payload = await verifyToken(token, { secretKey: process.env.CLERK_SECRET_KEY });
     return payload.sub || null;
-  } catch {
+  } catch (error) {
+    console.error("Clerk token verify error:", error?.name, error?.message);
     return null;
   }
 }
@@ -233,7 +235,7 @@ app.post("/api/generate-video", async (req, res) => {
     let data;
     try {
       data = JSON.parse(responseText);
-    } catch {
+    } catch (error) {
       console.error("DEAPI VIDEO RAW RESPONSE:", responseText);
       throw new Error(
         "deAPI mengembalikan respons bukan JSON: " +
