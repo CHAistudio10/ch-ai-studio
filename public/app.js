@@ -96,7 +96,8 @@ async function useCredit(cost) {
     headers: {
       "Content-Type": "application/json",
       Authorization: "Bearer " + token
-    }
+    },
+    body: JSON.stringify({ cost })
   });
 
   const data = await response.json();
