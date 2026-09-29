@@ -381,3 +381,92 @@
   overflow-wrap:anywhere;
   word-break:break-word;
 }
+
+/* ===== CH AI STUDIO PRICING ===== */
+.price-grid{
+  grid-template-columns:repeat(4,1fr);
+  gap:16px;
+  align-items:stretch;
+}
+
+.price{
+  padding:24px 20px;
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  background:linear-gradient(145deg,#15161b,#101115);
+  border:1px solid #292b32;
+  transition:.2s ease;
+}
+
+.price:hover{
+  transform:translateY(-3px);
+  border-color:#5d3850;
+}
+
+.price.featured{
+  border-color:#9a4771;
+  box-shadow:0 0 25px rgba(216,82,148,.10);
+}
+
+.price h3{
+  margin:0;
+  font-size:17px;
+}
+
+.price strong{
+  font-size:32px;
+  letter-spacing:-1px;
+  margin:18px 0 2px;
+}
+
+.price p{
+  margin:0;
+  color:#a0a2ab;
+  font-size:13px;
+}
+
+.price-detail{
+  margin-top:14px;
+  padding-top:13px;
+  border-top:1px solid #292b31;
+  color:#777a85;
+  font-size:11px;
+  line-height:1.6;
+}
+
+.price button{
+  margin-top:auto;
+  padding:11px 12px;
+  background:linear-gradient(135deg,#29222a,#9b3969);
+  color:#fff;
+  border-color:#63364e;
+  font-weight:700;
+}
+
+.price.featured button{
+  background:linear-gradient(135deg,#65304d,#c64b86);
+}
+
+.price .badge{
+  right:14px;
+  top:14px;
+  background:#472239;
+  color:#f27ab0;
+}
+
+@media(max-width:900px){
+  .price-grid{
+    grid-template-columns:repeat(2,1fr);
+  }
+}
+
+@media(max-width:520px){
+  .price-grid{
+    grid-template-columns:1fr;
+  }
+
+  .price{
+    padding:22px 18px;
+  }
+}
