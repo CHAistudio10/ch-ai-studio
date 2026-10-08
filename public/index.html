@@ -15,6 +15,7 @@
     </div>
     <nav>
       <button data-page="home" onclick="go('home')" class="nav-item active">⌂ <span>Beranda</span></button>
+      <button data-page="chat" onclick="go('chat')" class="nav-item">◉ <span>CH Chat AI</span></button>
       <button data-page="projects" onclick="go('projects')" class="nav-item">▱ <span>Project Saya</span></button>
       <button data-page="assets" onclick="go('assets')" class="nav-item">▧ <span>Asset</span></button>
       <button data-page="templates" class="nav-item" onclick="go('templates')">✦ <span>Template</span></button>
@@ -135,6 +136,30 @@
       </div>
       <div class="section-title"><h2>Hasil</h2></div>
       <div id="results" class="result-grid empty-state"><p>Hasil generate akan muncul di sini.</p></div>
+    </section>
+
+    <section id="page-chat" class="page">
+      <div class="page-head">
+        <div>
+          <p class="eyebrow">AI ASSISTANT</p>
+          <h2>CH Chat AI</h2>
+          <p class="muted">Ngobrol, cari ide, tanya apa saja.</p>
+        </div>
+        <button class="generate-btn" onclick="newChat()">＋ Chat Baru</button>
+      </div>
+      <div class="chat-shell">
+        <div id="chatMessages" class="chat-messages">
+          <div class="chat-empty">
+            <div class="chat-logo">CH</div>
+            <h3>Halo, gue CH Chat AI 👋</h3>
+            <p>Tanya apa aja. Mau serius, santai, cari ide, atau sekadar ngobrol juga boleh.</p>
+          </div>
+        </div>
+        <form id="chatForm" class="chat-input-wrap">
+          <textarea id="chatInput" rows="1" placeholder="Tulis pesan..." autocomplete="off"></textarea>
+          <button type="submit" id="chatSend">➤</button>
+        </form>
+      </div>
     </section>
 
     <section id="page-projects" class="page"><div class="page-head"><p class="eyebrow">WORKSPACE</p><h2>Project Saya</h2></div><div id="projectList" class="card-list"></div></section>

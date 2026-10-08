@@ -470,3 +470,19 @@
     padding:22px 18px;
   }
 }
+.chat-shell{display:flex;flex-direction:column;height:calc(100vh - 190px);min-height:420px;max-width:900px;margin:0 auto;border-radius:20px;overflow:hidden;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.025)}
+.chat-messages{flex:1;overflow-y:auto;padding:24px}
+.chat-empty{min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:30px}
+.chat-logo{width:58px;height:58px;border-radius:18px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:22px;background:linear-gradient(135deg,#ff4ecd,#704cff);color:#fff;margin-bottom:16px}
+.chat-empty h3{margin:0 0 8px}
+.chat-empty p{margin:0;color:#999}
+.chat-bubble{max-width:78%;margin-bottom:16px;padding:13px 16px;border-radius:17px;line-height:1.55;word-break:break-word}
+.chat-bubble.user{margin-left:auto;background:linear-gradient(135deg,#704cff,#9b4dff);color:#fff;border-bottom-right-radius:5px}
+.chat-bubble.ai{margin-right:auto;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.07);border-bottom-left-radius:5px}
+.chat-name{font-size:12px;font-weight:700;margin-bottom:5px;opacity:.7}
+.chat-text{font-size:14px}
+.chat-input-wrap{display:flex;gap:10px;padding:14px;border-top:1px solid rgba(255,255,255,.08);background:rgba(0,0,0,.12)}
+.chat-input-wrap textarea{flex:1;resize:none;min-height:48px;max-height:120px;border-radius:14px;padding:13px 14px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:inherit;outline:none}
+.chat-input-wrap button{width:50px;height:48px;border:0;border-radius:14px;background:linear-gradient(135deg,#ff4ecd,#704cff);color:#fff;font-size:20px;cursor:pointer}
+.chat-input-wrap button:disabled{opacity:.5;cursor:not-allowed}
+@media(max-width:600px){.chat-shell{height:calc(100vh - 150px);min-height:380px;border-radius:15px}.chat-messages{padding:15px}.chat-bubble{max-width:88%}.chat-input-wrap{padding:10px}.chat-input-wrap textarea{font-size:14px}}
