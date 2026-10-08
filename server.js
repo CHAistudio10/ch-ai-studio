@@ -635,11 +635,6 @@ app.post("/api/dana/finish", async (req, res) => {
   }
 });;
 
-// 404 for unmatched API routes (static assets are served by Vercel's CDN from public/**)
-app.use("/api", (req, res) => {
-  res.status(404).json({ error: "Endpoint tidak ditemukan." });
-});
-
 app.post("/api/chat", async (req, res) => {
   try {
     const { messages } = req.body || {};
@@ -689,6 +684,13 @@ app.post("/api/chat", async (req, res) => {
     res.status(500).json({ error: "Terjadi kesalahan pada CH Chat AI." });
   }
 });
+
+// 404 for unmatched API routes (static assets are served by Vercel's CDN from public/**)
+app.use("/api", (req, res) => {
+  res.status(404).json({ error: "Endpoint tidak ditemukan." });
+});
+
+
 
 if (process.env.VERCEL !== "1") {
   app.listen(PORT, () => {
