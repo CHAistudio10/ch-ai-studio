@@ -819,10 +819,42 @@ function useTemplate(template) {
   input.focus();
 }
 
-function buyCredits(amount) {
-  alert(
-    `Pembelian ${amount} credit masih dalam tahap pengembangan.`
-  );
+async function buyCredits(packageId) {
+  try {
+    if (!window.Clerk?.user) {
+      alert("Silakan login terlebih dahulu.");
+      return;
+    }
+
+    const token = await Clerk.session?.getToken();
+
+    if (!token) {
+      alert("Sesi login tidak ditemukan. Silakan login kembali.");
+      return;
+    }
+
+    const response = await fetch("/api/dana/create-order", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token
+      },
+      body: JSON.stringify({ packageId })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok || !data.success || !data.webRedirectUrl) {
+      console.error("DANA Create Order:", data);
+      alert(data?.error || "Gagal membuat pembayaran DANA.");
+      return;
+    }
+
+    window.location.href = data.webRedirectUrl;
+  } catch (error) {
+    console.error("Pembayaran DANA:", error);
+    alert("Terjadi kesalahan saat membuat pembayaran.");
+  }
 }
 
 
