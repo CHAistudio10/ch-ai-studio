@@ -654,31 +654,72 @@ app.post("/api/chat", async (req, res) => {
       parts: [{ text: String(m.content || "").slice(0, 12000) }]
     }));
 
-    const response = await fetch(
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=" + encodeURIComponent(process.env.GEMINI_API_KEY),
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          systemInstruction: {
-            parts: [{ text: "Kamu adalah CH Chat AI, asisten AI milik CH AI Studio. Gunakan Bahasa Indonesia natural, santai, Gen Z, unik dan lucu jika cocok. Jangan memaksakan slang atau humor. Kalau pengguna serius, jawab serius dan membantu. Tetap akurat dan jelas. Jangan menyebut dirimu ChatGPT; nama kamu CH Chat AI." }]
-          },
-          contents,
-          generationConfig: { temperature: 0.8, maxOutputTokens: 2048 }
-        })
-      }
-    );
+    const models = [
+      "gemini-3.8-flash",
+      "gemini-3.7-flash",
+      "gemini-3.6-flash",
+      "gemini-3.5-flash-lite"
+    ];
 
-    const data = await response.json();
-    if (!response.ok) {
-      console.error("GEMINI CHAT ERROR:", data);
-      return res.status(response.status).json({ error: data?.error?.message || "Gagal mendapatkan jawaban AI." });
+    const systemText = "Kamu adalah CH Chat AI, asisten AI milik CH AI Studio. Gunakan Bahasa Indonesia natural, santai, Gen Z, unik dan lucu jika cocok. Jangan memaksakan slang atau humor. Kalau pengguna serius, jawab serius dan membantu. Tetap akurat dan jelas. Jangan menyebut dirimu ChatGPT; nama kamu CH Chat AI.";
+
+    let lastError = null;
+
+    for (const model of models) {
+      try {
+        const response = await fetch(
+          "https://generativelanguage.googleapis.com/v1beta/models/" + model + ":generateContent?key=" + encodeURIComponent(process.env.GEMINI_API_KEY),
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              systemInstruction: { parts: [{ text: systemText }] },
+              contents,
+              generationConfig: { maxOutputTokens: 2048 }
+            })
+          }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          lastError = data?.error?.message || ("Model " + model + " gagal.");
+          console.error("GEMINI CHAT MODEL ERROR:", model, data);
+
+          const msg = String(lastError).toLowerCase();
+          const retryable =
+            response.status === 429 ||
+            response.status === 503 ||
+            msg.includes("high demand") ||
+            msg.includes("overloaded") ||
+            msg.includes("temporarily") ||
+            msg.includes("unavailable");
+
+          if (retryable) continue;
+
+          return res.status(response.status).json({ error: lastError });
+        }
+
+        const reply = data?.candidates?.[0]?.content?.parts
+          ?.map(p => p.text || "")
+          .join("")
+          .trim();
+
+        if (!reply) {
+          lastError = "AI tidak mengembalikan jawaban.";
+          continue;
+        }
+
+        return res.json({ reply });
+      } catch (err) {
+        lastError = err?.message || "Network error";
+        console.error("GEMINI CHAT FETCH ERROR:", model, err);
+      }
     }
 
-    const reply = data?.candidates?.[0]?.content?.parts?.map(p => p.text || "").join("").trim();
-    if (!reply) return res.status(500).json({ error: "AI tidak mengembalikan jawaban." });
-
-    res.json({ reply });
+    return res.status(503).json({
+      error: lastError || "Semua model CH Chat AI sedang sibuk. Coba lagi beberapa saat."
+    });
   } catch (err) {
     console.error("CH CHAT ERROR:", err);
     res.status(500).json({ error: "Terjadi kesalahan pada CH Chat AI." });
