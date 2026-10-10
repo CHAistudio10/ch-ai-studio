@@ -4,14 +4,6 @@ import express from "express";
 import cors from "cors";
 import { createClient } from "@supabase/supabase-js";
 import { verifyToken } from "@clerk/backend";
-import { createDanaSignature, verifyDanaSignature } from "./dana-signature.js";
-
-const DANA_API_URL = process.env.DANA_API_URL || "";
-const DANA_CLIENT_ID = process.env.DANA_CLIENT_ID || "";
-const DANA_MERCHANT_ID = process.env.DANA_MERCHANT_ID || "";
-const DANA_CLIENT_SECRET = process.env.DANA_CLIENT_SECRET || "";
-const DANA_PRIVATE_KEY = process.env.DANA_PRIVATE_KEY || "";
-const DANA_PUBLIC_KEY = process.env.DANA_PUBLIC_KEY || "";
 
 const supabase = process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY ? createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY) : null;
 
@@ -341,135 +333,55 @@ app.post("/api/video-status", async (req, res) => {
 });
 
 
-app.post("/api/dana/create-order", async (req, res) => {
+
+// ===== MIDTRANS QRIS =====
+const MIDTRANS_SERVER_KEY = process.env.MIDTRANS_SERVER_KEY || "";
+const MIDTRANS_IS_PRODUCTION =
+  String(process.env.MIDTRANS_IS_PRODUCTION || "false").toLowerCase() === "true";
+
+const MIDTRANS_API_URL = MIDTRANS_IS_PRODUCTION
+  ? "https://api.midtrans.com"
+  : "https://api.sandbox.midtrans.com";
+
+const CREDIT_PACKAGES = {
+  starter: { amount: 10000, credits: 20, title: "CH AI Studio Starter" },
+  creator: { amount: 20000, credits: 50, title: "CH AI Studio Creator" },
+  pro: { amount: 50000, credits: 150, title: "CH AI Studio Pro" },
+  ultra: { amount: 100000, credits: 350, title: "CH AI Studio Ultra" }
+};
+
+app.post("/api/midtrans/create-order", async (req, res) => {
+  let orderId = "";
+
   try {
     const clerkUserId = await getClerkUserId(req);
 
     if (!clerkUserId) {
-      return res.status(401).json({
-        error: "Unauthorized."
-      });
+      return res.status(401).json({ error: "Silakan login terlebih dahulu." });
     }
 
     if (!supabase) {
-      return res.status(500).json({
-        error: "Supabase belum dikonfigurasi."
-      });
+      return res.status(500).json({ error: "Supabase belum dikonfigurasi." });
     }
 
-    if (
-      !DANA_API_URL ||
-      !DANA_CLIENT_ID ||
-      !DANA_MERCHANT_ID ||
-      !DANA_PRIVATE_KEY
-    ) {
+    if (!MIDTRANS_SERVER_KEY) {
       return res.status(500).json({
-        error: "Konfigurasi DANA belum lengkap."
+        error: "MIDTRANS_SERVER_KEY belum dikonfigurasi di Environment Variables."
       });
     }
-
-    const packages = {
-      starter: {
-        amount: 10000,
-        credits: 20,
-        title: "CH AI Studio Starter"
-      },
-      creator: {
-        amount: 20000,
-        credits: 50,
-        title: "CH AI Studio Creator"
-      },
-      pro: {
-        amount: 50000,
-        credits: 150,
-        title: "CH AI Studio Pro"
-      },
-      ultra: {
-        amount: 100000,
-        credits: 350,
-        title: "CH AI Studio Ultra"
-      }
-    };
 
     const packageId = String(req.body?.packageId || "").toLowerCase();
-    const selected = packages[packageId];
+    const selected = CREDIT_PACKAGES[packageId];
 
     if (!selected) {
-      return res.status(400).json({
-        error: "Paket kredit tidak valid."
-      });
+      return res.status(400).json({ error: "Paket kredit tidak valid." });
     }
 
-    const orderId =
-      "CH-" +
-      Date.now() +
-      "-" +
+    orderId = "CH-" + Date.now() + "-" +
       crypto.randomBytes(4).toString("hex").toUpperCase();
 
-    const externalId =
-      String(Date.now()) +
-      crypto.randomBytes(3).toString("hex");
-
-    const now = new Date();
-
-    const timestamp = new Date(now.getTime() + 7 * 60 * 60 * 1000)
-      .toISOString()
-      .replace("Z", "+07:00")
-      .replace(/\.\d{3}/, "");
-
-    const validUpTo = new Date(now.getTime() + 25 * 60 * 1000);
-
-    const validUpToGMT7 = new Date(
-      validUpTo.getTime() + 7 * 60 * 60 * 1000
-    )
-      .toISOString()
-      .replace("Z", "+07:00")
-      .replace(/\.\d{3}/, "");
-
-    const body = JSON.stringify({
-      partnerReferenceNo: orderId,
-      merchantId: DANA_MERCHANT_ID,
-      amount: {
-        value: selected.amount.toFixed(2),
-        currency: "IDR"
-      },
-      validUpTo: validUpToGMT7,
-      urlParams: [
-        {
-          url: "https://ch-ai-studio.vercel.app/api/dana/finish",
-          type: "NOTIFICATION",
-          isDeeplink: "N"
-        },
-        {
-          url: "https://ch-ai-studio.vercel.app/api/dana/redirect",
-          type: "PAY_RETURN",
-          isDeeplink: "N"
-        }
-      ],
-      additionalInfo: {
-        order: {
-          orderTitle: selected.title,
-          scenario: "REDIRECT",
-          buyer: {
-            externalUserId: clerkUserId
-          }
-        },
-        mcc: "5734",
-        envInfo: {
-          sourcePlatform: "IPG",
-          terminalType: "SYSTEM"
-        }
-      }
-    });
-
-    const signature = createDanaSignature(
-      DANA_PRIVATE_KEY,
-      timestamp,
-      body
-    );
-
     const { error: insertError } = await supabase
-      .from("dana_payments")
+      .from("midtrans_payments")
       .insert({
         clerk_user_id: clerkUserId,
         order_id: orderId,
@@ -479,55 +391,46 @@ app.post("/api/dana/create-order", async (req, res) => {
       });
 
     if (insertError) {
-      console.error("DANA payment insert error:", insertError);
-
-      return res.status(500).json({
-        error: "Gagal membuat data pembayaran."
-      });
+      console.error("Midtrans order insert error:", insertError);
+      return res.status(500).json({ error: "Gagal menyimpan pesanan pembayaran." });
     }
 
-    const danaResponse = await fetch(
-      DANA_API_URL +
-        "/payment-gateway/v1.0/debit/payment-host-to-host.htm",
+    const payload = {
+      payment_type: "qris",
+      transaction_details: {
+        order_id: orderId,
+        gross_amount: selected.amount
+      },
+      item_details: [{
+        id: packageId,
+        price: selected.amount,
+        quantity: 1,
+        name: selected.title
+      }],
+      custom_field1: clerkUserId
+    };
+
+    const midtransResponse = await fetch(
+      MIDTRANS_API_URL + "/v2/charge",
       {
         method: "POST",
         headers: {
+          "Accept": "application/json",
           "Content-Type": "application/json",
-          "X-TIMESTAMP": timestamp,
-          "X-SIGNATURE": signature,
-          "X-PARTNER-ID": DANA_CLIENT_ID,
-          "X-EXTERNAL-ID": externalId,
-          "CHANNEL-ID": "95221",
-          "ORIGIN": "https://ch-ai-studio.vercel.app"
+          "Authorization": "Basic " +
+            Buffer.from(MIDTRANS_SERVER_KEY + ":").toString("base64")
         },
-        body
+        body: JSON.stringify(payload)
       }
     );
 
-    const rawResponse = await danaResponse.text();
+    const result = await midtransResponse.json().catch(() => ({}));
 
-    let danaResult;
+    if (!midtransResponse.ok) {
+      console.error("Midtrans create order failed:", midtransResponse.status, result);
 
-    try {
-      danaResult = JSON.parse(rawResponse);
-    } catch {
-      danaResult = {
-        raw: rawResponse
-      };
-    }
-
-    console.log(
-      "DANA Create Order:",
-      danaResponse.status,
-      JSON.stringify(danaResult)
-    );
-
-    if (
-      !danaResponse.ok ||
-      danaResult.responseCode !== "2005400"
-    ) {
       await supabase
-        .from("dana_payments")
+        .from("midtrans_payments")
         .update({
           status: "FAILED",
           updated_at: new Date().toISOString()
@@ -535,105 +438,196 @@ app.post("/api/dana/create-order", async (req, res) => {
         .eq("order_id", orderId);
 
       return res.status(502).json({
-        error: "DANA menolak pembuatan order.",
-        dana: danaResult
+        error: result.status_message || "Midtrans gagal membuat QRIS. Periksa konfigurasi akun dan Server Key."
       });
     }
+
+    const actions = Array.isArray(result.actions) ? result.actions : [];
+    const qrAction = actions.find(action =>
+      ["generate-qr-code-v2", "generate-qr-code"].includes(action.name)
+    );
+
+    if (!qrAction?.url) {
+      console.error("Midtrans response tidak memiliki URL QR:", result);
+
+      await supabase
+        .from("midtrans_payments")
+        .update({
+          status: "FAILED",
+          updated_at: new Date().toISOString()
+        })
+        .eq("order_id", orderId);
+
+      return res.status(502).json({
+        error: "Midtrans tidak mengembalikan QRIS. Cek konfigurasi QRIS pada akun Midtrans."
+      });
+    }
+
+    await supabase
+      .from("midtrans_payments")
+      .update({
+        transaction_id: result.transaction_id || null,
+        transaction_status: result.transaction_status || "pending",
+        updated_at: new Date().toISOString()
+      })
+      .eq("order_id", orderId);
 
     return res.json({
       success: true,
       orderId,
       amount: selected.amount,
       credits: selected.credits,
-      referenceNo: danaResult.referenceNo,
-      webRedirectUrl: danaResult.webRedirectUrl
+      qrUrl: qrAction.url,
+      expiresAt: result.expiry_time || null
     });
   } catch (error) {
-    console.error("DANA Create Order error:", error);
-
-    return res.status(500).json({
-      error: error?.message || "Gagal membuat order DANA."
-    });
+    console.error("Midtrans create order error:", error);
+    return res.status(500).json({ error: "Terjadi kesalahan saat membuat pesanan Midtrans." });
   }
 });
 
-// DANA finish redirect
-app.get("/api/dana/redirect", (req, res) => {
-  res.redirect("/?payment=dana");
+app.post("/api/midtrans/notification", async (req, res) => {
+  try {
+    if (!supabase || !MIDTRANS_SERVER_KEY) {
+      return res.status(500).json({ error: "Konfigurasi pembayaran belum lengkap." });
+    }
+
+    const body = req.body || {};
+    const orderId = String(body.order_id || "");
+    const transactionId = String(body.transaction_id || "");
+    const statusCode = String(body.status_code || "");
+    const grossAmount = String(body.gross_amount || "");
+    const signature = String(body.signature_key || "");
+
+    if (!orderId || !transactionId || !statusCode || !grossAmount || !signature) {
+      return res.status(400).json({ error: "Data notifikasi tidak lengkap." });
+    }
+
+    const expectedSignature = crypto
+      .createHash("sha512")
+      .update(orderId + statusCode + grossAmount + MIDTRANS_SERVER_KEY)
+      .digest("hex");
+
+    const signatureBuffer = Buffer.from(signature.toLowerCase(), "utf8");
+    const expectedBuffer = Buffer.from(expectedSignature, "utf8");
+
+    if (
+      signatureBuffer.length !== expectedBuffer.length ||
+      !crypto.timingSafeEqual(signatureBuffer, expectedBuffer)
+    ) {
+      console.error("Midtrans notification: signature tidak valid.");
+      return res.status(401).json({ error: "Signature tidak valid." });
+    }
+
+    const { data: payment, error: paymentError } = await supabase
+      .from("midtrans_payments")
+      .select("order_id, amount, credits, status")
+      .eq("order_id", orderId)
+      .maybeSingle();
+
+    if (paymentError) throw paymentError;
+
+    if (!payment) {
+      return res.status(404).json({ error: "Pesanan tidak ditemukan." });
+    }
+
+    if (Number(grossAmount).toFixed(2) !== Number(payment.amount).toFixed(2)) {
+      console.error("Midtrans notification: nominal tidak cocok.", orderId);
+      return res.status(400).json({ error: "Nominal pembayaran tidak cocok." });
+    }
+
+    const transactionStatus = String(body.transaction_status || "").toLowerCase();
+    const fraudStatus = String(body.fraud_status || "").toLowerCase();
+
+    if (transactionStatus === "settlement" && statusCode === "200") {
+      if (fraudStatus && fraudStatus !== "accept") {
+        return res.status(200).json({ received: true });
+      }
+
+      const { data: completed, error: completeError } = await supabase.rpc(
+        "complete_midtrans_payment",
+        {
+          p_order_id: orderId,
+          p_transaction_id: transactionId
+        }
+      );
+
+      if (completeError) throw completeError;
+
+      const result = Array.isArray(completed) ? completed[0] : completed;
+
+      if (!result?.success) {
+        return res.status(500).json({ error: "Gagal menyelesaikan pembayaran." });
+      }
+
+      console.log("Midtrans payment completed:", orderId);
+    } else if (["expire", "cancel", "deny", "failure"].includes(transactionStatus)) {
+      if (payment.status !== "SUCCESS") {
+        await supabase
+          .from("midtrans_payments")
+          .update({
+            status: transactionStatus.toUpperCase(),
+            transaction_id: transactionId,
+            transaction_status: transactionStatus,
+            updated_at: new Date().toISOString()
+          })
+          .eq("order_id", orderId)
+          .neq("status", "SUCCESS");
+      }
+    } else {
+      await supabase
+        .from("midtrans_payments")
+        .update({
+          transaction_id: transactionId,
+          transaction_status: transactionStatus,
+          updated_at: new Date().toISOString()
+        })
+        .eq("order_id", orderId)
+        .neq("status", "SUCCESS");
+    }
+
+    return res.status(200).json({ received: true });
+  } catch (error) {
+    console.error("Midtrans notification error:", error);
+    return res.status(500).json({ error: "Gagal memproses notifikasi Midtrans." });
+  }
 });
 
-app.post("/api/dana/finish", async (req, res) => {
+// Status pembayaran untuk akun yang sedang login.
+app.get("/api/midtrans/status/:orderId", async (req, res) => {
   try {
-    const timestamp = req.headers["x-timestamp"];
-    const signature = req.headers["x-signature"];
-    const rawBody = req.rawBody || JSON.stringify(req.body || {});
+    const clerkUserId = await getClerkUserId(req);
 
-    const isValidSignature = verifyDanaSignature(DANA_PUBLIC_KEY, timestamp, rawBody, signature);
-
-    if (!isValidSignature) {
-      console.error("DANA Finish: invalid signature.");
-      return res.status(401).json({ responseCode: "4015600", responseMessage: "Invalid Signature" });
-    }
-
-    const payload = req.body || {};
-    const orderId = String(payload.originalPartnerReferenceNo || "");
-    const danaTransactionId = String(payload.originalReferenceNo || "");
-    const transactionStatus = String(payload.latestTransactionStatus || "");
-    const amountValue = String(payload.amount?.value || "");
-    const amountCurrency = String(payload.amount?.currency || "");
-
-    if (!orderId || !danaTransactionId) {
-      return res.status(400).json({ responseCode: "4005602", responseMessage: "Invalid payment data" });
-    }
-
-    if (transactionStatus !== "00") {
-      console.log("DANA Finish non-success:", orderId, transactionStatus);
-      return res.json({ responseCode: "2005600", responseMessage: "Successful" });
-    }
-
-    if (amountCurrency !== "IDR") {
-      return res.status(400).json({ responseCode: "4005602", responseMessage: "Invalid amount currency" });
+    if (!clerkUserId) {
+      return res.status(401).json({ error: "Login diperlukan." });
     }
 
     if (!supabase) {
-      return res.status(500).json({ responseCode: "5005600", responseMessage: "Supabase belum dikonfigurasi" });
+      return res.status(500).json({ error: "Supabase belum dikonfigurasi." });
     }
 
-    const { data: payment, error: paymentError } = await supabase.from("dana_payments").select("order_id, clerk_user_id, amount, credits, status").eq("order_id", orderId).maybeSingle();
+    const { data, error } = await supabase
+      .from("midtrans_payments")
+      .select("order_id, amount, credits, status, transaction_status")
+      .eq("order_id", String(req.params.orderId || ""))
+      .eq("clerk_user_id", clerkUserId)
+      .maybeSingle();
 
-    if (paymentError) {
-      console.error("DANA Finish payment lookup error:", paymentError);
-      return res.status(500).json({ responseCode: "5005600", responseMessage: "Database Error" });
-    }
+    if (error) throw error;
+    if (!data) return res.status(404).json({ error: "Pesanan tidak ditemukan." });
 
-    if (!payment) {
-      return res.status(404).json({ responseCode: "4045600", responseMessage: "Order Not Found" });
-    }
-
-    const expectedAmount = Number(payment.amount).toFixed(2);
-    const receivedAmount = Number(amountValue).toFixed(2);
-
-    if (!Number.isFinite(Number(amountValue)) || expectedAmount !== receivedAmount) {
-      console.error("DANA Finish: amount mismatch:", expectedAmount, receivedAmount);
-      return res.status(400).json({ responseCode: "4005602", responseMessage: "Amount Mismatch" });
-    }
-
-    const { data: completed, error: completeError } = await supabase.rpc("complete_dana_payment", { p_order_id: orderId, p_dana_transaction_id: danaTransactionId });
-
-    if (completeError) {
-      console.error("DANA Finish complete payment error:", completeError);
-      return res.status(500).json({ responseCode: "5005600", responseMessage: "Database Error" });
-    }
-
-    const result = Array.isArray(completed) ? completed[0] : completed;
-    console.log("DANA Finish completed:", JSON.stringify({ orderId, danaTransactionId, creditsAdded: result?.credits_added, totalCredits: result?.total_credits }));
-
-    return res.json({ responseCode: "2005600", responseMessage: "Successful" });
+    return res.json({
+      orderId: data.order_id,
+      amount: data.amount,
+      credits: data.credits,
+      status: data.status,
+      transactionStatus: data.transaction_status
+    });
   } catch (error) {
-    console.error("DANA Finish error:", error);
-    return res.status(500).json({ responseCode: "5005600", responseMessage: "General Error" });
+    console.error("Midtrans status error:", error);
+    return res.status(500).json({ error: "Gagal memeriksa status pembayaran." });
   }
-});;
+});
 
 app.post("/api/chat", async (req, res) => {
   try {
