@@ -486,3 +486,126 @@
 .chat-input-wrap button{width:50px;height:48px;border:0;border-radius:14px;background:linear-gradient(135deg,#ff4ecd,#704cff);color:#fff;font-size:20px;cursor:pointer}
 .chat-input-wrap button:disabled{opacity:.5;cursor:not-allowed}
 @media(max-width:600px){.chat-shell{height:calc(100vh - 150px);min-height:380px;border-radius:15px}.chat-messages{padding:15px}.chat-bubble{max-width:88%}.chat-input-wrap{padding:10px}.chat-input-wrap textarea{font-size:14px}}
+
+/* CH AI Studio — Modern Neon Icon Upgrade */
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 46px;
+  border: 1px solid transparent;
+  transition: background .22s ease, border-color .22s ease, transform .22s ease;
+}
+
+.nav-item .nav-icon {
+  width: 22px;
+  height: 22px;
+  flex: 0 0 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  color: #a6a0bd;
+  transition: color .22s ease, filter .22s ease;
+}
+
+.nav-icon svg,
+.icon svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.nav-item span {
+  margin-left: 0;
+}
+
+.nav-item:hover {
+  background: rgba(133, 87, 255, .09);
+  border-color: rgba(133, 87, 255, .18);
+}
+
+.nav-item:hover .nav-icon,
+.nav-item.active .nav-icon {
+  color: #b99aff;
+  filter: drop-shadow(0 0 6px rgba(143, 92, 255, .5));
+}
+
+.nav-item.active {
+  background: linear-gradient(100deg, rgba(132, 73, 255, .17), rgba(52, 150, 255, .06));
+  border-color: rgba(153, 111, 255, .2);
+  box-shadow: inset 3px 0 #a477ff;
+}
+
+.quick-card {
+  position: relative;
+  overflow: hidden;
+  transition: border-color .25s ease, transform .25s ease, box-shadow .25s ease;
+}
+
+.quick-card::before {
+  content: "";
+  position: absolute;
+  width: 130px;
+  height: 130px;
+  top: -75px;
+  right: -55px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(129, 79, 255, .16), transparent 70%);
+  pointer-events: none;
+}
+
+.quick-card:hover {
+  border-color: rgba(151, 103, 255, .6);
+  box-shadow: 0 8px 30px rgba(94, 56, 180, .12);
+  transform: translateY(-3px);
+}
+
+.quick-card .icon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  margin-bottom: 22px;
+  border: 1px solid rgba(158, 119, 255, .28);
+  border-radius: 15px;
+  color: #b99aff;
+  background: linear-gradient(135deg, rgba(135, 80, 255, .16), rgba(55, 145, 255, .09));
+  box-shadow: inset 0 0 18px rgba(130, 83, 255, .06);
+}
+
+.quick-card .icon svg {
+  width: 26px;
+  height: 26px;
+}
+
+.quick-card:nth-child(2) .icon {
+  color: #7fc8ff;
+  border-color: rgba(81, 177, 255, .3);
+  background: linear-gradient(135deg, rgba(63, 157, 255, .16), rgba(135, 80, 255, .08));
+}
+
+.quick-card:nth-child(3) .icon {
+  color: #e2a4ff;
+}
+
+.brand-mark {
+  background: linear-gradient(135deg, #c6a5ff, #7c5cff 55%, #53baff);
+  color: #fff;
+  box-shadow: 0 0 22px rgba(124, 92, 255, .24);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-item,
+  .nav-item .nav-icon,
+  .quick-card {
+    transition: none;
+  }
+}

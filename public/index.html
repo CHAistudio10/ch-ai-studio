@@ -14,14 +14,14 @@
       <div><b>ch ai studio</b><small>Power by Cahya Handika</small></div>
     </div>
     <nav>
-      <button data-page="home" onclick="go('home')" class="nav-item active">⌂ <span>Beranda</span></button>
-      <button data-page="chat" onclick="go('chat')" class="nav-item">◉ <span>CH Chat AI</span></button>
-      <button data-page="projects" onclick="go('projects')" class="nav-item">▱ <span>Project Saya</span></button>
-      <button data-page="assets" onclick="go('assets')" class="nav-item">▧ <span>Asset</span></button>
-      <button data-page="templates" class="nav-item" onclick="go('templates')">✦ <span>Template</span></button>
-      <button data-page="generate" class="nav-item" onclick="go('generate')">✧ <span>Generate</span></button>
-      <button data-page="instant" onclick="go('instant')" class="nav-item">⚡ <span>Instant</span></button>
-      <button data-page="pricing" onclick="go('pricing')" class="nav-item">▣ <span>Harga</span></button>
+      <button data-page="home" onclick="go('home')" class="nav-item active"><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7M5 9v12h14V9M9 21v-7h6v7"/></svg></span><span>Beranda</span></button>
+      <button data-page="chat" onclick="go('chat')" class="nav-item"><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H7l-4 2 1.5-4A7.5 7.5 0 1 1 20 11.5Z"/><path d="M8 11h.01M12 11h.01M16 11h.01"/></svg></span><span>CH Chat AI</span></button>
+      <button data-page="projects" onclick="go('projects')" class="nav-item"><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h5l2 2h7a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/><path d="M3 10h18"/></svg></span><span>Project Saya</span></button>
+      <button data-page="assets" onclick="go('assets')" class="nav-item"><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg></span><span>Asset</span></button>
+      <button data-page="templates" class="nav-item" onclick="go('templates')"><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="5" rx="2"/><rect x="13" y="10" width="8" height="11" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/></svg></span><span>Template</span></button>
+      <button data-page="generate" class="nav-item" onclick="go('generate')"><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2 6 6 2-6 2-2 6-2-6-6-2 6-2Z"/><path d="m19 14 1 3 3 1-3 1-1 3-1-3-3-1 3-1Z"/></svg></span><span>Generate</span></button>
+      <button data-page="instant" onclick="go('instant')" class="nav-item"><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m13 2-9 12h7l-1 8 10-13h-7Z"/></svg></span><span>Instant</span></button>
+      <button data-page="pricing" onclick="go('pricing')" class="nav-item"><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 21 7v10l-9 5-9-5V7Z"/><path d="M12 7v10M8.5 10h7M8.5 14h7"/></svg></span><span>Harga</span></button>
     </nav>
     <div class="side-bottom">
       <div class="credit-box">
@@ -50,13 +50,13 @@
       </div>
       <div class="quick-grid">
         <button class="quick-card" onclick="go('generate'); setMode('image')">
-          <div class="icon">▧</div><b>Generate Gambar</b><span>Buat visual dari prompt & referensi.</span>
+          <div class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg></div><b>Generate Gambar</b><span>Buat visual dari prompt & referensi.</span>
         </button>
         <button class="quick-card" onclick="go('generate'); setMode('video')">
-          <div class="icon">▶</div><b>Generate Video</b><span>Siapkan konsep video dari ide kamu.</span>
+          <div class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="13" height="14" rx="3"/><path d="m16 10 5-3v10l-5-3Z"/><path d="m8 9 4 3-4 3Z"/></svg></div><b>Generate Video</b><span>Siapkan konsep video dari ide kamu.</span>
         </button>
         <button class="quick-card" onclick="go('templates')">
-          <div class="icon">✦</div><b>Pakai Template</b><span>Mulai dari konsep siap edit.</span>
+          <div class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9h18M9 9v12"/><path d="m15 13 1 2 2 1-2 1-1 2-1-2-2-1 2-1Z"/></svg></div><b>Pakai Template</b><span>Mulai dari konsep siap edit.</span>
         </button>
       </div>
       <div class="section-title"><h2>Terbaru</h2><button class="text-btn" onclick="go('assets')">Lihat semua →</button></div>
