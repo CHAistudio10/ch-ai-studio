@@ -721,34 +721,30 @@ app.post("/api/chat", async (req, res) => {
 });
 
 // 404 for unmatched API routes (static assets are served by Vercel's CDN from public/**)
-app.use("/api", (req, res) => {
-  res.status(404).json({ error: "Endpoint tidak ditemukan." });
-});
-
-
-
-if (process.env.VERCEL !== "1") {
-  
-
 
 // === ISOLATED STORYTELLING ROUTES ===
-import stGenerateScript from "./api/storytelling/generate-script.js";
-import stGenerateSceneImages from "./api/storytelling/generate-scene-images.js";
-import stGenerateSceneVideo from "./api/storytelling/generate-scene-video.js";
-import stGenerationStatus from "./api/storytelling/generation-status.js";
+const loadStHandler = async (relPath) => {
+  const mod = await import(relPath);
+  return mod.default;
+};
 
-const wrapStHandler = (fn) => async (req, res) => {
+const wrapStRoute = (relPath) => async (req, res) => {
   try {
-    return await fn(req, res);
+    const handler = await loadStHandler(relPath);
+    return await handler(req, res);
   } catch (err) {
-    console.error("[Storytelling Route Guard]", err?.message || err);
+    console.error("[Storytelling Route Error]", err?.message || err);
     if (!res.headersSent) {
-      return res.status(200).json({ ok: false, error: "Layanan storytelling sedang sibuk" });
+      return res.status(200).json({ ok: false, error: err?.message || "Layanan storytelling sedang sibuk" });
     }
   }
 };
 
-app.post("/api/storytelling/generate-script", wrapStHandler(stGenerateScript));
-app.post("/api/storytelling/generate-scene-images", wrapStHandler(stGenerateSceneImages));
-app.post("/api/storytelling/generate-scene-video", wrapStHandler(stGenerateSceneVideo));
-app.all("/api/storytelling/generation-status", wrapStHandler(stGenerationStatus));
+app.post("/api/storytelling/generate-script", wrapStRoute("./api/storytelling/generate-script.js"));
+app.post("/api/storytelling/generate-scene-images", wrapStRoute("./api/storytelling/generate-scene-images.js"));
+app.post("/api/storytelling/generate-scene-video", wrapStRoute("./api/storytelling/generate-scene-video.js"));
+app.all("/api/storytelling/generation-status", wrapStRoute("./api/storytelling/generation-status.js"));
+
+app.use("/api", (req, res) => {
+  res.status(404).json({ error: "Endpoint tidak ditemukan." });
+});
