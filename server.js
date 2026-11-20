@@ -729,20 +729,26 @@ app.use("/api", (req, res) => {
 
 if (process.env.VERCEL !== "1") {
   
+
+
 // === ISOLATED STORYTELLING ROUTES ===
 import stGenerateScript from "./api/storytelling/generate-script.js";
 import stGenerateSceneImages from "./api/storytelling/generate-scene-images.js";
 import stGenerateSceneVideo from "./api/storytelling/generate-scene-video.js";
 import stGenerationStatus from "./api/storytelling/generation-status.js";
 
-app.post("/api/storytelling/generate-script", (req, res) => stGenerateScript(req, res));
-app.post("/api/storytelling/generate-scene-images", (req, res) => stGenerateSceneImages(req, res));
-app.post("/api/storytelling/generate-scene-video", (req, res) => stGenerateSceneVideo(req, res));
-app.all("/api/storytelling/generation-status", (req, res) => stGenerationStatus(req, res));
+const wrapStHandler = (fn) => async (req, res) => {
+  try {
+    return await fn(req, res);
+  } catch (err) {
+    console.error("[Storytelling Route Guard]", err?.message || err);
+    if (!res.headersSent) {
+      return res.status(200).json({ ok: false, error: "Layanan storytelling sedang sibuk" });
+    }
+  }
+};
 
-app.listen(PORT, () => {
-    console.log(`CH AI Studio berjalan di http://localhost:${PORT}`);
-  });
-}
-
-export default app;
+app.post("/api/storytelling/generate-script", wrapStHandler(stGenerateScript));
+app.post("/api/storytelling/generate-scene-images", wrapStHandler(stGenerateSceneImages));
+app.post("/api/storytelling/generate-scene-video", wrapStHandler(stGenerateSceneVideo));
+app.all("/api/storytelling/generation-status", wrapStHandler(stGenerationStatus));

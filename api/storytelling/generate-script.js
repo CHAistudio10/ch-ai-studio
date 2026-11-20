@@ -1,9 +1,9 @@
 export default async function handler(req, res) {
   if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method not allowed" });
+    return res.status(405).json({ ok: false, error: "Method not allowed" });
   }
   try {
-    const body = req.body || {};
+    const body = typeof req.body === "string" ? JSON.parse(req.body || "{}") : (req.body || {});
     const title = String(body.title || "Cerita AI").trim();
     const idea = String(body.idea || "").trim();
     const duration = Math.max(10, Math.min(180, Number(body.duration) || 30));
@@ -12,7 +12,7 @@ export default async function handler(req, res) {
     const mood = String(body.mood || "Emosional & Epik");
     const narrationMode = String(body.narrationMode || "narration_dialogue");
     const dialogueMode = String(body.dialogueMode || "on");
-    const char = body.character || {
+    const char = body.character && typeof body.character === "object" ? body.character : {
       name: "Tokoh Utama",
       physical: "Wajah ekspresif, pencahayaan sinematik",
       outfit: "Jaket modern",
@@ -20,7 +20,7 @@ export default async function handler(req, res) {
     };
 
     const perSceneSec = Math.max(3, Math.round(duration / sceneCount));
-    const charLock = `${char.name}, ${char.physical}, wearing ${char.outfit}`;
+    const charLock = `${char.name || "Tokoh Utama"}, ${char.physical || "sinematik"}, wearing ${char.outfit || "jaket modern"}`;
     const beats = [
       "Hook Pembuka",
       "Pengenalan Konflik",
@@ -39,9 +39,9 @@ export default async function handler(req, res) {
         title: `${beat} — ${title}`,
         description: `${idea} (${beat})`,
         duration: perSceneSec,
-        character: char.name,
+        character: char.name || "Tokoh Utama",
         location: isOdd ? "Lokasi utama penuh atmosfer" : "Sudut lokasi dengan pencahayaan kontras",
-        action: `${char.name} menjalani momen ${beat.toLowerCase()}`,
+        action: `${char.name || "Tokoh Utama"} menjalani momen ${beat.toLowerCase()}`,
         expression: char.expression || "Fokus",
         cameraAngle: num === 1 ? "Wide Establishing Shot" : "Medium Close-Up",
         cameraMovement: isOdd ? "Slow Dolly In" : "Smooth Tracking Pan",
@@ -50,7 +50,7 @@ export default async function handler(req, res) {
         videoPrompt: `Smooth ${perSceneSec}s motion, ${isOdd ? "slow dolly in" : "smooth pan"}, ${mood} atmosphere`,
         negativePrompt: "collage, split screen, grid, watermark, text, blurry, extra limbs",
         narration: narrationMode === "off" ? "" : `${beat} untuk ${title}: ${idea}.`,
-        dialogue: dialogueMode === "off" ? "" : `${char.name}: "Kita lanjutkan langkah ini."`,
+        dialogue: dialogueMode === "off" ? "" : `${char.name || "Tokoh Utama"}: "Kita lanjutkan langkah ini."`,
         soundEffect: "Ambient cinematic atmosphere",
         imageStatus: "Waiting",
         videoStatus: "Waiting",
@@ -60,6 +60,7 @@ export default async function handler(req, res) {
     });
 
     return res.status(200).json({
+      ok: true,
       title,
       hook: `Pembuka sinematik untuk ${title}`,
       synopsis: idea,
@@ -70,6 +71,9 @@ export default async function handler(req, res) {
       scenes
     });
   } catch (err) {
-    return res.status(500).json({ error: err.message || "Gagal membuat naskah cerita" });
+    return res.status(200).json({
+      ok: false,
+      error: err?.message || "Gagal membuat naskah cerita"
+    });
   }
 }
