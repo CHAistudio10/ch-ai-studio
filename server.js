@@ -722,20 +722,21 @@ app.post("/api/chat", async (req, res) => {
 
 // 404 for unmatched API routes (static assets are served by Vercel's CDN from public/**)
 
-// === ISOLATED STORYTELLING ROUTES ===
-const loadStHandler = async (relPath) => {
-  const mod = await import(relPath);
-  return mod.default;
-};
 
+
+// === ISOLATED STORYTELLING ROUTES ===
 const wrapStRoute = (relPath) => async (req, res) => {
   try {
-    const handler = await loadStHandler(relPath);
-    return await handler(req, res);
+    const mod = await import(relPath);
+    const fn = mod && mod.default;
+    if (typeof fn !== "function") {
+      return res.status(200).json({ ok: false, error: "Handler storytelling tidak ditemukan" });
+    }
+    return await fn(req, res);
   } catch (err) {
     console.error("[Storytelling Route Error]", err?.message || err);
     if (!res.headersSent) {
-      return res.status(200).json({ ok: false, error: err?.message || "Layanan storytelling sedang sibuk" });
+      return res.status(200).json({ ok: false, error: err?.message || "Layanan storytelling gagal dimuat" });
     }
   }
 };
@@ -745,6 +746,3 @@ app.post("/api/storytelling/generate-scene-images", wrapStRoute("./api/storytell
 app.post("/api/storytelling/generate-scene-video", wrapStRoute("./api/storytelling/generate-scene-video.js"));
 app.all("/api/storytelling/generation-status", wrapStRoute("./api/storytelling/generation-status.js"));
 
-app.use("/api", (req, res) => {
-  res.status(404).json({ error: "Endpoint tidak ditemukan." });
-});
