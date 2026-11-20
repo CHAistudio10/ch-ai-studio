@@ -1508,3 +1508,61 @@ html body #page-jedagjedug #jj-media-list > * {
   display: block !important;
   object-fit: contain !important;
 }
+
+/* === V6 DARK MODAL & BACK BUTTON FIX === */
+.v6-back-btn {
+  font-size: 1rem !important;
+  line-height: 1 !important;
+  font-weight: 700 !important;
+  color: #F5F7FF !important;
+}
+
+#v6CustomDialogOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  background: rgba(5, 6, 10, 0.78);
+  backdrop-filter: blur(8px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+}
+#v6CustomDialogOverlay.is-open { display: flex; }
+
+#v6CustomDialogBox {
+  width: 100%;
+  max-width: 360px;
+  padding: 16px;
+  border-radius: 18px;
+  background: #10162B;
+  border: 1px solid rgba(139, 53, 255, 0.5);
+  box-shadow: 0 22px 48px rgba(0, 0, 0, 0.78);
+  color: #F5F7FF;
+}
+
+#v6ToastBanner {
+  position: fixed;
+  left: 14px;
+  right: 14px;
+  bottom: 76px;
+  z-index: 1250;
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 10px 14px;
+  border-radius: 13px;
+  background: rgba(16, 22, 43, 0.96);
+  border: 1px solid rgba(236, 53, 201, 0.45);
+  color: #F5F7FF;
+  font-size: 0.75rem;
+  font-weight: 600;
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.7);
+  opacity: 0;
+  transform: translateY(10px);
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+#v6ToastBanner.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}

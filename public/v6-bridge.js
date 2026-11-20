@@ -888,3 +888,93 @@
     };
   }
 })();
+
+/* === V6_DARK_DIALOG_REPLACEMENT === */
+(function () {
+  function ensureDialogDom() {
+    if (document.getElementById("v6CustomDialogOverlay")) return;
+    const overlay = document.createElement("div");
+    overlay.id = "v6CustomDialogOverlay";
+    overlay.innerHTML = `
+      <div id="v6CustomDialogBox">
+        <div style="font-size:0.64rem;font-weight:800;letter-spacing:0.06em;color:#C084FC;text-transform:uppercase;margin-bottom:4px;">CH AI STUDIO</div>
+        <div id="v6DlgMessage" style="font-size:0.86rem;font-weight:600;line-height:1.4;margin-bottom:12px;"></div>
+        <input id="v6DlgInput" type="text" class="v6-input" style="display:none;margin-bottom:12px;">
+        <div style="display:flex;justify-content:flex-end;gap:8px;">
+          <button type="button" id="v6DlgCancel" class="v6-inline-action-btn" style="min-height:34px;padding:0 14px;">Batal</button>
+          <button type="button" id="v6DlgOk" class="v6-topup-pill" style="min-height:34px;padding:0 16px;">Oke</button>
+        </div>
+      </div>`;
+    document.body.appendChild(overlay);
+
+    const toast = document.createElement("div");
+    toast.id = "v6ToastBanner";
+    document.body.appendChild(toast);
+  }
+
+  window.showV6Toast = function (msg) {
+    ensureDialogDom();
+    const el = document.getElementById("v6ToastBanner");
+    if (!el) return;
+    el.textContent = String(msg || "");
+    el.classList.add("is-visible");
+    clearTimeout(window.__v6ToastTimer);
+    window.__v6ToastTimer = setTimeout(() => el.classList.remove("is-visible"), 2800);
+  };
+
+  function openDarkDialog(type, message, defaultValue) {
+    ensureDialogDom();
+    return new Promise((resolve) => {
+      const overlay = document.getElementById("v6CustomDialogOverlay");
+      const msgEl = document.getElementById("v6DlgMessage");
+      const inpEl = document.getElementById("v6DlgInput");
+      const okBtn = document.getElementById("v6DlgOk");
+      const cancelBtn = document.getElementById("v6DlgCancel");
+
+      msgEl.textContent = String(message || "");
+      if (type === "prompt") {
+        inpEl.style.display = "block";
+        inpEl.value = defaultValue || "";
+        cancelBtn.style.display = "inline-flex";
+      } else if (type === "confirm") {
+        inpEl.style.display = "none";
+        cancelBtn.style.display = "inline-flex";
+      } else {
+        inpEl.style.display = "none";
+        cancelBtn.style.display = "none";
+      }
+
+      overlay.classList.add("is-open");
+      if (type === "prompt") setTimeout(() => inpEl.focus(), 60);
+
+      function cleanup(val) {
+        overlay.classList.remove("is-open");
+        okBtn.removeEventListener("click", onOk);
+        cancelBtn.removeEventListener("click", onCancel);
+        resolve(val);
+      }
+      function onOk() {
+        cleanup(type === "prompt" ? inpEl.value : true);
+      }
+      function onCancel() {
+        cleanup(type === "prompt" ? null : false);
+      }
+      okBtn.addEventListener("click", onOk);
+      cancelBtn.addEventListener("click", onCancel);
+    });
+  }
+
+  window.alert = function (msg) {
+    window.showV6Toast(msg);
+  };
+
+  // Pastikan pemanggilan sinkron pada kode lama tetap membuka modal dark mode atau toast
+  const origConfirm = window.confirm.bind(window);
+  window.confirm = function (msg) {
+    if (window.__v6AllowAsyncConfirm) return origConfirm(msg);
+    openDarkDialog("confirm", msg);
+    return true;
+  };
+  window.v6ConfirmAsync = (msg) => openDarkDialog("confirm", msg);
+  window.v6PromptAsync = (msg, def) => openDarkDialog("prompt", msg, def);
+})();

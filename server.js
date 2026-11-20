@@ -728,7 +728,19 @@ app.use("/api", (req, res) => {
 
 
 if (process.env.VERCEL !== "1") {
-  app.listen(PORT, () => {
+  
+// === ISOLATED STORYTELLING ROUTES ===
+import stGenerateScript from "./api/storytelling/generate-script.js";
+import stGenerateSceneImages from "./api/storytelling/generate-scene-images.js";
+import stGenerateSceneVideo from "./api/storytelling/generate-scene-video.js";
+import stGenerationStatus from "./api/storytelling/generation-status.js";
+
+app.post("/api/storytelling/generate-script", (req, res) => stGenerateScript(req, res));
+app.post("/api/storytelling/generate-scene-images", (req, res) => stGenerateSceneImages(req, res));
+app.post("/api/storytelling/generate-scene-video", (req, res) => stGenerateSceneVideo(req, res));
+app.all("/api/storytelling/generation-status", (req, res) => stGenerationStatus(req, res));
+
+app.listen(PORT, () => {
     console.log(`CH AI Studio berjalan di http://localhost:${PORT}`);
   });
 }
