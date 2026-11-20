@@ -32,3 +32,16 @@ hasil_sse.txt
 server-*-backup*.js
 .vercel
 .env*
+
+# Backup dan file lokal yang tidak untuk deploy
+MGC_CRASH_LOG/
+*.account-backup
+*.clerk-backup
+*.clerk-error-backup
+*.clerk-mount-backup
+*.clerk-test-backup
+*.clerk-v2-backup
+*.clerk-working-backup
+*.xml
+backups/
+server.log

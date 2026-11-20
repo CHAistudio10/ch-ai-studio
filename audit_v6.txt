@@ -1,0 +1,456 @@
+=== AUDIT DOM IDs ===
+id="animeCard1"
+id="animeGlow1"
+id="animeHair1"
+id="animeHair2"
+id="animeHair3"
+id="animeHair4"
+id="animeSkin1"
+id="animeSkin2"
+id="animeSkin3"
+id="animeSkin4"
+id="assetGrid"
+id="authEmail"
+id="authError"
+id="authOverlay"
+id="authPassword"
+id="authSubmit"
+id="authSubtitle"
+id="authSwitch"
+id="authTitle"
+id="ch-mobile-nav"
+id="ch-profile-account"
+id="ch-profile-auth"
+id="ch-profile-credits"
+id="ch-profile-overlay"
+id="ch-profile-title"
+id="chatForm"
+id="chatInput"
+id="chatMessages"
+id="chatSend"
+id="clerk-user-button"
+id="cost"
+id="count"
+id="countOption"
+id="duration"
+id="durationOption"
+id="fps"
+id="fpsOption"
+id="generateBtn"
+id="ideas"
+id="jj-audio-info"
+id="jj-audio-input"
+id="jj-audio-preview"
+id="jj-download"
+id="jj-intensity"
+id="jj-media-input"
+id="jj-media-list"
+id="jj-media-status"
+id="jj-music-end"
+id="jj-music-start"
+id="jj-output-video"
+id="jj-preview"
+id="jj-preview-selection"
+id="jj-render-btn"
+id="jj-render-status"
+id="jj-scale-end"
+id="jj-scale-middle"
+id="jj-scale-start"
+id="jj-selection-duration"
+id="jj-selection-window"
+id="jj-style"
+id="jj-timeline-editor"
+id="jj-timeline-playhead"
+id="jj-timeline-time"
+id="jj-timeline-track"
+id="jj-transition-duration"
+id="jj-transition-duration-value"
+id="jj-trim-end"
+id="jj-trim-start"
+id="jj-waveform"
+id="model"
+id="modelOption"
+id="page-assets"
+id="page-chat"
+id="page-generate"
+id="page-home"
+id="page-instant"
+id="page-jedagjedug"
+id="page-pricing"
+id="page-projects"
+id="page-templates"
+id="projectList"
+id="prompt"
+id="ratio"
+id="refFile"
+id="refImg"
+id="refPreview"
+id="resolution"
+id="resolutionOption"
+id="results"
+id="sideCredits"
+id="sidebar"
+id="toast"
+id="topCredits"
+id="videoReferenceOption"
+
+=== AUDIT JS FUNCTIONS & HOOKS ===
+const AC =
+const MIN_CLIP =
+const a =
+const account =
+const accountKey =
+const actualBeats =
+const alpha =
+const amount =
+const analyser =
+const analysis =
+const audio =
+const audioBuffer =
+const auth =
+const avatar =
+const b =
+const bar =
+const beatTimes =
+const beats =
+const blob =
+const buffer =
+const button =
+const candidates =
+const canvas =
+const canvasStream =
+const card =
+const checkButton =
+const checkPayment =
+const choice =
+const chosen =
+const chunks =
+const cleanup =
+const closeButton =
+const container =
+const context =
+const controls =
+const cost =
+const countOption =
+const credits =
+const creditsEl =
+const ctx =
+const current =
+const currentName =
+const data =
+const delta =
+const destination =
+const dh =
+const displayName =
+const down =
+const download =
+const draw =
+const drawItem =
+const duration =
+const durationBadge =
+const durationOption =
+const dw =
+const effects =
+const el =
+const elapsed =
+const email =
+const end =
+const endHandle =
+const endInput =
+const energies =
+const energy =
+const error =
+const extension =
+const file =
+const files =
+const finalUrl =
+const first =
+const firstName =
+const firstPanel =
+const flap =
+const flash =
+const focusTarget =
+const focusable =
+const fps =
+const fpsOption =
+const frequency =
+const fullName =
+const gap =
+const gaps =
+const generateBtn =
+const h =
+const height =
+const history =
+const hop =
+const icons =
+const ideas =
+const image =
+const img =
+const info =
+const input =
+const intensity =
+const isActive =
+const jjTransitionDurationInput =
+const jjTransitionDurationValue =
+const labels =
+const last =
+const lastName =
+const left =
+const length =
+const list =
+const mean =
+const media =
+const mediaInput =
+const median =
+const minutes =
+const mobile =
+const modelOption =
+const music =
+const name =
+const nav =
+const note =
+const oldMode =
+const originalOpen =
+const output =
+const overlay =
+const p =
+const page =
+const panels =
+const parts =
+const password =
+const payment =
+const paymentWindow =
+const playhead =
+const preview =
+const previewButton =
+const progress =
+const prompt =
+const promptInput =
+const radius =
+const rand =
+const reader =
+const recorderFinished =
+const rect =
+const refFile =
+const refractory =
+const remaining =
+const remove =
+const renderStart =
+const requestedTransitionDuration =
+const requiredCredits =
+const resolutionOption =
+const response =
+const responseText =
+const result =
+const results =
+const rise =
+const sampleRate =
+const saved =
+const scale =
+const scaleEnd =
+const scaleMiddle =
+const scaleStart =
+const segment =
+const segmentDuration =
+const segmentStart =
+const selection =
+const sh =
+const shake =
+const shakeAmount =
+const sidebar =
+const size =
+const source =
+const start =
+const startHandle =
+const startInput =
+const status =
+const statusResponse =
+const strength =
+const style =
+const submit =
+const subtitle =
+const supportedTypes =
+const sw =
+const target =
+const time =
+const timeLabel =
+const timer =
+const title =
+const token =
+const track =
+const transition =
+const transitionDuration =
+const transitionProgress =
+const transitionSlider =
+const up =
+const updateJJTransitionDuration =
+const url =
+const user =
+const valid =
+const validImages =
+const value =
+const video =
+const videoReferenceOption =
+const visual =
+const w =
+const wait =
+const waveform =
+const width =
+const windowSize =
+const wing =
+const x =
+const y =
+const yy =
+const zoom =
+const zoomBase =
+function activate
+function analyseBeats
+function beginDrag
+function buyCredits
+function clamp
+function clearRef
+function closeAuth
+function drawCover
+function drawEffects
+function drawJJTransition
+function endDrag
+function escapeChatHtml
+function escapeProfileText
+function formatTime
+function generate
+function generateImage
+function generateVideo
+function getClerkUser
+function getFocusableElements
+function getProfileOverlay
+function getSelection
+function go
+function initJJMobileSteps
+function instantIdeas
+function loadImage
+function loadVideo
+function logoutCH
+function makeWaveform
+function move
+function moveDrag
+function newChat
+function openAuth
+function pausePreview
+function previewRef
+function profileMessage
+function releaseItems
+function removeItem
+function render
+function renderAssets
+function renderChatMessages
+function renderCredits
+function renderProjects
+function renderRecent
+function save
+function sendChatMessage
+function setMode
+function setupGenerateButton
+function showGeneratedImage
+function showGeneratedVideo
+function showToast
+function socialAuth
+function styleFlashIntensity
+function submitAuth
+function switchAuth
+function syncCredits
+function timeAtPointer
+function toggleAccountMenu
+function toggleSidebar
+function updatePlayhead
+function updateTimeline
+function useCredit
+function useTemplate
+function useVideoTemplate
+getElementById("assetGrid")
+getElementById("authEmail")
+getElementById("authError")
+getElementById("authOverlay")
+getElementById("authPassword")
+getElementById("authSubmit")
+getElementById("authSubtitle")
+getElementById("authSwitch")
+getElementById("authTitle")
+getElementById("ch-profile-account")
+getElementById("ch-profile-account-extra-style")
+getElementById("ch-profile-auth")
+getElementById("ch-profile-credits")
+getElementById("ch-profile-overlay")
+getElementById("chAccountMenu")
+getElementById("chatForm")
+getElementById("chatInput")
+getElementById("chatMessages")
+getElementById("chatSend")
+getElementById("cost")
+getElementById("count")
+getElementById("countOption")
+getElementById("duration")
+getElementById("durationOption")
+getElementById("fps")
+getElementById("fpsOption")
+getElementById("generateBtn")
+getElementById("ideas")
+getElementById("jj-audio-info")
+getElementById("jj-audio-input")
+getElementById("jj-audio-preview")
+getElementById("jj-download")
+getElementById("jj-intensity")
+getElementById("jj-media-input")
+getElementById("jj-media-list")
+getElementById("jj-media-status")
+getElementById("jj-music-end")
+getElementById("jj-music-start")
+getElementById("jj-output-video")
+getElementById("jj-preview")
+getElementById("jj-preview-selection")
+getElementById("jj-render-btn")
+getElementById("jj-render-status")
+getElementById("jj-scale-end")
+getElementById("jj-scale-middle")
+getElementById("jj-scale-start")
+getElementById("jj-selection-duration")
+getElementById("jj-selection-window")
+getElementById("jj-style")
+getElementById("jj-timeline-playhead")
+getElementById("jj-timeline-time")
+getElementById("jj-timeline-track")
+getElementById("jj-transition-duration")
+getElementById("jj-transition-duration-value")
+getElementById("jj-trim-end")
+getElementById("jj-trim-start")
+getElementById("jj-waveform")
+getElementById("model")
+getElementById("modelOption")
+getElementById("page-" + page)
+getElementById("projectList")
+getElementById("prompt")
+getElementById("ratio")
+getElementById("recentGrid")
+getElementById("refFile")
+getElementById("refImg")
+getElementById("refPreview")
+getElementById("resolution")
+getElementById("resolutionOption")
+getElementById("results")
+getElementById("sideCredits")
+getElementById("topCredits")
+getElementById("videoProgress")
+getElementById("videoReferenceOption")
+querySelector("#page-jedagjedug")
+querySelector(".ch-profile-close")
+querySelector(".ch-profile-drawer")
+querySelector(".output")
+querySelector(".result")
+querySelector(".sidebar")
+querySelector("[data-generate]")
+querySelector("[data-mobile-profile]")
+querySelector("textarea")
+querySelector('input[name="jj-transition"]:checked')
+
+=== AUDIT API, AUTH & PAYMENT ===
+Clerk
+fetch("/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({messages:chChatMessages.slice(0,-1)

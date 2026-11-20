@@ -1,0 +1,613 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#090912">
+  <title>CH AI Studio — AI Image & Video</title>
+  <meta name="description" content="CH AI Studio - workspace AI untuk membuat gambar dan video.">
+  <link rel="stylesheet" href="style.css?v=ch-v5-premium-20261109">
+  <link rel="stylesheet" href="premium-overrides.css?v=ch-v5-premium-mobile-full-20261109">
+  <link rel="stylesheet" href="ch-tailwind.css?v=3.4.17">
+</head>
+<body>
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="brand-mark">CH</div>
+      <div><b>ch ai studio</b><small>Power by Cahya Handika</small></div>
+    </div>
+    <nav>
+      <button data-page="home" onclick="go('home')" class="nav-item active"><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7M5 9v12h14V9M9 21v-7h6v7"/></svg></span><span>Beranda</span></button>
+      <button data-page="chat" onclick="go('chat')" class="nav-item"><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H7l-4 2 1.5-4A7.5 7.5 0 1 1 20 11.5Z"/><path d="M8 11h.01M12 11h.01M16 11h.01"/></svg></span><span>CH Chat AI</span></button>
+      <button data-page="projects" onclick="go('projects')" class="nav-item"><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h5l2 2h7a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/><path d="M3 10h18"/></svg></span><span>Project Saya</span></button>
+      <button data-page="assets" onclick="go('assets')" class="nav-item"><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg></span><span>Asset</span></button>
+      <button data-page="templates" class="nav-item" onclick="go('templates')"><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="5" rx="2"/><rect x="13" y="10" width="8" height="11" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/></svg></span><span>Template</span></button>
+      <button data-page="generate" class="nav-item" onclick="go('generate')"><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2 6 6 2-6 2-2 6-2-6-6-2 6-2Z"/><path d="m19 14 1 3 3 1-3 1-1 3-1-3-3-1 3-1Z"/></svg></span><span>Generate</span></button>
+      <button data-page="instant" onclick="go('instant')" class="nav-item"><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m13 2-9 12h7l-1 8 10-13h-7Z"/></svg></span><span>Instant</span></button>
+      <button data-page="jedagjedug" onclick="go('jedagjedug')" class="nav-item"><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 14.5 8.5 21 11l-6.5 2.5L12 20l-2.5-6.5L3 11l6.5-2.5Z"/><path d="m19 15 1.2 2.8L23 19l-2.8 1.2L19 23l-1.2-2.8L15 19l2.8-1.2Z"/></svg></span><span>CH Jedag Jedug AI</span></button>
+      <button data-page="pricing" onclick="go('pricing')" class="nav-item"><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 21 7v10l-9 5-9-5V7Z"/><path d="M12 7v10M8.5 10h7M8.5 14h7"/></svg></span><span>Harga</span></button>
+    </nav>
+    <div class="side-bottom">
+      <div class="credit-box">
+        <span>Saldo kredit</span>
+        <strong id="sideCredits">20</strong>
+      </div>
+      <div id="clerk-user-button"></div>
+    </div>
+  </aside>
+
+  <main>
+    <header class="topbar">
+      <div class="top-actions">
+        <span class="credits">◈ <b id="topCredits">20</b> kredit</span>
+      </div>
+      <div class="ch-brand-topbar" aria-label="CH AI Studio">
+        <span class="ch-neon-symbol" aria-hidden="true"><img src="/ch-logo.png" alt=""></span>
+        <span class="ch-brand-name">CH AI STUDIO</span>
+      </div>
+    </header>
+
+    <section id="page-home" class="page active">
+      <div class="hero">
+        <p class="eyebrow">CH AI STUDIO</p>
+        <h1>Wujudkan ide<br><span>dengan AI.</span></h1>
+        <p class="muted">Pilih kreativitasmu hari ini.</p>
+      </div>
+
+      <div class="quick-grid ch-home-grid">
+        <button class="quick-card home-feature-card feature-image" onclick="go('generate');setMode('image')">
+          <span class="feature-art"><svg viewBox="0 0 240 160" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Anime kreator AI futuristik">
+      <defs>
+        <linearGradient id="animeHair1" x2="1" y2="1"><stop stop-color="#58efff"/><stop offset=".5" stop-color="#9870ff"/><stop offset="1" stop-color="#ff63dc"/></linearGradient>
+        <linearGradient id="animeSkin1" x2=".8" y2="1"><stop stop-color="#ffe7ed"/><stop offset="1" stop-color="#d9a4d9"/></linearGradient>
+        <linearGradient id="animeCard1" x2="1" y2="1"><stop stop-color="#25205a"/><stop offset="1" stop-color="#11162e"/></linearGradient>
+        <filter id="animeGlow1"><feGaussianBlur stdDeviation="4"/></filter>
+      </defs>
+      <circle cx="120" cy="77" r="55" fill="#8d4cff" opacity=".18" filter="url(#animeGlow1)"/>
+      <path d="M28 125 42 65 58 42 88 26 126 31 155 50 173 94 190 125Z" fill="url(#animeHair1)" opacity=".95"/>
+      <path d="M72 87Q58 40 99 31Q144 25 157 67L147 111 83 112Z" fill="url(#animeHair1)"/>
+      <path d="M87 69Q88 48 117 47Q145 51 145 78L137 105Q120 124 97 103Z" fill="url(#animeSkin1)"/>
+      <path d="M84 71Q78 42 108 37L144 49 153 76 137 62 119 51 102 64 88 83Z" fill="#29204d"/>
+      <path d="M89 79Q101 69 111 80M121 80Q132 69 141 79" fill="none" stroke="#312458" stroke-width="3" stroke-linecap="round"/>
+      <ellipse cx="102" cy="81" rx="5" ry="7" fill="#3eeeff"/>
+      <ellipse cx="132" cy="81" rx="5" ry="7" fill="#ff5bd7"/>
+      <circle cx="103" cy="79" r="2" fill="white"/><circle cx="133" cy="79" r="2" fill="white"/>
+      <path d="M113 94Q120 99 127 94" fill="none" stroke="#b34e9e" stroke-width="2" stroke-linecap="round"/>
+      <path d="M85 105 76 134 158 134 143 105Q120 122 85 105Z" fill="#232044" stroke="#64eaff" stroke-width="2"/>
+      <path d="M99 116 119 128 137 115" fill="none" stroke="#ff68df" stroke-width="3"/>
+      <path d="M47 58 63 65 57 84M153 42 169 35 164 56" fill="none" stroke="#6df2ff" stroke-width="3" stroke-linecap="round"/>
+      <rect x="165" y="78" width="44" height="48" rx="8" fill="url(#animeCard1)" stroke="#7e7aff" stroke-width="2"/>
+      <path d="M172 112 183 97 190 104 201 88" fill="none" stroke="#5deeff" stroke-width="3" stroke-linecap="round"/>
+      <circle cx="189" cy="57" r="13" fill="#b85bff" opacity=".7"/><path d="m189 48 3 6 6 3-6 3-3 6-3-6-6-3 6-3Z" fill="white"/>
+      <path d="M20 139H220" stroke="#755fff" stroke-opacity=".65"/>
+    </svg></span>
+          <span class="feature-label">GENERATE GAMBAR</span>
+          <span class="feature-caption">Ciptakan visual AI</span>
+        </button>
+
+        <button class="quick-card home-feature-card feature-video" onclick="go('generate');setMode('video')">
+          <span class="feature-art"><svg viewBox="0 0 240 160" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Anime sinematik futuristik">
+      <defs>
+        <linearGradient id="animeHair2" x2="1" y2="1"><stop stop-color="#ff8bdc"/><stop offset=".5" stop-color="#a15cff"/><stop offset="1" stop-color="#4deaff"/></linearGradient>
+        <linearGradient id="animeSkin2" x2="1" y2="1"><stop stop-color="#ffe7f3"/><stop offset="1" stop-color="#d6a4df"/></linearGradient>
+      </defs>
+      <circle cx="122" cy="76" r="57" fill="#974cff" opacity=".15"/>
+      <rect x="23" y="25" width="194" height="111" rx="14" fill="#12172f" stroke="#8e72ff" stroke-width="2"/>
+      <path d="M34 112 69 70 95 93 127 53 160 88 194 56 207 75V125H34Z" fill="#28245a"/>
+      <path d="M34 121 73 99 108 114 148 84 207 111V125H34Z" fill="#1e4970" opacity=".9"/>
+      <path d="M84 76Q79 40 112 37Q149 39 151 75L144 107 91 108Z" fill="url(#animeHair2)"/>
+      <path d="M95 67Q98 50 119 50Q140 52 142 75L135 99Q118 114 101 98Z" fill="url(#animeSkin2)"/>
+      <path d="M89 71Q84 43 113 39L143 50 153 78 137 62 119 51 100 65 91 82Z" fill="#252044"/>
+      <path d="M100 78 113 80M124 80 137 77" stroke="#35234f" stroke-width="3" stroke-linecap="round"/>
+      <ellipse cx="106" cy="80" rx="4" ry="6" fill="#43eaff"/><ellipse cx="131" cy="79" rx="4" ry="6" fill="#ff5ed9"/>
+      <path d="M113 92Q120 96 126 91" fill="none" stroke="#c25caa" stroke-width="2"/>
+      <path d="M99 102 89 127H149L137 102Q117 113 99 102Z" fill="#272147" stroke="#5deeff" stroke-width="2"/>
+      <circle cx="120" cy="81" r="32" fill="none" stroke="#d77bff" stroke-opacity=".5" stroke-width="2"/>
+      <circle cx="120" cy="81" r="39" fill="none" stroke="#58eaff" stroke-opacity=".3" stroke-dasharray="5 6" stroke-width="2"/>
+      <circle cx="183" cy="43" r="12" fill="#191936" stroke="#65eaff" stroke-width="2"/>
+      <path d="m179 35 12 8-12 8Z" fill="white"/>
+      <path d="M37 43H61M37 50H53M183 108H203M183 115H197" stroke="#bd72ff" stroke-width="2" stroke-linecap="round"/>
+    </svg></span>
+          <span class="feature-label">GENERATE VIDEO</span>
+          <span class="feature-caption">Hidupkan idemu</span>
+        </button>
+
+        <button class="quick-card home-feature-card feature-chat" onclick="go('chat')">
+          <span class="feature-art"><svg viewBox="0 0 240 160" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Anime cewek asisten AI">
+      <defs>
+        <linearGradient id="animeHair3" x2="1" y2="1"><stop stop-color="#ff9de6"/><stop offset=".48" stop-color="#bd7bff"/><stop offset="1" stop-color="#6b8dff"/></linearGradient>
+        <linearGradient id="animeSkin3" x2=".7" y2="1"><stop stop-color="#fff0f4"/><stop offset="1" stop-color="#e6afd9"/></linearGradient>
+      </defs>
+      <circle cx="120" cy="77" r="57" fill="#ec55ff" opacity=".13"/>
+      <path d="M70 91Q54 25 119 24Q183 25 170 94L157 123H83Z" fill="url(#animeHair3)"/>
+      <path d="M85 66Q88 43 119 43Q149 43 151 70L143 100Q120 119 96 100Z" fill="url(#animeSkin3)"/>
+      <path d="M83 73Q75 43 105 34L143 42 157 72 137 56 118 48 100 61 89 83Z" fill="#352250"/>
+      <path d="M92 78Q102 70 111 79M126 79Q136 70 145 78" fill="none" stroke="#392653" stroke-width="3" stroke-linecap="round"/>
+      <ellipse cx="102" cy="79" rx="5" ry="7" fill="#5beeff"/><ellipse cx="135" cy="79" rx="5" ry="7" fill="#fa61dc"/>
+      <circle cx="103" cy="77" r="2" fill="white"/><circle cx="136" cy="77" r="2" fill="white"/>
+      <path d="M112 93Q120 102 129 93" fill="none" stroke="#c15eaa" stroke-width="2.5" stroke-linecap="round"/>
+      <path d="M94 105 82 135H158L145 105Q120 119 94 105Z" fill="#242044" stroke="#d77bff" stroke-width="2"/>
+      <path d="M81 66Q69 67 72 84Q74 97 87 96M153 66Q166 66 165 83Q163 96 151 96" fill="none" stroke="#62eaff" stroke-width="5"/>
+      <rect x="18" y="45" width="44" height="27" rx="9" fill="#1a2042" stroke="#5eeaff" stroke-width="2"/>
+      <path d="M27 58H48M37 51V65" stroke="#5eeaff" stroke-width="2" stroke-linecap="round"/>
+      <rect x="170" y="77" width="49" height="29" rx="9" fill="#25163e" stroke="#ed65ed" stroke-width="2"/>
+      <circle cx="184" cy="91" r="3" fill="#62eaff"/><circle cx="194" cy="91" r="3" fill="#ed65ed"/><circle cx="204" cy="91" r="3" fill="#fff"/>
+      <path d="M42 27 46 35 54 39 46 42 42 50 38 42 30 39 38 35Z" fill="#fff"/>
+      <path d="M188 35 191 41 197 44 191 47 188 53 185 47 179 44 185 41Z" fill="#5eeaff"/>
+    </svg></span>
+          <span class="feature-label">CH CHAT AI</span>
+          <span class="feature-caption">Teman ngobrol pintarmu</span>
+        </button>
+
+        <button class="quick-card home-feature-card feature-jj" onclick="go('jedagjedug')">
+          <span class="feature-art"><svg viewBox="0 0 240 160" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Anime cewek DJ cyberpunk">
+      <defs>
+        <linearGradient id="animeHair4" x2="1" y2="1"><stop stop-color="#ffb1ef"/><stop offset=".45" stop-color="#c05dff"/><stop offset="1" stop-color="#47eaff"/></linearGradient>
+        <linearGradient id="animeSkin4" x2="1" y2="1"><stop stop-color="#ffe8f2"/><stop offset="1" stop-color="#dda6e2"/></linearGradient>
+      </defs>
+      <circle cx="120" cy="73" r="56" fill="#ff49dc" opacity=".12"/>
+      <path d="M79 83Q65 32 108 25Q157 20 164 66L153 109 88 111Z" fill="url(#animeHair4)"/>
+      <path d="M94 64Q97 43 120 43Q143 44 145 67L138 91Q120 109 101 91Z" fill="url(#animeSkin4)"/>
+      <path d="M91 68Q83 39 112 33L142 43 153 71 136 56 119 47 101 60 93 79Z" fill="#282044"/>
+      <path d="M99 73 112 76M126 76 139 72" stroke="#39224e" stroke-width="3" stroke-linecap="round"/>
+      <ellipse cx="105" cy="75" rx="4" ry="6" fill="#56edff"/><ellipse cx="132" cy="74" rx="4" ry="6" fill="#ff59db"/>
+      <path d="M112 87Q120 93 128 87" fill="none" stroke="#b94eab" stroke-width="2"/>
+      <path d="M97 96 86 128H151L141 96Q120 109 97 96Z" fill="#272044" stroke="#ff61dc" stroke-width="2"/>
+      <path d="M82 64Q72 62 73 78Q74 90 87 89M151 62Q163 61 164 78Q163 90 150 89" fill="none" stroke="#5ceeff" stroke-width="6"/>
+      <path d="M73 76 83 80M154 78 164 73" stroke="#fff" stroke-width="2"/>
+      <rect x="25" y="105" width="190" height="34" rx="10" fill="#11162d" stroke="#8b68ff" stroke-width="2"/>
+      <path d="M37 122H45L50 113 56 131 63 116 70 126 77 108 84 131 91 119 98 122H111" fill="none" stroke="#55edff" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+      <path d="M129 122H137L143 111 149 132 157 115 165 126 173 109 180 131 188 119 196 122H203" fill="none" stroke="#ff58d9" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+      <circle cx="120" cy="122" r="9" fill="#21183f" stroke="#fff" stroke-width="2"/>
+      <path d="M117 116 126 122 117 128Z" fill="#fff"/>
+    </svg></span>
+          <span class="feature-label">CH AI JEDAG JEDUG</span>
+          <span class="feature-caption">Foto, video & musik</span>
+        </button>
+      </div>
+    </section>
+
+    <section id="page-generate" class="page">
+      <div class="page-head"><div><p class="eyebrow">CREATE</p><h2>Generate</h2><p class="muted">Ubah ide menjadi visual.</p></div></div>
+      <div class="generator">
+        <div class="prompt-wrap">
+          <label>Prompt</label>
+          <textarea id="prompt" placeholder="Ayo bikin ide kamu dalam gambar yang kamu punya jadi lebih unik dan menarik sesuai keinginan kamu."></textarea>
+          <div class="upload-row" id="videoReferenceOption" style="display:none">
+            <label class="upload">
+              <input type="file" id="refFile" accept="image/*" onchange="previewRef(event)">
+              <span>＋ Tambah referensi</span>
+            </label>
+            <div id="refPreview" class="ref-preview hidden"><img id="refImg"><button onclick="clearRef()">×</button></div>
+          </div>
+        </div>
+        <div class="options">
+          <div class="option" id="modelOption">
+            <label>Model</label>
+            <select id="model">
+              <option>CH Image</option>
+              <option>Photoreal Studio</option>
+              <option>Anime / Illustration</option>
+            </select>
+          </div>
+
+          <div class="option">
+            <label>Rasio</label>
+            <select id="ratio">
+              <option>9:16</option>
+              <option>1:1</option>
+              <option>16:9</option>
+            </select>
+          </div>
+
+          <div class="option" id="resolutionOption">
+            <label>Resolusi</label>
+            <select id="resolution">
+              <option>1K</option>
+              <option>2K</option>
+            </select>
+          </div>
+
+          <div class="option" id="countOption">
+            <label>Jumlah</label>
+            <select id="count">
+              <option value="1">1 hasil</option>
+              <option value="2">2 hasil</option>
+            </select>
+          </div>
+
+          <div class="option" id="durationOption" style="display:none">
+            <label>Durasi</label>
+            <select id="duration">
+              <option value="10" selected>10 detik</option>
+
+            </select>
+          </div>
+
+          <div class="option" id="fpsOption" style="display:none">
+            <label>FPS</label>
+            <select id="fps">
+              <option value="24">24 FPS</option>
+              <option value="30">30 FPS</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="generate-bar">
+          <span>Biaya: <b id="cost">2</b> kredit</span>
+          <button id="generateBtn" class="generate-btn">✦ Generate Image</button>
+        </div>
+      </div>
+      <div class="section-title"><h2>Hasil</h2></div>
+      <div id="results" class="result-grid empty-state"><p>Hasil generate akan muncul di sini.</p></div>
+    </section>
+
+    <section id="page-chat" class="page">
+      <div class="page-head">
+        <div>
+          <p class="eyebrow">AI ASSISTANT</p>
+          <h2>CH Chat AI</h2>
+          <p class="muted">Ngobrol, cari ide, tanya apa saja.</p>
+        </div>
+        <button class="generate-btn" onclick="newChat()">＋ Chat Baru</button>
+      </div>
+      <div class="chat-shell">
+        <div id="chatMessages" class="chat-messages">
+          <div class="chat-empty">
+            <div class="chat-logo">CH</div>
+            <h3>Halo, gue CH Chat AI 👋</h3>
+            <p>Tanya apa aja. Mau serius, santai, cari ide, atau sekadar ngobrol juga boleh.</p>
+          </div>
+        </div>
+        <form id="chatForm" class="chat-input-wrap">
+          <textarea id="chatInput" rows="1" placeholder="Tulis pesan..." autocomplete="off"></textarea>
+          <button type="submit" id="chatSend">➤</button>
+        </form>
+      </div>
+    </section>
+
+    <section id="page-projects" class="page"><div class="page-head"><p class="eyebrow">WORKSPACE</p><h2>Project Saya</h2></div><div id="projectList" class="card-list"></div></section>
+    <section id="page-assets" class="page"><div class="page-head"><p class="eyebrow">LIBRARY</p><h2>Asset</h2></div><div id="assetGrid" class="result-grid empty-state"><p>Belum ada asset.</p></div></section>
+
+    <section id="page-templates" class="page">
+      <div class="page-head"><p class="eyebrow">START FAST</p><h2>Template</h2><p class="muted">Pilih ide, lalu edit prompt-nya.</p></div>
+      <div class="template-grid">
+        <button class="template" onclick="useVideoTemplate('Cinematic Story', 'A cinematic scene with natural character movement. The camera slowly moves forward, smooth cinematic motion, realistic lighting, detailed environment, immersive film atmosphere.')"><b>Cinematic Story</b><span>Adegan sinematik</span></button>
+        <button class="template" onclick="useVideoTemplate('Street Vibes', 'A cinematic urban street scene at night. The camera moves naturally forward through the city, neon lights reflecting on the street, realistic movement, smooth camera motion, atmospheric lighting.')"><b>Street Vibes</b><span>POV kota & malam</span></button>
+        <button class="template" onclick="useVideoTemplate('Product Motion', 'A premium product commercial video. The camera slowly moves around the product, smooth cinematic motion, realistic studio lighting, sharp details, clean background, professional commercial look.')"><b>Product Motion</b><span>Produk bergerak</span></button>
+        <button class="template" onclick="useVideoTemplate('Fashion Motion', 'A cinematic fashion video with a model wearing a stylish outfit. The model moves naturally and confidently while the camera follows smoothly, realistic lighting, elegant motion, premium fashion atmosphere.')"><b>Fashion Motion</b><span>Model & outfit</span></button>
+      </div>
+    </section>
+
+    <section id="page-instant" class="page">
+      <div class="page-head"><p class="eyebrow">INSTANT</p><h2>Quick Create</h2><p class="muted">Satu klik untuk konsep cepat.</p></div>
+      <div class="instant-box"><h3>Generate Ide Gerakan Video</h3><p>Tekan tombol untuk membuat 5 prompt gerakan berdasarkan gambar referensi. Setiap prompt dirancang untuk menghasilkan video 10 detik dengan gerakan natural dan tetap mempertahankan karakter utama, objek, pakaian, dan komposisi gambar.</p><button class="generate-btn" onclick="instantIdeas()">⚡ Buat ide</button><div id="ideas"></div></div>
+    </section>
+
+
+    <section id="page-jedagjedug" class="page">
+      <div class="page-head">
+        <p class="eyebrow">CH AI STUDIO • VIDEO EDITOR</p>
+        <h2>CH Jedag Jedug AI</h2>
+        <p class="muted">Gabungkan foto, video, dan musik menjadi video jedag-jedug sesuai beat.</p>
+      </div>
+
+      <div class="jj-panel">
+        <h3>01. Pilih Media</h3>
+        <p class="muted">Pilih tepat 5 foto/video dari HP. Kamu bisa mencampur foto dan video.</p>
+        <input id="jj-media-input" type="file" accept="image/*,video/*" multiple>
+        <div id="jj-media-list" class="jj-media-list"></div>
+        <p id="jj-media-status" class="muted">Belum ada media dipilih (0/5).</p>
+      </div>
+
+      <div class="jj-panel">
+        <h3>02. Musik</h3>
+        <label for="jj-audio-input">Pilih musik dari HP</label>
+        <input id="jj-audio-input" type="file" accept="audio/*">
+        <div id="jj-audio-info" class="muted">Belum ada musik dipilih.</div>
+        <audio id="jj-audio-preview" controls style="display:none;width:100%;margin-top:12px"></audio>
+
+        <div id="jj-timeline-editor" class="jj-timeline-editor">
+          <div class="jj-timeline-heading">
+            <div>
+              <span class="jj-timeline-kicker">AUDIO STUDIO</span>
+              <h4>Potong musik</h4>
+            </div>
+            <span id="jj-selection-duration" class="jj-duration-badge">30.0 dtk</span>
+          </div>
+
+          <div class="jj-timeline-toolbar">
+            <button id="jj-preview-selection" type="button" class="jj-timeline-play">▶ Preview potongan</button>
+            <span id="jj-timeline-time">00:00 / 00:00</span>
+          </div>
+
+          <div id="jj-timeline-track" class="jj-timeline-track" aria-label="Timeline musik">
+            <div id="jj-waveform" class="jj-waveform"></div>
+            <div id="jj-selection-window" class="jj-selection-window">
+              <button id="jj-trim-start" class="jj-trim-handle jj-trim-start" type="button" aria-label="Geser awal potongan"><span></span></button>
+              <button id="jj-trim-end" class="jj-trim-handle jj-trim-end" type="button" aria-label="Geser akhir potongan"><span></span></button>
+            </div>
+            <div id="jj-timeline-playhead" class="jj-timeline-playhead"></div>
+          </div>
+
+          <div class="jj-timeline-scale">
+            <span id="jj-scale-start">00:00</span>
+            <span id="jj-scale-middle">00:00</span>
+            <span id="jj-scale-end">00:00</span>
+          </div>
+
+          <p class="jj-timeline-hint">Geser pegangan kiri/kanan untuk memotong. Geser bagian tengah untuk memindahkan potongan musik.</p>
+
+          <div class="jj-fields">
+            <label>Mulai (detik)
+              <input id="jj-music-start" type="number" min="0" step="0.1" value="0">
+            </label>
+            <label>Akhir (detik)
+              <input id="jj-music-end" type="number" min="30" step="0.1" value="30">
+            </label>
+          </div>
+        </div>
+        <p class="muted">Durasi video minimal 30 detik. Panjang akhir mengikuti durasi potongan musik yang tersedia.</p>
+      </div>
+
+      <div class="jj-panel">
+        <h3>03. Gaya Video</h3>
+        <div class="jj-fields">
+          <label for="jj-style">Pilih gaya
+            <select id="jj-style">
+              <option value="beat-sync">Beat Sync</option>
+              <option value="flash">Jedag Jedug Flash</option>
+              <option value="velocity">Velocity</option>
+              <option value="cinematic">Cinematic Beat</option>
+            </select>
+          </label>
+          <label for="jj-intensity">Intensitas efek
+            <select id="jj-intensity">
+              <option value="low">Rendah</option>
+              <option value="medium" selected>Sedang</option>
+              <option value="high">Tinggi</option>
+            </select>
+          </label>
+        </div>
+      </div>
+
+      <div class="jj-panel jj-transition-panel">
+        <div class="jj-section-heading">
+          <div>
+            <span class="jj-timeline-kicker">TRANSITION STUDIO</span>
+            <h3>04. Transisi Perpindahan</h3>
+            <p class="muted">Pilih gaya transisi untuk perpindahan antar-media.</p>
+          </div>
+          <span class="jj-live-badge">VIDEO FX</span>
+        </div>
+
+        <div class="jj-transition-grid">
+          <label class="jj-transition-card">
+            <input type="radio" name="jj-transition" value="velocity" checked>
+            <span class="jj-transition-icon">↗</span>
+            <span class="jj-transition-name">Velocity Zoom</span>
+            <span class="jj-transition-desc">Zoom cepat mengikuti beat</span>
+          </label>
+
+          <label class="jj-transition-card">
+            <input type="radio" name="jj-transition" value="flash">
+            <span class="jj-transition-icon">ϟ</span>
+            <span class="jj-transition-name">Flash Beat</span>
+            <span class="jj-transition-desc">Kilatan cahaya saat berganti</span>
+          </label>
+
+          <label class="jj-transition-card">
+            <input type="radio" name="jj-transition" value="whip">
+            <span class="jj-transition-icon">➜</span>
+            <span class="jj-transition-name">Whip Pan</span>
+            <span class="jj-transition-desc">Sapuan gerakan cepat</span>
+          </label>
+
+          <label class="jj-transition-card">
+            <input type="radio" name="jj-transition" value="glitch">
+            <span class="jj-transition-icon">⌁</span>
+            <span class="jj-transition-name">RGB Glitch</span>
+            <span class="jj-transition-desc">Gangguan digital berwarna</span>
+          </label>
+
+          <label class="jj-transition-card">
+            <input type="radio" name="jj-transition" value="rotate3d">
+            <span class="jj-transition-icon">◇</span>
+            <span class="jj-transition-name">3D Rotate</span>
+            <span class="jj-transition-desc">Efek putar perspektif</span>
+          </label>
+
+          <label class="jj-transition-card">
+            <input type="radio" name="jj-transition" value="blur">
+            <span class="jj-transition-icon">◎</span>
+            <span class="jj-transition-name">Motion Blur</span>
+            <span class="jj-transition-desc">Perpindahan dengan blur</span>
+          </label>
+
+          <label class="jj-transition-card">
+            <input type="radio" name="jj-transition" value="neon">
+            <span class="jj-transition-icon">✧</span>
+            <span class="jj-transition-name">Neon Swipe</span>
+            <span class="jj-transition-desc">Sapuan cahaya neon</span>
+          </label>
+
+          <label class="jj-transition-card">
+            <input type="radio" name="jj-transition" value="fade">
+            <span class="jj-transition-icon">◌</span>
+            <span class="jj-transition-name">Cinematic Fade</span>
+            <span class="jj-transition-desc">Perpindahan lembut</span>
+          </label>
+        </div>
+
+        <div class="jj-transition-control">
+          <label for="jj-transition-duration">
+            Durasi transisi
+            <output id="jj-transition-duration-value">0,5 detik</output>
+          </label>
+          <input id="jj-transition-duration" type="range"
+                 min="0.2" max="0.9" step="0.1" value="0.5">
+          <p class="muted">Durasi aktual otomatis menyesuaikan panjang setiap segmen.</p>
+        </div>
+      </div>
+
+      <div class="jj-panel">
+        <h3>05. Efek Animasi Tambahan</h3>
+        <div class="jj-effects">
+          <label><input type="checkbox" value="butterflies" class="jj-effect"> Kupu-kupu</label>
+          <label><input type="checkbox" value="birds" class="jj-effect"> Burung terbang</label>
+          <label><input type="checkbox" value="stars" class="jj-effect"> Bintang &amp; kilau</label>
+          <label><input type="checkbox" value="fire" class="jj-effect"> Api</label>
+          <label><input type="checkbox" value="water" class="jj-effect"> Air</label>
+        </div>
+      </div>
+
+      <div class="jj-panel">
+        <h3>06. Preview &amp; Render</h3>
+        <div id="jj-preview" class="jj-preview">
+          <span>Pilih 5 media untuk menyiapkan video.</span>
+        </div>
+        <p id="jj-render-status" class="muted">Render belum dimulai.</p>
+        <button id="jj-render-btn" class="generate-btn" type="button">⚡ Buat Video Jedag Jedug</button>
+        <video id="jj-output-video" controls playsinline style="display:none;width:100%;margin-top:16px;border-radius:14px"></video>
+        <a id="jj-download" class="generate-btn" style="display:none;margin-top:12px;text-align:center;text-decoration:none" download="CH-Jedag-Jedug.mp4">⬇️ Download Video</a>
+      </div>
+    </section>
+
+    <section id="page-pricing" class="page">
+      <div class="page-head"><p class="eyebrow">CREDIT</p><h2>Harga</h2><p class="muted">Paket kredit untuk CH AI Studio.</p></div>
+      <div class="price-grid">
+        <div class="price"><h3>Starter</h3><strong>Rp10K</strong><p>20 kredit</p><div class="price-detail">20 gambar · 2 video</div><button onclick="buyCredits('starter')">Pilih paket</button></div>
+        <div class="price featured"><span class="badge">POPULER</span><h3>Creator</h3><strong>Rp20K</strong><p>50 kredit</p><div class="price-detail">50 gambar · 5 video</div><button onclick="buyCredits('creator')">Pilih paket</button></div>
+        <div class="price"><h3>Pro</h3><strong>Rp50K</strong><p>150 kredit</p><div class="price-detail">150 gambar · 15 video</div><button onclick="buyCredits('pro')">Pilih paket</button></div>
+        <div class="price"><h3>Ultra</h3><strong>Rp100K</strong><p>350 kredit</p><div class="price-detail">350 gambar · 35 video</div><button onclick="buyCredits('ultra')">Pilih paket</button></div>
+      </div>
+      <div class="notice">Pembayaran kredit akan tersedia setelah sistem pembayaran diaktifkan.</div>
+    </section>
+  </main>
+
+  <div id="authOverlay" class="auth-overlay">
+    <div class="auth-box">
+      <button class="auth-close" onclick="closeAuth()">×</button>
+      <div class="auth-logo">CH</div>
+      <h2 class="auth-title" id="authTitle">Masuk ke CH AI Studio</h2>
+      <p class="auth-subtitle" id="authSubtitle">Gunakan akun kamu untuk melanjutkan.</p>
+      <div id="authError" class="auth-error"></div>
+      <div class="auth-field">
+        <label>Email</label>
+        <input id="authEmail" type="email" autocomplete="email" placeholder="nama@email.com">
+      </div>
+      <div class="auth-field">
+        <label>Password</label>
+        <input id="authPassword" type="password" autocomplete="current-password" placeholder="Password">
+      </div>
+      <div class="auth-socials">
+        <button class="auth-social google" onclick="socialAuth('oauth_google')"><span class="social-icon google-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M21.35 12.27c0-.72-.06-1.42-.18-2.09H12v3.95h5.24a4.48 4.48 0 0 1-1.94 2.94v2.44h3.14c1.84-1.69 2.91-4.18 2.91-7.24z"/><path fill="#34A853" d="M12 21.9c2.62 0 4.82-.87 6.43-2.39l-3.14-2.44c-.87.58-1.98.92-3.29.92-2.53 0-4.68-1.71-5.45-4.01H3.3v2.52A9.71 9.71 0 0 0 12 21.9z"/><path fill="#FBBC05" d="M6.55 13.98A5.84 5.84 0 0 1 6.24 12c0-.69.12-1.36.31-1.98V7.5H3.3A9.72 9.72 0 0 0 2.28 12c0 1.57.38 3.06 1.02 4.5l3.25-2.52z"/><path fill="#EA4335" d="M12 6.01c1.43 0 2.71.49 3.72 1.45l2.79-2.79C16.82 3.05 14.62 2.1 12 2.1A9.71 9.71 0 0 0 3.3 7.5l3.25 2.52C7.32 7.72 9.47 6.01 12 6.01z"/></svg></span><span>Lanjutkan dengan Google</span></button>
+        <button class="auth-social facebook" onclick="socialAuth('oauth_facebook')"><span class="social-icon facebook-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#1877F2" d="M24 12.07C24 5.42 18.63 0 12 0S0 5.42 0 12.07C0 18.1 4.39 23.17 10.13 24v-8.44H7.08v-3.49h3.05V9.41c0-3.03 1.79-4.7 4.53-4.7 1.31 0 2.68.24 2.68.24v2.97h-1.51c-1.49 0-1.96.93-1.96 1.88v2.27h3.33l-.53 3.49h-2.8V24C19.61 23.17 24 18.1 24 12.07z"/></svg></span><span>Lanjutkan dengan Facebook</span></button>
+        <button class="auth-social tiktok" onclick="socialAuth('oauth_tiktok')" ><span class="social-icon tiktok-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#25F4EE" d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.11h-3.17v13.5a2.91 2.91 0 1 1-2-2.77V10.1a6.1 6.1 0 1 0 5.17 6V9.37a7.2 7.2 0 0 0 4.2 1.36V7.56a4.8 4.8 0 0 1-.43-.87z"/><path fill="#FE2C55" d="M20.02 7.56v3.17a7.2 7.2 0 0 1-4.2-1.36v6.73a6.1 6.1 0 1 1-5.17-6v3.21a2.91 2.91 0 1 0 2 2.77V2.58h3.17a4.83 4.83 0 0 0 3.77 4.11c.13.32.27.61.43.87z"/></svg></span><span>Lanjutkan dengan TikTok</span></button>
+      </div>
+      <div class="auth-divider"><span>atau</span></div>
+      <button class="auth-button" id="authSubmit" onclick="submitAuth()">Masuk</button>
+      <div class="auth-switch" id="authSwitch">Belum punya akun? <button onclick="switchAuth()">Daftar</button></div>
+      <div class="auth-secured">Secured by Cahya Handika</div>
+    </div>
+  </div>
+  <div id="toast" class="toast"></div>
+  <script src="app.js?v=ch-mobile-app-v5-20261109"></script>
+  <script src="https://fine-toad-6346.clerk.accounts.dev/npm/@clerk/ui@1.33.0/dist/ui.browser.js"></script>
+  <script async crossorigin="anonymous" data-clerk-publishable-key="pk_test_ZmluZS10b2FkLTYzNDYuY2xlcmsuYWNjb3VudHMuZGV2JA" src="https://cdn.jsdelivr.net/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"></script>
+  <script>
+    window.addEventListener("load", async () => {
+      await Clerk.load({ ui: { ClerkUI: window.__internal_ClerkUICtor } });
+      await syncCredits();
+      Clerk.addListener(() => syncCredits());
+      const el = document.getElementById("clerk-user-button");
+      if (Clerk.user) {
+        const name = Clerk.user.firstName || Clerk.user.primaryEmailAddress?.emailAddress || "Akun";
+        el.innerHTML = "<div class=\"ch-account\"><button class=\"ch-account-btn\" onclick=\"toggleAccountMenu()\"><span class=\"ch-avatar\">"+name.charAt(0).toUpperCase()+"</span><span class=\"ch-account-name\">"+name+"</span><span>⌄</span></button><div id=\"chAccountMenu\" class=\"ch-account-menu\"><button onclick=\"logoutCH()\">Keluar</button></div></div>";
+      } else {
+        el.innerHTML = "<button class=\"account\" onclick=\"openAuth()\">Masuk / Daftar</button>";
+      }
+    });  </script>
+
+  <!-- CH MOBILE BOTTOM NAV -->
+  <nav id="ch-mobile-nav" class="ch-mobile-nav" aria-label="Navigasi utama">
+    <button type="button" data-mobile-page="home" class="ch-mobile-item active" onclick="go('home')">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7M5 9v12h14V9M9 21v-7h6v7"/></svg>
+      <span>Beranda</span>
+    </button>
+    <button type="button" data-mobile-page="projects" class="ch-mobile-item" onclick="go('projects')">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M8 4V2h8v2M8 10h8M8 14h5"/></svg>
+      <span>Projek</span>
+    </button>
+    <button type="button" data-mobile-page="assets" class="ch-mobile-item" onclick="go('assets')">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
+      <span>Aset</span>
+    </button>
+    <button type="button" class="ch-mobile-item" data-mobile-profile aria-label="Buka profil" aria-haspopup="dialog" aria-expanded="false" aria-controls="ch-profile-overlay" onclick="openCHProfile()">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2Z"/></svg>
+      <span>Profil</span>
+    </button>
+  </nav>
+
+  <!-- CH PROFILE DRAWER -->
+  <div id="ch-profile-overlay" class="ch-profile-overlay" aria-hidden="true" onclick="if(event.target===this)closeCHProfile()">
+    <aside class="ch-profile-drawer" role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="ch-profile-title">
+      <div class="ch-profile-header">
+        <div>
+          <p class="ch-profile-eyebrow">CH AI STUDIO</p>
+          <h2 id="ch-profile-title">Profil akun</h2>
+        </div>
+        <button type="button" class="ch-profile-close" aria-label="Tutup profil" onclick="closeCHProfile()">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>
+        </button>
+      </div>
+
+      <div id="ch-profile-account" class="ch-profile-account">
+        <div class="ch-profile-avatar">CH</div>
+        <div class="ch-profile-identity">
+          <strong>Memuat akun...</strong>
+          <span>Memeriksa sesi akun</span>
+        </div>
+      </div>
+
+      <div class="ch-profile-credit">
+        <span>Saldo kredit kamu</span>
+        <div><strong id="ch-profile-credits">0</strong><span>kredit</span></div>
+        <button type="button" onclick="closeCHProfile();go('pricing')">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+          Beli kredit
+        </button>
+      </div>
+
+      <div class="ch-profile-section">
+        <p class="ch-profile-label">AKUN & PREFERENSI</p>
+        <button type="button" class="ch-profile-action" onclick="editCHProfileName()">
+          <span class="ch-profile-action-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"/><path d="m16.5 3.5 4 4L8 20l-5 1 1-5Z"/></svg></span>
+          <span><strong>Edit nama</strong><small>Ubah nama tampilan akun</small></span>
+          <svg class="ch-profile-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+        </button>
+        <button type="button" class="ch-profile-action" onclick="showCHCreditHistory()">
+          <span class="ch-profile-action-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>
+          <span><strong>Riwayat kredit</strong><small>Lihat informasi saldo akun</small></span>
+          <svg class="ch-profile-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+        </button>
+        <button type="button" class="ch-profile-action" onclick="openCHSettings()">
+          <span class="ch-profile-action-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="m19.4 15 .1.1 1.2 1-1.5 2.6-1.5-.6a7.8 7.8 0 0 1-1.5.9l-.3 1.6h-3l-.3-1.6a7.8 7.8 0 0 1-1.5-.9l-1.5.6-1.5-2.6 1.3-1a7 7 0 0 1 0-1.8l-1.3-1 1.5-2.6 1.5.6a7.8 7.8 0 0 1 1.5-.9l.3-1.6h3l.3 1.6a7.8 7.8 0 0 1 1.5.9l1.5-.6 1.5 2.6-1.3 1a7 7 0 0 1 0 1.7Z"/></svg></span>
+          <span><strong>Pengaturan</strong><small>Preferensi aplikasi</small></span>
+          <svg class="ch-profile-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+        </button>
+        <button type="button" class="ch-profile-action" onclick="openCHHelp()">
+          <span class="ch-profile-action-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.6 9a2.5 2.5 0 1 1 4.5 1.5c-1 1.1-2.1 1.3-2.1 3M12 17h.01"/></svg></span>
+          <span><strong>Pusat bantuan</strong><small>Bantuan penggunaan CH AI Studio</small></span>
+          <svg class="ch-profile-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+        </button>
+      </div>
+
+      <div id="ch-profile-auth" class="ch-profile-auth">
+        <button type="button" class="ch-profile-login" onclick="closeCHProfile();openAuth()">Masuk / Daftar</button>
+      </div>
+    </aside>
+  </div>
+
+</body>
+</html>

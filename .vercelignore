@@ -5,6 +5,31 @@
 *.zip
 *.pdf
 *.jpg
+*.jpeg
 *.png
+*.webp
+*.avif
 .*VoiceCleaner*
 VoiceCleaner*
+
+# File rahasia dan konfigurasi lokal
+.env*
+.vercel/
+
+# Backup dan file lokal
+*.backup
+*.backup-*
+*.before-*
+*.account-backup
+*.clerk-backup
+*.clerk-error-backup
+*.clerk-mount-backup
+*.clerk-test-backup
+*.clerk-v2-backup
+*.clerk-working-backup
+server-backup*.js
+server-*.backup*.js
+MGC_CRASH_LOG/
+*.xml
+backup_v5_*
+audit_v6.txt

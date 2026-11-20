@@ -1,0 +1,207 @@
+/* ==========================================================================
+   CH AI STORYTELLING STUDIO — ISOLATED MOBILE-FIRST PREMIUM STYLES
+   ========================================================================== */
+#page-storytelling {
+  color: var(--v6-white, #F5F7FF);
+}
+
+.st-header-card {
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(40, 123, 255, 0.16), rgba(139, 53, 255, 0.22) 55%, rgba(236, 53, 201, 0.16));
+  border: 1px solid rgba(139, 53, 255, 0.42);
+  margin-bottom: 10px;
+}
+
+.st-header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.st-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(236, 53, 201, 0.2);
+  border: 1px solid rgba(236, 53, 201, 0.45);
+  color: #FF9CEB;
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.st-room-tabs {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  margin-bottom: 10px;
+  scrollbar-width: none;
+}
+.st-room-tabs::-webkit-scrollbar { display: none; }
+
+.st-room-tab {
+  flex: 0 0 auto;
+  min-height: 31px;
+  padding: 0 11px;
+  border-radius: 999px;
+  border: 1px solid var(--v6-border, rgba(245,247,255,0.09));
+  background: var(--v6-card, #10162B);
+  color: var(--v6-dim, rgba(245,247,255,0.72));
+  font-size: 0.7rem;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.st-room-tab.is-active {
+  background: var(--v6-grad-btn, linear-gradient(95deg, #6E45FF, #EC35C9));
+  border-color: transparent;
+  color: #F5F7FF;
+}
+
+.st-view { display: none; }
+.st-view.is-active { display: block; }
+
+.st-project-card {
+  padding: 11px;
+  border-radius: 15px;
+  background: var(--v6-card, #10162B);
+  border: 1px solid var(--v6-border, rgba(245,247,255,0.09));
+  margin-bottom: 9px;
+}
+
+.st-project-top {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.st-project-thumb {
+  width: 62px;
+  height: 62px;
+  border-radius: 11px;
+  background: linear-gradient(135deg, #171E3A, #2B174D);
+  border: 1px solid rgba(139, 53, 255, 0.35);
+  overflow: hidden;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #C79BFF;
+}
+.st-project-thumb img { width: 100%; height: 100%; object-fit: cover; }
+
+.st-meta-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 4px;
+}
+
+.st-chip {
+  padding: 2px 7px;
+  border-radius: 6px;
+  background: rgba(245, 247, 255, 0.06);
+  font-size: 0.62rem;
+  color: var(--v6-dim);
+}
+
+.st-progress-track {
+  width: 100%;
+  height: 5px;
+  border-radius: 999px;
+  background: rgba(245, 247, 255, 0.08);
+  overflow: hidden;
+  margin: 8px 0;
+}
+.st-progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #287BFF, #8B35FF, #EC35C9);
+  transition: width 0.25s ease;
+}
+
+.st-form-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 7px;
+}
+
+.st-label {
+  display: block;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--v6-dim);
+  margin: 0 0 4px;
+}
+
+.st-scene-card {
+  padding: 11px;
+  border-radius: 15px;
+  background: var(--v6-card, #10162B);
+  border: 1px solid var(--v6-border);
+  margin-bottom: 9px;
+}
+
+.st-scene-media {
+  width: 100%;
+  height: 148px;
+  border-radius: 11px;
+  background: #080C18;
+  border: 1px solid rgba(245, 247, 255, 0.08);
+  margin: 7px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+}
+.st-scene-media img, .st-scene-media video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.st-status-pill {
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.6rem;
+  font-weight: 700;
+}
+.st-status-waiting { background: rgba(245,247,255,0.08); color: #CBD5E1; }
+.st-status-processing { background: rgba(40,123,255,0.2); color: #7CC0FF; }
+.st-status-completed { background: rgba(16,185,129,0.2); color: #6EE7B7; }
+.st-status-failed { background: rgba(239,68,68,0.22); color: #FCA5A5; }
+
+/* Beranda Featured 2-Column Storytelling Tile */
+.v6-app-tile.v6-tile-storytelling {
+  grid-column: span 2;
+  flex-direction: row !important;
+  justify-content: flex-start !important;
+  text-align: left !important;
+  padding: 9px 12px !important;
+  gap: 10px !important;
+  background: linear-gradient(135deg, rgba(40, 123, 255, 0.16), rgba(139, 53, 255, 0.24) 58%, rgba(236, 53, 201, 0.18)) !important;
+  border: 1px solid rgba(236, 53, 201, 0.42) !important;
+}
+.v6-tile-st-copy {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.v6-tile-st-copy strong {
+  font-size: 0.74rem;
+  font-weight: 800;
+  color: #F5F7FF;
+  line-height: 1.15;
+}
+.v6-tile-st-copy small {
+  font-size: 0.6rem;
+  color: rgba(245, 247, 255, 0.74);
+  margin-top: 2px;
+}

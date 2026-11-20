@@ -2,216 +2,419 @@
 <html lang="id">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>CH AI Studio — AI Image & Video</title>
-  <meta name="description" content="CH AI Studio - workspace AI untuk membuat gambar dan video.">
-  <link rel="stylesheet" href="style.css">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#05060A">
+  <title>CH AI STUDIO V6 — Premium AI Creative Studio</title>
+  <meta name="description" content="CH AI Studio V6 — Imagine Beyond Limits.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=ch-v5-premium-20261109">
+  <link rel="stylesheet" href="premium-overrides.css?v=ch-v5-premium-mobile-full-20261109">
+  <link rel="stylesheet" href="ch-tailwind.css?v=3.4.17">
+  <link rel="stylesheet" href="v6-mobile.css?v=ch-v6-20261121-v11">
+  <link rel="stylesheet" href="storytelling/storytelling.css?v=ch-st-v1">
 </head>
 <body>
+  <!-- DESKTOP SIDEBAR (Preserved for Desktop > 860px) -->
   <aside class="sidebar" id="sidebar">
     <div class="brand">
       <div class="brand-mark">CH</div>
       <div><b>ch ai studio</b><small>Power by Cahya Handika</small></div>
     </div>
     <nav>
-      <button data-page="home" onclick="go('home')" class="nav-item active"><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7M5 9v12h14V9M9 21v-7h6v7"/></svg></span><span>Beranda</span></button>
-      <button data-page="chat" onclick="go('chat')" class="nav-item"><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H7l-4 2 1.5-4A7.5 7.5 0 1 1 20 11.5Z"/><path d="M8 11h.01M12 11h.01M16 11h.01"/></svg></span><span>CH Chat AI</span></button>
-      <button data-page="projects" onclick="go('projects')" class="nav-item"><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h5l2 2h7a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/><path d="M3 10h18"/></svg></span><span>Project Saya</span></button>
-      <button data-page="assets" onclick="go('assets')" class="nav-item"><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg></span><span>Asset</span></button>
-      <button data-page="templates" class="nav-item" onclick="go('templates')"><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="5" rx="2"/><rect x="13" y="10" width="8" height="11" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/></svg></span><span>Template</span></button>
-      <button data-page="generate" class="nav-item" onclick="go('generate')"><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2 6 6 2-6 2-2 6-2-6-6-2 6-2Z"/><path d="m19 14 1 3 3 1-3 1-1 3-1-3-3-1 3-1Z"/></svg></span><span>Generate</span></button>
-      <button data-page="instant" onclick="go('instant')" class="nav-item"><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m13 2-9 12h7l-1 8 10-13h-7Z"/></svg></span><span>Instant</span></button>
-      <button data-page="jedagjedug" onclick="go('jedagjedug')" class="nav-item"><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 14.5 8.5 21 11l-6.5 2.5L12 20l-2.5-6.5L3 11l6.5-2.5Z"/><path d="m19 15 1.2 2.8L23 19l-2.8 1.2L19 23l-1.2-2.8L15 19l2.8-1.2Z"/></svg></span><span>CH Jedag Jedug AI</span></button>
-      <button data-page="pricing" onclick="go('pricing')" class="nav-item"><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 21 7v10l-9 5-9-5V7Z"/><path d="M12 7v10M8.5 10h7M8.5 14h7"/></svg></span><span>Harga</span></button>
+      <button data-page="home" onclick="go('home')" class="nav-item active"><span class="nav-icon"><svg viewBox="0 0 24 24"><path d="m3 10 9-7 9 7M5 9v12h14V9M9 21v-7h6v7"/></svg></span><span>Beranda</span></button>
+      <button data-page="chat" onclick="go('chat')" class="nav-item"><span class="nav-icon"><svg viewBox="0 0 24 24"><path d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H7l-4 2 1.5-4A7.5 7.5 0 1 1 20 11.5Z"/></svg></span><span>CH Chat AI</span></button>
+      <button data-page="projects" onclick="go('projects')" class="nav-item"><span class="nav-icon"><svg viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h5l2 2h7a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/></svg></span><span>Projek</span></button>
+      <button data-page="assets" onclick="go('assets')" class="nav-item"><span class="nav-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/></svg></span><span>Aset</span></button>
+      <button data-page="templates" onclick="go('templates')" class="nav-item"><span class="nav-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/></svg></span><span>Template</span></button>
+      <button data-page="generate" onclick="go('generate')" class="nav-item"><span class="nav-icon"><svg viewBox="0 0 24 24"><path d="m12 3 2 6 6 2-6 2-2 6-2-6-6-2 6-2Z"/></svg></span><span>Generate</span></button>
+      <button data-page="instant" onclick="go('instant')" class="nav-item"><span class="nav-icon"><svg viewBox="0 0 24 24"><path d="m13 2-9 12h7l-1 8 10-13h-7Z"/></svg></span><span>Instant</span></button>
+      <button data-page="jedagjedug" onclick="go('jedagjedug')" class="nav-item"><span class="nav-icon"><svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/></svg></span><span>CH Jedag Jedug</span></button>
+      <button data-page="pricing" onclick="go('pricing')" class="nav-item"><span class="nav-icon"><svg viewBox="0 0 24 24"><path d="M12 2 21 7v10l-9 5-9-5V7Z"/></svg></span><span>Kredit</span></button>
+      <button data-page="profile" onclick="go('profile')" class="nav-item"><span class="nav-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/></svg></span><span>Profil</span></button>
     </nav>
     <div class="side-bottom">
-      <div class="credit-box">
-        <span>Saldo kredit</span>
-        <strong id="sideCredits">20</strong>
-      </div>
+      <div class="credit-box"><span>Saldo kredit</span><strong id="sideCredits">20</strong></div>
       <div id="clerk-user-button"></div>
     </div>
   </aside>
 
+  <!-- STICKY COMPACT MOBILE HEADER -->
+  <header class="v6-topbar" role="banner">
+    <div class="v6-brand-lockup" onclick="go('home')">
+      <span class="v6-crown-badge v6-ch-logo-badge" aria-hidden="true"><svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="chHdrGrad" x1="18" y1="50" x2="84" y2="50" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#C600BE"/><stop offset="52%" stop-color="#E6149C"/><stop offset="100%" stop-color="#FF2E79"/></linearGradient></defs><path d="M 60 32 C 60 19.5, 26.5 19.5, 26.5 38 L 26.5 62 C 26.5 80.5, 60 80.5, 60 68" stroke="url(#chHdrGrad)" stroke-width="11" stroke-linecap="round"/><path d="M 38.5 35.5 A 5.5 5.5 0 0 1 49.5 35.5 L 49.5 38.5 C 49.5 44.5, 69.5 44.5, 69.5 38.5 L 69.5 35.5 A 5.5 5.5 0 0 1 80.5 35.5 L 80.5 64.5 A 5.5 5.5 0 0 1 69.5 64.5 L 69.5 61.5 C 69.5 55.5, 49.5 55.5, 49.5 61.5 L 49.5 64.5 A 5.5 5.5 0 0 1 38.5 64.5 Z" fill="url(#chHdrGrad)"/></svg></span>
+      <div class="v6-brand-stack">
+        <span class="v6-brand-title">CH AI STUDIO</span>
+      </div>
+    </div>
+    <div class="v6-header-right">
+      <button type="button" class="v6-credit-chip" onclick="go('pricing')" aria-label="Kredit">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="#FBBF24"><circle cx="12" cy="12" r="10"/></svg>
+        <span id="v6HeaderCredits">0</span>
+      </button>
+      <button type="button" class="v6-hdr-icon-btn" onclick="toggleV6Notif()" aria-label="Notifikasi">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <span class="v6-notif-dot"></span>
+      </button>
+      <button type="button" id="v6HeaderAvatar" class="v6-avatar-btn" onclick="go('profile')" aria-label="Profil">CH</button>
+    </div>
+  </header>
+
+  <div id="v6NotifPopover" class="v6-notif-popover">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+      <strong style="font-size:0.84rem;">Notifikasi</strong>
+      <button type="button" class="v6-mini-btn" style="flex:0;padding:0 10px;" onclick="toggleV6Notif()">Tutup</button>
+    </div>
+    <p style="margin:0;font-size:0.76rem;color:var(--v6-dim);line-height:1.45;">CH AI Studio V6 siap digunakan. Pilih fitur AI dari layar Beranda untuk mulai berkarya.</p>
+  </div>
+
   <main>
     <header class="topbar">
-      <button class="hamburger" onclick="toggleSidebar()">☰</button>
-      <div class="mobile-logo">CH AI STUDIO</div>
-      <div class="top-actions">
-        <span class="credits">◈ <b id="topCredits">20</b> kredit</span>
-        <button class="upgrade" onclick="go('pricing')">Tambah kredit</button>
-      </div>
+      <div class="top-actions"><span class="credits">◈ <b id="topCredits">20</b> kredit</span></div>
+      <div class="ch-brand-topbar"><span class="ch-brand-name">CH AI STUDIO</span></div>
     </header>
 
+    <!-- =====================================================================
+         1. BERANDA (Hero Banner + Greeting + Wallet + 3x2 Feature App Grid)
+         ===================================================================== -->
     <section id="page-home" class="page active">
-      <div class="hero">
-        <p class="eyebrow">CH AI STUDIO</p>
-        <h1>Mau bikin apa<br><span>hari ini?</span></h1>
-        <p class="muted">Wujudkan ide lewat gambar dan video.</p>
+      <div class="v6-hero-banner has-wallpaper">
+        <div class="v6-hero-art-layer" aria-hidden="true">
+          <svg viewBox="0 0 380 180" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <radialGradient id="heroGlowR" cx="78%" cy="48%" r="48%">
+                <stop offset="0%" stop-color="#EC35C9" stop-opacity="0.52"/>
+                <stop offset="55%" stop-color="#8B35FF" stop-opacity="0.28"/>
+                <stop offset="100%" stop-color="#0B1020" stop-opacity="0"/>
+              </radialGradient>
+              <linearGradient id="cyberSilhouette" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#60A5FA"/>
+                <stop offset="50%" stop-color="#C084FC"/>
+                <stop offset="100%" stop-color="#F472B6"/>
+              </linearGradient>
+            </defs>
+            <rect width="380" height="180" fill="url(#heroGlowR)"/>
+            <circle cx="292" cy="86" r="64" fill="none" stroke="url(#cyberSilhouette)" stroke-width="1.3" stroke-opacity="0.55"/>
+            <circle cx="292" cy="86" r="46" fill="none" stroke="#F5F7FF" stroke-width="0.8" stroke-opacity="0.25" stroke-dasharray="3 5"/>
+            <!-- Stylized Futuristic Muse Portrait Silhouette -->
+            <path d="M258 180 C258 142 272 128 292 128 C312 128 326 142 326 180 Z" fill="url(#cyberSilhouette)" opacity="0.34"/>
+            <circle cx="292" cy="86" r="24" fill="url(#cyberSilhouette)" opacity="0.45"/>
+            <path d="M266 84 Q274 52 294 52 Q316 52 320 88 Q314 70 294 68 Q274 70 266 84 Z" fill="#F5F7FF" opacity="0.72"/>
+            <path d="M281 86 Q286 83 290 86 M296 86 Q301 83 305 86" stroke="#38BDF8" stroke-width="2" fill="none" stroke-linecap="round"/>
+            <circle cx="242" cy="42" r="2.5" fill="#60A5FA"/>
+            <circle cx="344" cy="36" r="3" fill="#EC35C9"/>
+            <circle cx="352" cy="128" r="2" fill="#A78BFA"/>
+          </svg>
+        </div>
+        <div class="v6-hero-copy">
+          <h1 class="v6-hero-script">Imagine Beyond Limits</h1>
+          <p class="v6-hero-tagline">Turn your imagination into extraordinary creations.</p>
+        </div>
+        <button type="button" class="v6-hero-start-btn" onclick="go('generate');setMode('image')">
+          <span>✦ Start Creating</span>
+        </button>
       </div>
-      <div class="quick-grid">
-        <button class="quick-card" onclick="go('generate'); setMode('image')">
-          <div class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg></div><b>Generate Gambar</b><span>Buat visual dari prompt & referensi.</span>
+
+      <!-- Greeting -->
+      <div class="v6-greeting-row">
+        <h2>Halo, <span id="v6GreetingName">Kreator</span> 👋</h2>
+        <p>Selamat datang di CH AI Studio</p>
+      </div>
+
+      <!-- Credit Wallet Bar -->
+      <div class="v6-wallet-bar">
+        <div class="v6-wallet-left">
+          <span class="v6-coin-badge">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="9"/></svg>
+          </span>
+          <div>
+            <span class="v6-wallet-label">Kredit Anda</span>
+            <span id="v6HomeWalletCredits" class="v6-wallet-value">0</span>
+          </div>
+        </div>
+        <button type="button" class="v6-topup-pill" onclick="go('pricing')">+ Top Up</button>
+      </div>
+
+      <!-- 6 Feature App Grid (3x2) -->
+      <div class="v6-app-grid">
+        <button type="button" class="v6-app-tile" onclick="go('generate');setMode('image')">
+          <span class="v6-tile-icon blue">
+            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
+          </span>
+          <span class="v6-tile-label">Generate Image</span>
         </button>
-        <button class="quick-card" onclick="go('generate'); setMode('video')">
-          <div class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="13" height="14" rx="3"/><path d="m16 10 5-3v10l-5-3Z"/><path d="m8 9 4 3-4 3Z"/></svg></div><b>Generate Video</b><span>Siapkan konsep video dari ide kamu.</span>
+        <button type="button" class="v6-app-tile" onclick="go('generate');setMode('video')">
+          <span class="v6-tile-icon purple">
+            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="m10 9 5 3-5 3Z"/></svg>
+          </span>
+          <span class="v6-tile-label">Generate Video</span>
         </button>
-        <button class="quick-card" onclick="go('templates')">
-          <div class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9h18M9 9v12"/><path d="m15 13 1 2 2 1-2 1-1 2-1-2-2-1 2-1Z"/></svg></div><b>Pakai Template</b><span>Mulai dari konsep siap edit.</span>
+        <button type="button" class="v6-app-tile" onclick="go('chat')">
+          <span class="v6-tile-icon cyan">
+            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+          </span>
+          <span class="v6-tile-label">CH Chat AI</span>
+        </button>
+        <button type="button" class="v6-app-tile" onclick="go('jedagjedug')">
+          <span class="v6-tile-icon pink">
+            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+          </span>
+          <span class="v6-tile-label">CH Jedag Jedug</span>
+        </button>
+        <button type="button" class="v6-app-tile v6-tile-storytelling" onclick="openStorytellingStudio()">
+          <span class="v6-tile-icon pink">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="m10 8 5 3-5 3V8Z"/><path d="M8 21h8M12 17v4"/></svg>
+          </span>
+          <span class="v6-tile-st-copy">
+            <strong>CH AI Storytelling</strong>
+            <small>Studio Film AI • Naskah, Karakter, Storyboard &amp; Video</small>
+          </span>
         </button>
       </div>
-      <div class="section-title"><h2>Terbaru</h2><button class="text-btn" onclick="go('assets')">Lihat semua →</button></div>
-      <div id="recentGrid" class="result-grid empty-state"><p>Belum ada hasil. Coba buat gambar pertama kamu.</p></div>
+
+      <div id="recentGrid" style="display:none;"></div>
     </section>
 
+    <!-- =====================================================================
+         2. GENERATE IMAGE & VIDEO (Matches Screens 2 & 3 in Reference)
+         ===================================================================== -->
     <section id="page-generate" class="page">
-      <div class="page-head"><div><p class="eyebrow">CREATE</p><h2>Generate</h2><p class="muted">Ubah ide menjadi visual.</p></div></div>
-      <div class="generator">
-        <div class="prompt-wrap">
-          <label>Prompt</label>
-          <textarea id="prompt" placeholder="Ayo bikin ide kamu dalam gambar yang kamu punya jadi lebih unik dan menarik sesuai keinginan kamu."></textarea>
-          <div class="upload-row" id="videoReferenceOption" style="display:none">
-            <label class="upload">
-              <input type="file" id="refFile" accept="image/*" onchange="previewRef(event)">
-              <span>＋ Tambah referensi</span>
-            </label>
-            <div id="refPreview" class="ref-preview hidden"><img id="refImg"><button onclick="clearRef()">×</button></div>
-          </div>
+      <div class="v6-subpage-bar">
+        <div class="v6-back-title">
+          <button type="button" class="v6-back-btn" onclick="go('home')" aria-label="Kembali">←</button>
+          <h2 id="v6GenPageTitle">Generate Image</h2>
         </div>
-        <div class="options">
-          <div class="option" id="modelOption">
-            <label>Model</label>
-            <select id="model">
-              <option>CH Image</option>
-              <option>Photoreal Studio</option>
-              <option>Anime / Illustration</option>
-            </select>
-          </div>
+        <span class="v6-crown-badge">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7z"/></svg>
+        </span>
+      </div>
 
-          <div class="option">
-            <label>Rasio</label>
-            <select id="ratio">
-              <option>9:16</option>
-              <option>1:1</option>
-              <option>16:9</option>
-            </select>
-          </div>
+      <!-- Segmented Mode Switcher -->
+      <div id="v6GenModeSwitcher" class="v6-segmented">
+        <button type="button" id="v6SegTabA" class="v6-seg-btn is-active" onclick="setV6GenSubMode('text')">Text to Image</button>
+        <button type="button" id="v6SegTabB" class="v6-seg-btn" onclick="setV6GenSubMode('ref')">Image to Image</button>
+      </div>
 
-          <div class="option" id="resolutionOption">
-            <label>Resolusi</label>
-            <select id="resolution">
-              <option>1K</option>
-              <option>2K</option>
-            </select>
-          </div>
-
-          <div class="option" id="countOption">
-            <label>Jumlah</label>
-            <select id="count">
-              <option value="1">1 hasil</option>
-              <option value="2">2 hasil</option>
-            </select>
-          </div>
-
-          <div class="option" id="durationOption" style="display:none">
-            <label>Durasi</label>
-            <select id="duration">
-              <option value="10" selected>10 detik</option>
-
-            </select>
-          </div>
-
-          <div class="option" id="fpsOption" style="display:none">
-            <label>FPS</label>
-            <select id="fps">
-              <option value="24">24 FPS</option>
-              <option value="30">30 FPS</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="generate-bar">
-          <span>Biaya: <b id="cost">2</b> kredit</span>
-          <button id="generateBtn" class="generate-btn">✦ Generate Image</button>
+      <!-- Prompt Box -->
+      <div class="v6-prompt-card">
+        <textarea id="prompt" placeholder="Masukkan prompt disini... Contoh: wanita cantik anime di taman bunga, aesthetic"></textarea>
+        <div class="upload-row" id="videoReferenceOption" style="display:none;margin-top:8px;">
+          <label class="upload" style="font-size:0.78rem;">
+            <input type="file" id="refFile" accept="image/*" onchange="previewRef(event)">
+            <span>＋ Unggah gambar referensi</span>
+          </label>
+          <div id="refPreview" class="ref-preview hidden"><img id="refImg"><button type="button" onclick="clearRef()">×</button></div>
         </div>
       </div>
-      <div class="section-title"><h2>Hasil</h2></div>
+
+      <!-- Visual Style Thumbnails (Synced to #model) -->
+      <div id="v6ImageStylesWrap">
+        <div class="v6-control-label"><span>Gaya Gambar</span><span style="font-size:0.72rem;color:var(--v6-dim);">Pilih gaya</span></div>
+        <div class="v6-style-grid">
+          <div class="v6-style-card is-active" onclick="selectV6Style('Photoreal Studio', this)">
+            <svg viewBox="0 0 80 60"><defs><linearGradient id="st1" x2="1" y2="1"><stop stop-color="#2563EB"/><stop offset="1" stop-color="#EC4899"/></linearGradient></defs><rect width="80" height="60" fill="url(#st1)"/><circle cx="40" cy="24" r="11" fill="#F5F7FF" opacity="0.8"/><path d="M22 60 C22 44 58 44 58 60Z" fill="#0B1020" opacity="0.6"/></svg>
+            <span>Realistic</span>
+          </div>
+          <div class="v6-style-card" onclick="selectV6Style('Anime / Illustration', this)">
+            <svg viewBox="0 0 80 60"><defs><linearGradient id="st2" x2="1" y2="1"><stop stop-color="#7C3AED"/><stop offset="1" stop-color="#38BDF8"/></linearGradient></defs><rect width="80" height="60" fill="url(#st2)"/><circle cx="40" cy="25" r="12" fill="#FDE68A"/><path d="M26 24 Q40 8 54 24" fill="#1E1B4B"/></svg>
+            <span>Anime</span>
+          </div>
+          <div class="v6-style-card" onclick="selectV6Style('CH Image', this)">
+            <svg viewBox="0 0 80 60"><defs><linearGradient id="st3" x2="1" y2="1"><stop stop-color="#0EA5E9"/><stop offset="1" stop-color="#8B5CF6"/></linearGradient></defs><rect width="80" height="60" fill="url(#st3)"/><rect x="24" y="14" width="32" height="32" rx="10" fill="#F5F7FF" opacity="0.75"/></svg>
+            <span>3D Studio</span>
+          </div>
+          <div class="v6-style-card" onclick="selectV6Style('Anime / Illustration', this)">
+            <svg viewBox="0 0 80 60"><defs><linearGradient id="st4" x2="1" y2="1"><stop stop-color="#DB2777"/><stop offset="1" stop-color="#4F46E5"/></linearGradient></defs><rect width="80" height="60" fill="url(#st4)"/><polygon points="40,10 52,32 68,36 54,48 58,60 40,52 22,60 26,48 12,36 28,32" fill="#F5F7FF" opacity="0.65"/></svg>
+            <span>Fantasy</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Video Controls (Shown in Video Mode — Optimized Mobile Layout) -->
+      <div id="v6VideoDurationWrap" style="display:none;">
+        <div class="v6-video-meta-grid">
+          <div class="v6-video-pill-group">
+            <span class="v6-video-pill-group-label">Durasi Video</span>
+            <div class="v6-mini-seg">
+              <button type="button" data-v6-dur="5" onclick="selectV6Duration(5, this)">5s</button>
+              <button type="button" data-v6-dur="10" class="is-active" onclick="selectV6Duration(10, this)">10s</button>
+              <button type="button" data-v6-dur="15" onclick="selectV6Duration(15, this)">15s</button>
+            </div>
+          </div>
+          <div class="v6-video-pill-group">
+            <span class="v6-video-pill-group-label">Frame Rate</span>
+            <div class="v6-mini-seg two-col">
+              <button type="button" data-v6-fps="24" class="is-active" onclick="selectV6Fps(24, this)">24 FPS</button>
+              <button type="button" data-v6-fps="30" onclick="selectV6Fps(30, this)">30 FPS</button>
+            </div>
+          </div>
+        </div>
+        <div class="v6-video-cost-bar">
+          <span>Estimasi Biaya Video</span>
+          <strong><span id="v6VideoCostDisplay">10</span> kredit</strong>
+        </div>
+      </div>
+
+      <!-- Aspect Ratio Selector (Synced to #ratio) -->
+      <div class="v6-control-label"><span>Rasio</span></div>
+      <div class="v6-ratio-grid">
+        <div class="v6-ratio-card" onclick="selectV6Ratio('1:1', this)">
+          <span class="v6-ratio-box" style="width:16px;height:16px;"></span>
+          <strong style="font-size:0.74rem;">1:1</strong>
+          <span style="font-size:0.62rem;">Square</span>
+        </div>
+        <div class="v6-ratio-card is-active" onclick="selectV6Ratio('9:16', this)">
+          <span class="v6-ratio-box" style="width:12px;height:18px;"></span>
+          <strong style="font-size:0.74rem;">9:16</strong>
+          <span style="font-size:0.62rem;">Portrait</span>
+        </div>
+        <div class="v6-ratio-card" onclick="selectV6Ratio('16:9', this)">
+          <span class="v6-ratio-box" style="width:20px;height:12px;"></span>
+          <strong style="font-size:0.74rem;">16:9</strong>
+          <span style="font-size:0.62rem;">Landscape</span>
+        </div>
+      </div>
+
+      <!-- Count Stepper (Synced to #count) -->
+      <div id="v6CountWrap" class="v6-stepper-row">
+        <div>
+          <strong style="font-size:0.82rem;display:block;">Jumlah Hasil</strong>
+          <span style="font-size:0.7rem;color:var(--v6-dim);">Biaya: <b id="cost">2</b> kredit</span>
+        </div>
+        <div class="v6-stepper">
+          <button type="button" onclick="stepV6Count(-1)">−</button>
+          <strong id="v6CountDisplay" style="font-size:0.88rem;">1</strong>
+          <button type="button" onclick="stepV6Count(1)">+</button>
+        </div>
+      </div>
+
+      <!-- Native Selects Preserved for app.js -->
+      <div style="display:none;">
+        <div id="modelOption"><select id="model"><option>CH Image</option><option selected>Photoreal Studio</option><option>Anime / Illustration</option></select></div>
+        <select id="ratio"><option selected>9:16</option><option>1:1</option><option>16:9</option></select>
+        <div id="resolutionOption"><select id="resolution"><option selected>1K</option><option>2K</option></select></div>
+        <div id="countOption"><select id="count"><option value="1" selected>1</option><option value="2">2</option></select></div>
+        <div id="durationOption"><select id="duration"><option value="10" selected>10 detik</option></select></div>
+        <div id="fpsOption"><select id="fps"><option value="24" selected>24 FPS</option><option value="30">30 FPS</option></select></div>
+      </div>
+
+      <button id="generateBtn" class="v6-cta-full">✦ Generate Sekarang</button>
+
+      <div id="v6ResultsHead" class="section-title is-empty" style="margin-top:12px;"><h2 style="font-size:0.9rem;">Hasil Generate</h2></div>
       <div id="results" class="result-grid empty-state"><p>Hasil generate akan muncul di sini.</p></div>
     </section>
 
+    <!-- =====================================================================
+         3. CH CHAT AI (Matches Screen 4 in Reference)
+         ===================================================================== -->
     <section id="page-chat" class="page">
-      <div class="page-head">
-        <div>
-          <p class="eyebrow">AI ASSISTANT</p>
-          <h2>CH Chat AI</h2>
-          <p class="muted">Ngobrol, cari ide, tanya apa saja.</p>
+      <div class="v6-subpage-bar">
+        <div class="v6-back-title">
+          <button type="button" class="v6-back-btn" onclick="go('home')">←</button>
+          <div>
+            <h2 style="font-size:0.96rem;">CH Chat AI</h2>
+            <span style="font-size:0.68rem;color:#34D399;">● Online</span>
+          </div>
         </div>
-        <button class="generate-btn" onclick="newChat()">＋ Chat Baru</button>
+        <button type="button" class="v6-inline-action-btn" onclick="newChat()">＋ Baru</button>
       </div>
       <div class="chat-shell">
         <div id="chatMessages" class="chat-messages">
           <div class="chat-empty">
             <div class="chat-logo">CH</div>
-            <h3>Halo, gue CH Chat AI 👋</h3>
-            <p>Tanya apa aja. Mau serius, santai, cari ide, atau sekadar ngobrol juga boleh.</p>
+            <h3>Halo! 👋 Saya CH AI</h3>
+            <p>Asisten AI kreatif Anda. Mau brainstorming ide, skrip video, atau prompt?</p>
           </div>
         </div>
         <form id="chatForm" class="chat-input-wrap">
-          <textarea id="chatInput" rows="1" placeholder="Tulis pesan..." autocomplete="off"></textarea>
+          <textarea id="chatInput" rows="1" placeholder="Ketik pesan..." autocomplete="off"></textarea>
           <button type="submit" id="chatSend">➤</button>
         </form>
       </div>
     </section>
 
-    <section id="page-projects" class="page"><div class="page-head"><p class="eyebrow">WORKSPACE</p><h2>Project Saya</h2></div><div id="projectList" class="card-list"></div></section>
-    <section id="page-assets" class="page"><div class="page-head"><p class="eyebrow">LIBRARY</p><h2>Asset</h2></div><div id="assetGrid" class="result-grid empty-state"><p>Belum ada asset.</p></div></section>
-
-    <section id="page-templates" class="page">
-      <div class="page-head"><p class="eyebrow">START FAST</p><h2>Template</h2><p class="muted">Pilih ide, lalu edit prompt-nya.</p></div>
-      <div class="template-grid">
-        <button class="template" onclick="useVideoTemplate('Cinematic Story', 'A cinematic scene with natural character movement. The camera slowly moves forward, smooth cinematic motion, realistic lighting, detailed environment, immersive film atmosphere.')"><b>Cinematic Story</b><span>Adegan sinematik</span></button>
-        <button class="template" onclick="useVideoTemplate('Street Vibes', 'A cinematic urban street scene at night. The camera moves naturally forward through the city, neon lights reflecting on the street, realistic movement, smooth camera motion, atmospheric lighting.')"><b>Street Vibes</b><span>POV kota & malam</span></button>
-        <button class="template" onclick="useVideoTemplate('Product Motion', 'A premium product commercial video. The camera slowly moves around the product, smooth cinematic motion, realistic studio lighting, sharp details, clean background, professional commercial look.')"><b>Product Motion</b><span>Produk bergerak</span></button>
-        <button class="template" onclick="useVideoTemplate('Fashion Motion', 'A cinematic fashion video with a model wearing a stylish outfit. The model moves naturally and confidently while the camera follows smoothly, realistic lighting, elegant motion, premium fashion atmosphere.')"><b>Fashion Motion</b><span>Model & outfit</span></button>
-      </div>
-    </section>
-
-    <section id="page-instant" class="page">
-      <div class="page-head"><p class="eyebrow">INSTANT</p><h2>Quick Create</h2><p class="muted">Satu klik untuk konsep cepat.</p></div>
-      <div class="instant-box"><h3>Generate Ide Gerakan Video</h3><p>Tekan tombol untuk membuat 5 prompt gerakan berdasarkan gambar referensi. Setiap prompt dirancang untuk menghasilkan video 10 detik dengan gerakan natural dan tetap mempertahankan karakter utama, objek, pakaian, dan komposisi gambar.</p><button class="generate-btn" onclick="instantIdeas()">⚡ Buat ide</button><div id="ideas"></div></div>
-    </section>
-
-
+    <!-- =====================================================================
+         4. CH AI JEDAG JEDUG (Matches Screen 5 in Reference)
+         ===================================================================== -->
     <section id="page-jedagjedug" class="page">
-      <div class="page-head">
-        <p class="eyebrow">CH AI STUDIO • VIDEO EDITOR</p>
-        <h2>CH Jedag Jedug AI</h2>
-        <p class="muted">Gabungkan foto, video, dan musik menjadi video jedag-jedug sesuai beat.</p>
+      <div class="v6-subpage-bar">
+        <div class="v6-back-title">
+          <button type="button" class="v6-back-btn" onclick="go('home')">←</button>
+          <h2>CH Jedag Jedug AI</h2>
+        </div>
+      </div>
+
+      <div class="jj-panel" style="margin-bottom:10px;">
+        <div id="jj-preview" class="jj-preview" style="min-height:175px;border-radius:16px;">
+          <span>Pilih 5 media untuk menyiapkan video.</span>
+        </div>
+        <p id="jj-render-status" class="muted" style="margin:8px 0 0;font-size:0.76rem;">Render belum dimulai.</p>
+      </div>
+
+      <!-- 5-Icon Tool Dock -->
+      <div class="v6-jj-dock">
+        <button type="button" class="v6-jj-dock-btn is-active" onclick="scrollV6JJPanel(1, this)">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="3"/></svg>
+          <span>Media</span>
+        </button>
+        <button type="button" class="v6-jj-dock-btn" onclick="scrollV6JJPanel(2, this)">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/></svg>
+          <span>Audio</span>
+        </button>
+        <button type="button" class="v6-jj-dock-btn" onclick="scrollV6JJPanel(3, this)">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          <span>Gaya</span>
+        </button>
+        <button type="button" class="v6-jj-dock-btn" onclick="scrollV6JJPanel(4, this)">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/></svg>
+          <span>Transisi</span>
+        </button>
+        <button type="button" class="v6-jj-dock-btn" onclick="scrollV6JJPanel(5, this)">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3 2 6 6 2-6 2-2 6-2-6-6-2 6-2Z"/></svg>
+          <span>Animasi</span>
+        </button>
       </div>
 
       <div class="jj-panel">
-        <h3>01. Pilih Media</h3>
-        <p class="muted">Pilih tepat 5 foto/video dari HP. Kamu bisa mencampur foto dan video.</p>
+        <h3>01. Pilih Media (5 Foto/Video)</h3>
         <input id="jj-media-input" type="file" accept="image/*,video/*" multiple>
         <div id="jj-media-list" class="jj-media-list"></div>
         <p id="jj-media-status" class="muted">Belum ada media dipilih (0/5).</p>
       </div>
 
       <div class="jj-panel">
-        <h3>02. Musik</h3>
-        <label for="jj-audio-input">Pilih musik dari HP</label>
+        <h3>02. Musik &amp; Potong Beat</h3>
         <input id="jj-audio-input" type="file" accept="audio/*">
         <div id="jj-audio-info" class="muted">Belum ada musik dipilih.</div>
         <audio id="jj-audio-preview" controls style="display:none;width:100%;margin-top:12px"></audio>
-        <div class="jj-fields">
-          <label>Mulai musik (detik)
-            <input id="jj-music-start" type="number" min="0" step="0.1" value="0">
-          </label>
-          <label>Potong sampai (detik)
-            <input id="jj-music-end" type="number" min="30" step="0.1" value="30">
-          </label>
+        <div id="jj-timeline-editor" class="jj-timeline-editor">
+          <div class="jj-timeline-heading">
+            <div><span class="jj-timeline-kicker">AUDIO STUDIO</span><h4>Potong musik</h4></div>
+            <span id="jj-selection-duration" class="jj-duration-badge">30.0 dtk</span>
+          </div>
+          <div class="jj-timeline-toolbar">
+            <button id="jj-preview-selection" type="button" class="jj-timeline-play">▶ Preview potongan</button>
+            <span id="jj-timeline-time">00:00 / 00:00</span>
+          </div>
+          <div id="jj-timeline-track" class="jj-timeline-track">
+            <div id="jj-waveform" class="jj-waveform"></div>
+            <div id="jj-selection-window" class="jj-selection-window">
+              <button id="jj-trim-start" class="jj-trim-handle jj-trim-start" type="button"><span></span></button>
+              <button id="jj-trim-end" class="jj-trim-handle jj-trim-end" type="button"><span></span></button>
+            </div>
+            <div id="jj-timeline-playhead" class="jj-timeline-playhead"></div>
+          </div>
+          <div class="jj-timeline-scale">
+            <span id="jj-scale-start">00:00</span>
+            <span id="jj-scale-middle">00:00</span>
+            <span id="jj-scale-end">00:00</span>
+          </div>
+          <div class="jj-fields">
+            <label>Mulai (detik)<input id="jj-music-start" type="number" min="0" step="0.1" value="0"></label>
+            <label>Akhir (detik)<input id="jj-music-end" type="number" min="30" step="0.1" value="30"></label>
+          </div>
         </div>
-        <p class="muted">Durasi video minimal 30 detik. Panjang akhir mengikuti durasi potongan musik yang tersedia.</p>
       </div>
 
       <div class="jj-panel">
@@ -235,41 +438,659 @@
         </div>
       </div>
 
-      <div class="jj-panel">
-        <h3>04. Efek Animasi Tambahan</h3>
-        <div class="jj-effects">
-          <label><input type="checkbox" value="butterflies" class="jj-effect"> Kupu-kupu</label>
-          <label><input type="checkbox" value="birds" class="jj-effect"> Burung terbang</label>
-          <label><input type="checkbox" value="stars" class="jj-effect"> Bintang &amp; kilau</label>
-          <label><input type="checkbox" value="fire" class="jj-effect"> Api</label>
-          <label><input type="checkbox" value="water" class="jj-effect"> Air</label>
+      <div class="jj-panel jj-transition-panel">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+          <h3 style="margin:0 !important;">04. Transisi Perpindahan</h3>
+          <output id="jj-transition-duration-value" style="font-size:0.68rem;font-weight:700;color:#38BDF8;">0,5 detik</output>
+        </div>
+
+        <!-- Category Tabs -->
+        <div class="v6-jj-trans-tabs">
+          <button type="button" data-trans-cat="all" class="v6-jj-trans-tab is-active" onclick="filterV6JJTrans('all', this)">Semua</button>
+          <button type="button" data-trans-cat="trend" class="v6-jj-trans-tab" onclick="filterV6JJTrans('trend', this)">Sedang tren</button>
+          <button type="button" data-trans-cat="camera" class="v6-jj-trans-tab" onclick="filterV6JJTrans('camera', this)">Kamera</button>
+          <button type="button" data-trans-cat="glitch" class="v6-jj-trans-tab" onclick="filterV6JJTrans('glitch', this)">Glitch</button>
+          <button type="button" data-trans-cat="light" class="v6-jj-trans-tab" onclick="filterV6JJTrans('light', this)">Cahaya</button>
+        </div>
+
+        <!-- 4-Column Rounded Square Thumbnail Grid -->
+        <div class="v6-jj-trans-scroll">
+          <div class="v6-jj-anim-grid" id="v6JJTransGrid">
+            <!-- 1. Tidak Ada -->
+            <div class="v6-jj-anim-item" data-trans-cat="trend camera glitch light" onclick="selectV6JJTransition('none', this)">
+              <div class="v6-jj-anim-thumb" style="background:#2F313A;">
+                <svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="14" fill="none" stroke="#D1D5DB" stroke-width="3.2"/><line x1="22" y1="22" x2="42" y2="42" stroke="#D1D5DB" stroke-width="3.2"/></svg>
+              </div>
+              <span class="v6-jj-anim-label">Tidak Ada</span>
+            </div>
+
+            <!-- 2. Zoom Palsu (velocity) -->
+            <div class="v6-jj-anim-item is-active" data-trans-cat="trend camera" onclick="selectV6JJTransition('velocity', this)">
+              <div class="v6-jj-anim-thumb">
+                <svg viewBox="0 0 64 64"><defs><linearGradient id="tr1" x2="0" y2="1"><stop stop-color="#3B82F6"/><stop offset="1" stop-color="#1E3A8A"/></linearGradient></defs><rect width="64" height="64" fill="url(#tr1)"/><rect x="27" y="24" width="10" height="32" rx="2" fill="#F8FAFC"/><line x1="16" y1="12" x2="48" y2="44" stroke="#E2E8F0" stroke-width="2.5" stroke-linecap="round"/><line x1="48" y1="12" x2="16" y2="44" stroke="#E2E8F0" stroke-width="2.5" stroke-linecap="round"/><path d="M0 54 Q32 46 64 54 L64 64 L0 64Z" fill="#78350F"/></svg>
+              </div>
+              <span class="v6-jj-anim-label">Zoom Palsu</span>
+            </div>
+
+            <!-- 3. Tarik Masuk (whip) -->
+            <div class="v6-jj-anim-item" data-trans-cat="trend camera" onclick="selectV6JJTransition('whip', this)">
+              <div class="v6-jj-anim-thumb">
+                <svg viewBox="0 0 64 64"><defs><linearGradient id="tr2" x2="0" y2="1"><stop stop-color="#BAE6FD"/><stop offset="1" stop-color="#38BDF8"/></linearGradient></defs><rect width="64" height="64" fill="url(#tr2)"/><rect x="25" y="14" width="14" height="50" fill="#1E293B"/><rect x="28" y="18" width="3" height="42" fill="#94A3B8"/><rect x="33" y="18" width="3" height="42" fill="#94A3B8"/><line x1="32" y1="6" x2="32" y2="14" stroke="#0F172A" stroke-width="2"/></svg>
+              </div>
+              <span class="v6-jj-anim-label">Tarik Masuk</span>
+            </div>
+
+            <!-- 4. Sirkuit Neon (neon) -->
+            <div class="v6-jj-anim-item" data-trans-cat="trend light glitch" onclick="selectV6JJTransition('neon', this)">
+              <div class="v6-jj-anim-thumb">
+                <span class="v6-jj-anim-badge">✦</span>
+                <svg viewBox="0 0 64 64"><rect width="64" height="64" fill="#CBD5E1"/><circle cx="32" cy="23" r="10" fill="#78350F"/><rect x="24" y="21" width="16" height="4.5" rx="2" fill="#0F172A"/><path d="M16 64 C16 42 48 42 48 64Z" fill="#F8FAFC"/><path d="M18 44 L46 58 M46 44 L18 58" stroke="#38BDF8" stroke-width="2"/></svg>
+              </div>
+              <span class="v6-jj-anim-label">Sirkuit Neon</span>
+            </div>
+
+            <!-- 5. Guncang (flash) -->
+            <div class="v6-jj-anim-item" data-trans-cat="trend camera light" onclick="selectV6JJTransition('flash', this)">
+              <div class="v6-jj-anim-thumb">
+                <svg viewBox="0 0 64 64"><defs><linearGradient id="tr5" x2="0" y2="1"><stop stop-color="#FDE68A"/><stop offset="1" stop-color="#F59E0B"/></linearGradient></defs><rect width="64" height="64" fill="url(#tr5)"/><rect x="26" y="14" width="12" height="50" fill="#92400E"/><rect x="14" y="34" width="10" height="30" fill="#B45309"/><rect x="40" y="30" width="12" height="34" fill="#78350F"/></svg>
+              </div>
+              <span class="v6-jj-anim-label">Guncang</span>
+            </div>
+
+            <!-- 6. Glitch Closeup (glitch) -->
+            <div class="v6-jj-anim-item" data-trans-cat="trend glitch" onclick="selectV6JJTransition('glitch', this)">
+              <div class="v6-jj-anim-thumb">
+                <svg viewBox="0 0 64 64"><rect width="64" height="64" fill="#7DD3FC"/><circle cx="32" cy="24" r="10" fill="#451A03"/><rect x="23" y="22" width="18" height="4.5" rx="2" fill="#090D16"/><path d="M14 64 C14 43 50 43 50 64Z" fill="#F8FAFC"/><rect x="10" y="28" width="20" height="3" fill="#EC4899" opacity="0.8"/><rect x="34" y="42" width="22" height="3" fill="#2563EB" opacity="0.8"/></svg>
+              </div>
+              <span class="v6-jj-anim-label">Glitch Closeup</span>
+            </div>
+
+            <!-- 7. Zoom Mendadak (rotate3d) -->
+            <div class="v6-jj-anim-item" data-trans-cat="trend camera" onclick="selectV6JJTransition('rotate3d', this)">
+              <div class="v6-jj-anim-thumb">
+                <svg viewBox="0 0 64 64"><rect width="64" height="64" fill="#E7E5E4"/><circle cx="32" cy="16" r="6" fill="#78350F"/><path d="M27 24 L37 24 L39 56 L33 56 L32 38 L31 56 L25 56 Z" fill="#1C1917"/></svg>
+              </div>
+              <span class="v6-jj-anim-label">Zoom Mendadak</span>
+            </div>
+
+            <!-- 8. Campur (fade) -->
+            <div class="v6-jj-anim-item" data-trans-cat="trend light" onclick="selectV6JJTransition('fade', this)">
+              <div class="v6-jj-anim-thumb">
+                <svg viewBox="0 0 64 64"><defs><linearGradient id="tr8" x2="0" y2="1"><stop stop-color="#93C5FD"/><stop offset="1" stop-color="#0284C7"/></linearGradient></defs><rect width="64" height="64" fill="url(#tr8)"/><rect x="27" y="18" width="10" height="30" rx="2" fill="#FEF3C7"/><path d="M0 48 Q32 42 64 48 L64 64 L0 64Z" fill="#0369A1"/></svg>
+              </div>
+              <span class="v6-jj-anim-label">Campur</span>
+            </div>
+
+            <!-- 9. Pudar Hitam (blur) -->
+            <div class="v6-jj-anim-item" data-trans-cat="light" onclick="selectV6JJTransition('blur', this)">
+              <div class="v6-jj-anim-thumb">
+                <svg viewBox="0 0 64 64"><rect width="64" height="64" fill="#1C1917"/><rect x="27" y="20" width="10" height="28" rx="2" fill="#57534E"/><path d="M0 48 Q32 43 64 48 L64 64 L0 64Z" fill="#292524"/></svg>
+              </div>
+              <span class="v6-jj-anim-label">Pudar Hitam</span>
+            </div>
+
+            <!-- 10. Ungu Sureal (neon) -->
+            <div class="v6-jj-anim-item" data-trans-cat="light glitch" onclick="selectV6JJTransition('neon', this)">
+              <div class="v6-jj-anim-thumb">
+                <svg viewBox="0 0 64 64"><rect width="64" height="64" fill="#F3E8FF"/><circle cx="32" cy="16" r="6" fill="#7E22CE"/><path d="M27 24 L37 24 L39 56 L33 56 L32 38 L31 56 L25 56 Z" fill="#581C87"/></svg>
+              </div>
+              <span class="v6-jj-anim-label">Ungu Sureal</span>
+            </div>
+
+            <!-- 11. Kecelakaan Merah (glitch) -->
+            <div class="v6-jj-anim-item" data-trans-cat="glitch light" onclick="selectV6JJTransition('glitch', this)">
+              <div class="v6-jj-anim-thumb">
+                <svg viewBox="0 0 64 64"><rect width="64" height="64" fill="#FDA4AF"/><circle cx="32" cy="24" r="10" fill="#881337"/><rect x="23" y="22" width="18" height="4.5" rx="2" fill="#4C0519"/><path d="M15 64 C15 44 49 44 49 64Z" fill="#FFE4E6"/></svg>
+              </div>
+              <span class="v6-jj-anim-label">Kecelakaan M..</span>
+            </div>
+
+            <!-- 12. Putaran Terdistorsi (rotate3d) -->
+            <div class="v6-jj-anim-item" data-trans-cat="camera glitch" onclick="selectV6JJTransition('rotate3d', this)">
+              <div class="v6-jj-anim-thumb">
+                <svg viewBox="0 0 64 64"><rect width="64" height="64" fill="#D6D3D1"/><g transform="rotate(-12 32 32)"><circle cx="32" cy="16" r="6" fill="#44403C"/><path d="M27 24 L37 24 L39 56 L33 56 L32 38 L31 56 L25 56 Z" fill="#1C1917"/></g></svg>
+              </div>
+              <span class="v6-jj-anim-label">Putaran Terdi..</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Compact Transition Duration Slider -->
+        <div class="v6-jj-trans-footer">
+          <span>Durasi transisi</span>
+          <input id="jj-transition-duration" type="range" min="0.2" max="0.9" step="0.1" value="0.5">
+        </div>
+
+        <!-- Hidden legacy radio inputs preserved for app.js compatibility -->
+        <div class="jj-transition-grid" style="display:none;">
+          <input type="radio" name="jj-transition" value="none">
+          <input type="radio" name="jj-transition" value="velocity" checked>
+          <input type="radio" name="jj-transition" value="flash">
+          <input type="radio" name="jj-transition" value="whip">
+          <input type="radio" name="jj-transition" value="glitch">
+          <input type="radio" name="jj-transition" value="rotate3d">
+          <input type="radio" name="jj-transition" value="blur">
+          <input type="radio" name="jj-transition" value="neon">
+          <input type="radio" name="jj-transition" value="fade">
         </div>
       </div>
 
       <div class="jj-panel">
-        <h3>05. Preview &amp; Render</h3>
-        <div id="jj-preview" class="jj-preview">
-          <span>Pilih 5 media untuk menyiapkan video.</span>
+        <h3>05. Animasi Beat</h3>
+        <div class="v6-jj-anim-grid" id="v6JJAnimGrid">
+          <!-- 1. Tidak Ada -->
+          <div class="v6-jj-anim-item is-active" data-jj-anim="none" onclick="selectV6JJAnim('none', this)">
+            <div class="v6-jj-anim-thumb" style="background:#2F313A;">
+              <svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="14" fill="none" stroke="#D1D5DB" stroke-width="3.2"/><line x1="22" y1="22" x2="42" y2="42" stroke="#D1D5DB" stroke-width="3.2"/></svg>
+            </div>
+            <span class="v6-jj-anim-label">Tidak Ada</span>
+          </div>
+
+          <!-- 2. Kilatan Bergoyang -->
+          <div class="v6-jj-anim-item" data-jj-anim="shake" onclick="selectV6JJAnim('shake', this)">
+            <div class="v6-jj-anim-thumb">
+              <svg viewBox="0 0 64 64"><defs><linearGradient id="ja1" x2="1" y2="1"><stop stop-color="#93C5FD"/><stop offset="1" stop-color="#1E3A8A"/></linearGradient></defs><rect width="64" height="64" fill="url(#ja1)"/><circle cx="32" cy="22" r="9" fill="#FDE68A"/><path d="M18 64 C18 42 46 42 46 64Z" fill="#DC2626"/><path d="M10 16 L20 20 M54 16 L44 20" stroke="#FFF" stroke-width="2" stroke-linecap="round"/></svg>
+            </div>
+            <span class="v6-jj-anim-label">Kilatan Bergoyang</span>
+          </div>
+
+          <!-- 3. Kekacauan Neon -->
+          <div class="v6-jj-anim-item" data-jj-anim="neon" onclick="selectV6JJAnim('neon', this)">
+            <div class="v6-jj-anim-thumb">
+              <svg viewBox="0 0 64 64"><defs><linearGradient id="ja2" x2="1" y2="1"><stop stop-color="#38BDF8"/><stop offset="1" stop-color="#312E81"/></linearGradient></defs><rect width="64" height="64" fill="url(#ja2)"/><circle cx="32" cy="24" r="10" fill="#1E1B4B"/><rect x="23" y="21" width="18" height="5" rx="2" fill="#EC4899"/><path d="M14 64 C14 42 50 42 50 64Z" fill="#4338CA"/></svg>
+            </div>
+            <span class="v6-jj-anim-label">Kekacauan Neon</span>
+          </div>
+
+          <!-- 4. Flash 2 -->
+          <div class="v6-jj-anim-item" data-jj-anim="flash2" onclick="selectV6JJAnim('flash2', this)">
+            <div class="v6-jj-anim-thumb">
+              <span class="v6-jj-anim-badge">↓</span>
+              <svg viewBox="0 0 64 64"><defs><linearGradient id="ja3" x2="1" y2="1"><stop stop-color="#0284C7"/><stop offset="1" stop-color="#0369A1"/></linearGradient></defs><rect width="64" height="64" fill="url(#ja3)"/><circle cx="32" cy="24" r="10" fill="#FED7AA"/><path d="M18 64 C18 44 46 44 46 64Z" fill="#F8FAFC"/><path d="M48 12 L50 18 L56 20 L50 22 L48 28 L46 22 L40 20 L46 18 Z" fill="#FFF"/></svg>
+            </div>
+            <span class="v6-jj-anim-label">Flash 2</span>
+          </div>
+
+          <!-- 5. Penyebaran Cahaya -->
+          <div class="v6-jj-anim-item" data-jj-anim="disperse" onclick="selectV6JJAnim('disperse', this)">
+            <div class="v6-jj-anim-thumb">
+              <span class="v6-jj-anim-badge">↓</span>
+              <svg viewBox="0 0 64 64"><defs><linearGradient id="ja4" x2="1" y2="1"><stop stop-color="#D6A28C"/><stop offset="1" stop-color="#7F1D1D"/></linearGradient></defs><rect width="64" height="64" fill="url(#ja4)"/><circle cx="30" cy="28" r="11" fill="#FDBA74"/><path d="M16 56 Q34 38 50 52" stroke="#B91C1C" stroke-width="8" fill="none" stroke-linecap="round"/><circle cx="46" cy="20" r="2.5" fill="#FEF08A"/><circle cx="50" cy="30" r="2" fill="#FFF"/></svg>
+            </div>
+            <span class="v6-jj-anim-label">Penyebaran</span>
+          </div>
+
+          <!-- 6. Fokus Berputar -->
+          <div class="v6-jj-anim-item" data-jj-anim="spin" onclick="selectV6JJAnim('spin', this)">
+            <div class="v6-jj-anim-thumb">
+              <svg viewBox="0 0 64 64"><defs><linearGradient id="ja5" x2="1" y2="1"><stop stop-color="#F472B6"/><stop offset="1" stop-color="#9D174D"/></linearGradient></defs><rect width="64" height="64" fill="url(#ja5)"/><circle cx="32" cy="32" r="22" fill="none" stroke="#FBCFE8" stroke-width="1.5" stroke-dasharray="6 4"/><circle cx="32" cy="25" r="9" fill="#FDE68A"/><path d="M20 64 C20 44 44 44 44 64Z" fill="#DB2777"/></svg>
+            </div>
+            <span class="v6-jj-anim-label">Fokus Berputar</span>
+          </div>
+
+          <!-- 7. Pemindaian Beat -->
+          <div class="v6-jj-anim-item" data-jj-anim="scan" onclick="selectV6JJAnim('scan', this)">
+            <div class="v6-jj-anim-thumb">
+              <span class="v6-jj-anim-badge">↓</span>
+              <svg viewBox="0 0 64 64"><defs><linearGradient id="ja6" x2="1" y2="1"><stop stop-color="#A5B4FC"/><stop offset="1" stop-color="#4C1D95"/></linearGradient></defs><rect width="64" height="64" fill="url(#ja6)"/><circle cx="32" cy="22" r="9" fill="#E0E7FF" opacity="0.55"/><circle cx="32" cy="28" r="9" fill="#FDE68A"/><line x1="6" y1="34" x2="58" y2="34" stroke="#38BDF8" stroke-width="2.5"/></svg>
+            </div>
+            <span class="v6-jj-anim-label">Pemindaian</span>
+          </div>
+
+          <!-- 8. Echo Zoom -->
+          <div class="v6-jj-anim-item" data-jj-anim="echo" onclick="selectV6JJAnim('echo', this)">
+            <div class="v6-jj-anim-thumb">
+              <svg viewBox="0 0 64 64"><defs><linearGradient id="ja7" x2="1" y2="1"><stop stop-color="#2563EB"/><stop offset="1" stop-color="#1D4ED8"/></linearGradient></defs><rect width="64" height="64" fill="url(#ja7)"/><rect x="8" y="8" width="48" height="48" rx="9" fill="none" stroke="#93C5FD" stroke-opacity="0.45" stroke-width="1.5"/><rect x="14" y="14" width="36" height="36" rx="7" fill="none" stroke="#DBEAFE" stroke-opacity="0.65" stroke-width="1.5"/><circle cx="32" cy="25" r="9" fill="#FED7AA"/><path d="M20 64 C20 45 44 45 44 64Z" fill="#F8FAFC"/></svg>
+            </div>
+            <span class="v6-jj-anim-label">Echo Zoom</span>
+          </div>
         </div>
-        <p id="jj-render-status" class="muted">Render belum dimulai.</p>
-        <button id="jj-render-btn" class="generate-btn" type="button">⚡ Buat Video Jedag Jedug</button>
-        <video id="jj-output-video" controls playsinline style="display:none;width:100%;margin-top:16px;border-radius:14px"></video>
-        <a id="jj-download" class="generate-btn" style="display:none;margin-top:12px;text-align:center;text-decoration:none" download="CH-Jedag-Jedug.mp4">⬇️ Download Video</a>
+
+        <!-- Hidden legacy checkboxes kept for app.js compatibility -->
+        <div class="jj-effects" style="display:none;">
+          <input type="checkbox" value="butterflies" class="jj-effect">
+          <input type="checkbox" value="birds" class="jj-effect">
+          <input type="checkbox" value="stars" class="jj-effect">
+          <input type="checkbox" value="fire" class="jj-effect">
+          <input type="checkbox" value="water" class="jj-effect">
+        </div>
+      </div>
+
+      <button id="jj-render-btn" class="v6-cta-full" type="button">Export Video ✦</button>
+      <video id="jj-output-video" controls playsinline style="display:none;width:100%;margin-top:14px;border-radius:14px"></video>
+      <a id="jj-download" class="v6-cta-full" style="display:none;margin-top:10px;text-decoration:none" download="CH-Jedag-Jedug.mp4">Download Video</a>
+    </section>
+
+    <!-- =====================================================================
+         5. TEMPLATE (Matches Screen 6 in Reference)
+         ===================================================================== -->
+    <section id="page-templates" class="page">
+      <div class="v6-subpage-bar">
+        <div class="v6-back-title">
+          <button type="button" class="v6-back-btn" onclick="go('home')">←</button>
+          <h2>Template</h2>
+        </div>
+      </div>
+      <input type="search" class="v6-search-input" placeholder="Cari template..." oninput="searchV6Templates(this.value)">
+      <div class="v6-filter-row">
+        <button type="button" data-tpl-filter="all" class="v6-pill is-active" onclick="filterV6Templates('all', this)">Semua</button>
+        <button type="button" data-tpl-filter="viral" class="v6-pill" onclick="filterV6Templates('viral', this)">Viral</button>
+        <button type="button" data-tpl-filter="aesthetic" class="v6-pill" onclick="filterV6Templates('aesthetic', this)">Aesthetic</button>
+        <button type="button" data-tpl-filter="commercial" class="v6-pill" onclick="filterV6Templates('commercial', this)">Commercial</button>
+      </div>
+      <div class="v6-grid-2">
+        <article class="v6-visual-card" data-tpl-cat="aesthetic viral" onclick="useVideoTemplate('Cinematic Story', 'A cinematic scene with natural character movement. The camera slowly moves forward, smooth cinematic motion, realistic lighting, detailed environment, immersive film atmosphere.')">
+          <div class="v6-visual-card-media"><svg viewBox="0 0 160 120"><defs><linearGradient id="tp1" x2="1" y2="1"><stop stop-color="#EA580C"/><stop offset="1" stop-color="#311042"/></linearGradient></defs><rect width="160" height="120" fill="url(#tp1)"/><circle cx="80" cy="48" r="24" fill="#FDE047" opacity="0.7"/></svg></div>
+          <div class="v6-visual-card-body"><h4>Cinematic Story</h4><p>Adegan sinematik • Pakai</p></div>
+        </article>
+        <article class="v6-visual-card" data-tpl-cat="viral aesthetic" onclick="useVideoTemplate('Street Vibes', 'A cinematic urban street scene at night. The camera moves naturally forward through the city, neon lights reflecting on the street, realistic movement, smooth camera motion, atmospheric lighting.')">
+          <div class="v6-visual-card-media"><svg viewBox="0 0 160 120"><defs><linearGradient id="tp2" x2="1" y2="1"><stop stop-color="#2563EB"/><stop offset="1" stop-color="#EC4899"/></linearGradient></defs><rect width="160" height="120" fill="url(#tp2)"/><rect x="30" y="34" width="100" height="52" rx="12" fill="#05060A" opacity="0.45"/></svg></div>
+          <div class="v6-visual-card-body"><h4>Street Vibes</h4><p>POV kota malam • Pakai</p></div>
+        </article>
+        <article class="v6-visual-card" data-tpl-cat="commercial" onclick="useVideoTemplate('Product Motion', 'A premium product commercial video. The camera slowly moves around the product, smooth cinematic motion, realistic studio lighting, sharp details, clean background, professional commercial look.')">
+          <div class="v6-visual-card-media"><svg viewBox="0 0 160 120"><defs><linearGradient id="tp3" x2="1" y2="1"><stop stop-color="#0284C7"/><stop offset="1" stop-color="#1E1B4B"/></linearGradient></defs><rect width="160" height="120" fill="url(#tp3)"/><circle cx="80" cy="60" r="28" fill="#38BDF8" opacity="0.5"/></svg></div>
+          <div class="v6-visual-card-body"><h4>Product Motion</h4><p>Iklan produk • Pakai</p></div>
+        </article>
+        <article class="v6-visual-card" data-tpl-cat="aesthetic viral" onclick="useVideoTemplate('Fashion Motion', 'A cinematic fashion video with a model wearing a stylish outfit. The model moves naturally and confidently while the camera follows smoothly, realistic lighting, elegant motion, premium fashion atmosphere.')">
+          <div class="v6-visual-card-media"><svg viewBox="0 0 160 120"><defs><linearGradient id="tp4" x2="1" y2="1"><stop stop-color="#7C3AED"/><stop offset="1" stop-color="#DB2777"/></linearGradient></defs><rect width="160" height="120" fill="url(#tp4)"/><circle cx="80" cy="46" r="20" fill="#F5F7FF" opacity="0.65"/></svg></div>
+          <div class="v6-visual-card-body"><h4>Fashion Motion</h4><p>Model &amp; outfit • Pakai</p></div>
+        </article>
       </div>
     </section>
 
+    <!-- INSTANT (Preserved) -->
+    <section id="page-instant" class="page">
+      <div class="v6-subpage-bar">
+        <div class="v6-back-title">
+          <button type="button" class="v6-back-btn" onclick="go('home')">←</button>
+          <h2>Instant Ide Gerak</h2>
+        </div>
+      </div>
+      <div class="v6-card">
+        <h3 style="margin:0 0 8px;">Generate 5 Prompt Gerakan Video</h3>
+        <p style="margin:0 0 14px;font-size:0.8rem;color:var(--v6-dim);line-height:1.45;">Buat 5 ide prompt gerakan otomatis berdurasi 10 detik berdasarkan referensi Anda.</p>
+        <button class="v6-cta-full" onclick="instantIdeas()">⚡ Buat Ide Sekarang</button>
+        <div id="ideas" style="margin-top:12px;"></div>
+      </div>
+    </section>
+
+    <!-- =====================================================================
+         6. ASET (2-Column Gallery + Search + Filter + Fullscreen Lightbox)
+         ===================================================================== -->
+    <section id="page-assets" class="page">
+      <div class="v6-subpage-bar">
+        <h2>Aset</h2>
+      </div>
+      <input type="search" class="v6-search-input" placeholder="Cari aset gambar atau video..." oninput="searchV6Assets(this.value)">
+      <div class="v6-filter-row">
+        <button type="button" data-asset-filter="all" class="v6-pill is-active" onclick="setV6AssetFilter('all', this)">Semua</button>
+        <button type="button" data-asset-filter="image" class="v6-pill" onclick="setV6AssetFilter('image', this)">Gambar</button>
+        <button type="button" data-asset-filter="video" class="v6-pill" onclick="setV6AssetFilter('video', this)">Video</button>
+      </div>
+      <div id="assetGrid"></div>
+    </section>
+
+    <!-- =====================================================================
+         7. PROJEK (Matches Screen 7 in Reference — Real Data Only)
+         ===================================================================== -->
+    <section id="page-projects" class="page">
+      <div class="v6-subpage-bar">
+        <h2>Project Saya</h2>
+        <button type="button" class="v6-topup-pill" style="min-height:32px;padding:0 12px;" onclick="go('generate');setMode('image')">＋ Baru</button>
+      </div>
+      <div class="v6-filter-row">
+        <button type="button" data-project-filter="all" class="v6-pill is-active" onclick="setV6ProjectFilter('all', this)">Semua</button>
+        <button type="button" data-project-filter="image" class="v6-pill" onclick="setV6ProjectFilter('image', this)">Gambar</button>
+        <button type="button" data-project-filter="video" class="v6-pill" onclick="setV6ProjectFilter('video', this)">Video</button>
+        <button type="button" data-project-filter="storyboard" class="v6-pill" onclick="setV6ProjectFilter('storyboard', this)">Storyboard</button>
+        <button type="button" data-project-filter="processing" class="v6-pill" onclick="setV6ProjectFilter('processing', this)">Diproses</button>
+        <button type="button" data-project-filter="done" class="v6-pill" onclick="setV6ProjectFilter('done', this)">Selesai</button>
+      </div>
+      <div id="projectList"></div>
+    </section>
+
+    <!-- TOP UP / PRICING (Midtrans Preserved) -->
     <section id="page-pricing" class="page">
-      <div class="page-head"><p class="eyebrow">CREDIT</p><h2>Harga</h2><p class="muted">Paket kredit untuk CH AI Studio.</p></div>
+      <div class="v6-subpage-bar">
+        <div class="v6-back-title">
+          <button type="button" class="v6-back-btn" onclick="go('profile')">←</button>
+          <h2>Paket Harga Kredit</h2>
+        </div>
+      </div>
       <div class="price-grid">
         <div class="price"><h3>Starter</h3><strong>Rp10K</strong><p>20 kredit</p><div class="price-detail">20 gambar · 2 video</div><button onclick="buyCredits('starter')">Pilih paket</button></div>
         <div class="price featured"><span class="badge">POPULER</span><h3>Creator</h3><strong>Rp20K</strong><p>50 kredit</p><div class="price-detail">50 gambar · 5 video</div><button onclick="buyCredits('creator')">Pilih paket</button></div>
         <div class="price"><h3>Pro</h3><strong>Rp50K</strong><p>150 kredit</p><div class="price-detail">150 gambar · 15 video</div><button onclick="buyCredits('pro')">Pilih paket</button></div>
         <div class="price"><h3>Ultra</h3><strong>Rp100K</strong><p>350 kredit</p><div class="price-detail">350 gambar · 35 video</div><button onclick="buyCredits('ultra')">Pilih paket</button></div>
       </div>
-      <div class="notice">Pembayaran kredit akan tersedia setelah sistem pembayaran diaktifkan.</div>
     </section>
+
+    <!-- =====================================================================
+         8. PROFIL & HARGA (Matches Screen 8 in Reference)
+         ===================================================================== -->
+    <section id="page-profile" class="page">
+      <div class="v6-subpage-bar">
+        <h2>Profil &amp; Harga</h2>
+      </div>
+
+      <!-- Profile Header Card -->
+      <div class="v6-card">
+        <div class="v6-profile-top">
+          <div class="v6-profile-ring">
+            <div id="v6ProfilePic" class="v6-profile-ring-inner">CH</div>
+          </div>
+          <div style="min-width:0;flex:1;">
+            <strong id="v6ProfileName" style="display:block;font-size:1.02rem;">Memuat akun...</strong>
+            <span id="v6ProfileEmail" style="display:block;font-size:0.76rem;color:var(--v6-dim);margin:2px 0 8px;overflow:hidden;text-overflow:ellipsis;">-</span>
+            <button type="button" class="v6-topup-pill" style="min-height:30px;padding:0 14px;font-size:0.72rem;" onclick="editCHProfileName()">Edit Profil</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Credit Wallet Bar -->
+      <div class="v6-wallet-bar">
+        <div class="v6-wallet-left">
+          <span class="v6-coin-badge">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="9"/></svg>
+          </span>
+          <div>
+            <span class="v6-wallet-label">Kredit Anda</span>
+            <span id="v6ProfilePageCredits" class="v6-wallet-value">0</span>
+          </div>
+        </div>
+        <button type="button" class="v6-topup-pill" onclick="go('pricing')">+ Top Up</button>
+      </div>
+
+      <!-- Clean Chevron Menu List -->
+      <div class="v6-menu-list">
+        <button type="button" class="v6-menu-item" onclick="go('pricing')">
+          <span class="v6-menu-item-left"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#8B35FF" stroke-width="2"><path d="M12 2 21 7v10l-9 5-9-5V7Z"/></svg><span>Paket Harga</span></span>
+          <span style="color:var(--v6-dim);">›</span>
+        </button>
+        <button type="button" class="v6-menu-item" onclick="showCHCreditHistory()">
+          <span class="v6-menu-item-left"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#287BFF" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>Riwayat Transaksi</span></span>
+          <span style="color:var(--v6-dim);">›</span>
+        </button>
+        <button type="button" class="v6-menu-item" onclick="openCHSettings()">
+          <span class="v6-menu-item-left"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#38BDF8" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c.26.6.85 1 1.51 1H21a2 2 0 0 1 0 4h-.09c-.66 0-1.25.4-1.51 1z"/></svg><span>Pengaturan</span></span>
+          <span style="color:var(--v6-dim);">›</span>
+        </button>
+        <button type="button" class="v6-menu-item" onclick="openCHHelp()">
+          <span class="v6-menu-item-left"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#EC35C9" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9.6 9a2.5 2.5 0 1 1 4.5 1.5c-1 1.1-2.1 1.3-2.1 3M12 17h.01"/></svg><span>Bantuan &amp; Dukungan</span></span>
+          <span style="color:var(--v6-dim);">›</span>
+        </button>
+                <button type="button" class="v6-menu-item" onclick="openV6BugModal()">
+          <span class="v6-menu-item-left"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#FBBF24" stroke-width="2"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><span>Laporan Bug</span></span>
+          <span style="color:var(--v6-dim);">›</span>
+        </button>
+<button type="button" class="v6-menu-item" onclick="handleV6AuthMenuClick()">
+          <span class="v6-menu-item-left"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#FF85B3" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg><span id="v6ProfileAuthLabel">Keluar</span></span>
+          <span style="color:var(--v6-dim);">›</span>
+        </button>
+      </div>
+
+      </section>
+
+  <!-- BUG REPORT MODAL SHEET -->
+  <div id="v6BugModal" class="v6-sheet-modal" onclick="if(event.target===this)closeV6BugModal()">
+    <div class="v6-sheet-box">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+        <strong style="font-size:0.94rem;">Laporan Bug</strong>
+        <button type="button" class="v6-hdr-icon-btn" onclick="closeV6BugModal()">×</button>
+      </div>
+      <form id="v6BugForm" onsubmit="submitV6BugReport(event)">
+        <input id="v6BugTitle" type="text" class="v6-input" placeholder="Judul masalah..." required>
+        <select id="v6BugCategory" class="v6-select">
+          <option value="Generate Image / Video">Generate Image / Video</option>
+          <option value="CH AI Jedag Jedug">CH AI Jedag Jedug</option>
+          <option value="CH Chat AI">CH Chat AI</option>
+          <option value="Kredit & Top Up">Kredit &amp; Top Up</option>
+          <option value="UI / Tampilan Mobile">UI / Tampilan Mobile</option>
+        </select>
+        <textarea id="v6BugDesc" class="v6-textarea" rows="3" placeholder="Deskripsi masalah..." required></textarea>
+        <button type="submit" class="v6-cta-full">Kirim Laporan</button>
+        <p id="v6BugStatus" style="display:none;margin:8px 0 0;font-size:0.75rem;"></p>
+      </form>
+    </div>
+  </div>
+  
+    <!-- ======================================================================
+         ISOLATED MODULE: CH AI STORYTELLING STUDIO
+         ====================================================================== -->
+    <section id="page-storytelling" class="page">
+      <div class="v6-subpage-bar">
+        <div class="v6-back-title">
+          <button type="button" class="v6-back-btn" onclick="go('home')">←</button>
+          <h2>CH AI Storytelling</h2>
+        </div>
+        <button type="button" class="v6-inline-action-btn" style="background:var(--v6-grad-btn);border:none;" onclick="switchStorytellingRoom('creator')">＋ Cerita Baru</button>
+      </div>
+
+      <!-- Studio Room Switcher -->
+      <div class="st-room-tabs">
+        <button type="button" data-st-room="projects" class="st-room-tab is-active" onclick="switchStorytellingRoom('projects', this)">Proyek</button>
+        <button type="button" data-st-room="creator" class="st-room-tab" onclick="switchStorytellingRoom('creator', this)">Story Creator</button>
+        <button type="button" data-st-room="character" class="st-room-tab" onclick="switchStorytellingRoom('character', this)">Karakter</button>
+        <button type="button" data-st-room="storyboard" class="st-room-tab" onclick="switchStorytellingRoom('storyboard', this)">Storyboard</button>
+        <button type="button" data-st-room="audio" class="st-room-tab" onclick="switchStorytellingRoom('audio', this)">Voice &amp; Audio</button>
+        <button type="button" data-st-room="subtitle" class="st-room-tab" onclick="switchStorytellingRoom('subtitle', this)">Subtitle</button>
+        <button type="button" data-st-room="export" class="st-room-tab" onclick="switchStorytellingRoom('export', this)">Export MP4</button>
+      </div>
+
+      <!-- ROOM 1: MAIN PROJECT LIST -->
+      <div id="st-view-projects" class="st-view is-active">
+        <div class="st-header-card">
+          <div class="st-header-top">
+            <div>
+              <span class="st-badge">AI FILMMAKING STUDIO</span>
+              <h3 style="margin:5px 0 2px;font-size:0.94rem;">Produksi Film &amp; Cerita AI</h3>
+              <p style="margin:0;font-size:0.68rem;color:var(--v6-dim);">Naskah terstruktur, karakter konsisten, scene terpisah, voice &amp; export MP4.</p>
+            </div>
+          </div>
+          <button type="button" class="v6-cta-full" style="margin-top:9px;min-height:37px;font-size:0.78rem;" onclick="switchStorytellingRoom('creator')">＋ Create New Story</button>
+        </div>
+        <div id="stProjectsList"></div>
+      </div>
+
+      <!-- ROOM 2: STORY CREATOR -->
+      <div id="st-view-creator" class="st-view">
+        <form class="v6-card" onsubmit="createSTProjectFromForm(event)">
+          <label class="st-label">Judul Cerita</label>
+          <input id="stTitle" type="text" class="v6-input" placeholder="Contoh: Penjaga Cahaya di Kota Neon" required>
+
+          <label class="st-label">Ide Cerita</label>
+          <textarea id="stIdea" class="v6-textarea" rows="3" placeholder="Tuliskan premis, tokoh utama, konflik, dan suasana cerita..." required></textarea>
+
+          <div class="st-form-grid-2">
+            <div>
+              <label class="st-label">Kategori</label>
+              <select id="stCategory" class="v6-select">
+                <option value="Drama Sinematik">Drama Sinematik</option>
+                <option value="Sci-Fi & Cyberpunk">Sci-Fi &amp; Cyberpunk</option>
+                <option value="Horor & Misteri">Horor &amp; Misteri</option>
+                <option value="Fantasi Epik">Fantasi Epik</option>
+                <option value="Motivasi & Edukasi">Motivasi &amp; Edukasi</option>
+              </select>
+            </div>
+            <div>
+              <label class="st-label">Bahasa</label>
+              <select id="stLanguage" class="v6-select">
+                <option value="Indonesia">Indonesia</option>
+                <option value="English">English</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="st-form-grid-2">
+            <div>
+              <label class="st-label">Target Durasi</label>
+              <select id="stDuration" class="v6-select">
+                <option value="30" selected>30 Detik (5×6s)</option>
+                <option value="45">45 Detik</option>
+                <option value="60">60 Detik</option>
+              </select>
+            </div>
+            <div>
+              <label class="st-label">Jumlah Scene</label>
+              <input id="stSceneCount" type="number" min="1" max="12" value="5" class="v6-input">
+            </div>
+          </div>
+
+          <div class="st-form-grid-2">
+            <div>
+              <label class="st-label">Gaya Visual</label>
+              <select id="stVisualStyle" class="v6-select">
+                <option value="Photorealistic Cinema">Photorealistic Cinema</option>
+                <option value="Anime Makoto Style">Anime Makoto Style</option>
+                <option value="3D Pixar-grade Render">3D Studio Render</option>
+                <option value="Dark Neo-Noir">Dark Neo-Noir</option>
+              </select>
+            </div>
+            <div>
+              <label class="st-label">Rasio Video</label>
+              <select id="stRatio" class="v6-select">
+                <option value="9:16" selected>9:16 (Vertical)</option>
+                <option value="16:9">16:9 (Widescreen)</option>
+                <option value="1:1">1:1 (Square)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="st-form-grid-2">
+            <div>
+              <label class="st-label">Mood Cerita</label>
+              <select id="stMood" class="v6-select">
+                <option value="Emosional & Epik">Emosional &amp; Epik</option>
+                <option value="Tegang & Misterius">Tegang &amp; Misterius</option>
+                <option value="Hangat & Inspiratif">Hangat &amp; Inspiratif</option>
+              </select>
+            </div>
+            <div>
+              <label class="st-label">Mode Narasi &amp; Dialog</label>
+              <select id="stNarrationMode" class="v6-select">
+                <option value="narration_dialogue">Narasi + Dialog</option>
+                <option value="narration_only">Narasi Saja</option>
+                <option value="off">Visual Tanpa Narasi</option>
+              </select>
+            </div>
+          </div>
+          <input type="hidden" id="stDialogueMode" value="on">
+
+          <button type="submit" class="v6-cta-full">✦ AI Story Writer &amp; Buat Storyboard</button>
+          <p id="stCreatorStatus" style="display:none;margin:8px 0 0;font-size:0.72rem;color:#7CC0FF;"></p>
+        </form>
+      </div>
+
+      <!-- ROOM 3: CHARACTER STUDIO -->
+      <div id="st-view-character" class="st-view">
+        <div class="v6-card" id="stActiveCharLock" style="font-size:0.72rem;color:#D9B8FF;border-color:rgba(139,53,255,0.45);"></div>
+        <form class="v6-card" onsubmit="saveSTCharacter(event)">
+          <strong style="display:block;font-size:0.82rem;margin-bottom:8px;">Character Reference (Terkunci Semua Scene)</strong>
+          <input id="stCharName" type="text" class="v6-input" placeholder="Nama Karakter (Contoh: Arka)" required>
+          <input id="stCharPhysical" type="text" class="v6-input" placeholder="Deskripsi fisik (usia, rambut, wajah, postur)" required>
+          <input id="stCharOutfit" type="text" class="v6-input" placeholder="Pakaian tetap (jaket, warna, aksesori)" required>
+          <div class="st-form-grid-2">
+            <input id="stCharExpression" type="text" class="v6-input" placeholder="Ekspresi khas">
+            <input id="stCharPersonality" type="text" class="v6-input" placeholder="Kepribadian">
+          </div>
+          <input id="stCharVoice" type="text" class="v6-input" placeholder="Karakter suara (Contoh: Bariton tenang)">
+          <label class="st-label">Upload Referensi Wajah / Karakter (Opsional)</label>
+          <input type="file" accept="image/*" class="v6-input" onchange="handleSTCharFile(this)">
+          <input type="hidden" id="stCharRefData">
+          <img id="stCharRefPreview" alt="" style="display:none;width:56px;height:56px;border-radius:10px;object-fit:cover;margin-bottom:8px;">
+          <button type="submit" class="v6-cta-full" style="min-height:37px;font-size:0.76rem;">Simpan &amp; Kunci Karakter</button>
+        </form>
+        <div id="stSavedCharsList"></div>
+      </div>
+
+      <!-- ROOM 4: STORYBOARD ENGINE -->
+      <div id="st-view-storyboard" class="st-view">
+        <div class="v6-card" id="stStoryboardHeader"></div>
+        <div id="stScenesList"></div>
+      </div>
+
+      <!-- ROOM 5: VOICE & SOUND STUDIO -->
+      <div id="st-view-audio" class="st-view">
+        <div class="v6-card">
+          <strong style="display:block;font-size:0.84rem;margin-bottom:6px;">Voice Over, Dialog &amp; Sound Studio</strong>
+          <p style="margin:0 0 10px;font-size:0.7rem;color:var(--v6-dim);">Terhubung langsung dengan provider TTS &amp; audio yang terdeteksi pada repository backend.</p>
+          <label class="st-label">Volume Voice Over (100%)</label>
+          <input type="range" min="0" max="100" value="100" style="width:100%;margin-bottom:8px;">
+          <label class="st-label">Volume Background Music (35%)</label>
+          <input type="range" min="0" max="100" value="35" style="width:100%;margin-bottom:8px;">
+          <label class="st-label">Volume Sound Effects (60%)</label>
+          <input type="range" min="0" max="100" value="60" style="width:100%;margin-bottom:10px;">
+          <div id="stAudioProviderStatus" style="font-size:0.7rem;color:#FBBF24;">Menunggu verifikasi endpoint TTS pada Tahap 6.</div>
+        </div>
+      </div>
+
+      <!-- ROOM 6: SUBTITLE STUDIO -->
+      <div id="st-view-subtitle" class="st-view">
+        <div class="v6-card">
+          <strong style="display:block;font-size:0.84rem;margin-bottom:8px;">Subtitle Studio &amp; Timing</strong>
+          <div class="st-form-grid-2">
+            <div>
+              <label class="st-label">Posisi Subtitle</label>
+              <select class="v6-select">
+                <option value="bottom">Bawah (Safe Area)</option>
+                <option value="center">Tengah Sinematik</option>
+              </select>
+            </div>
+            <div>
+              <label class="st-label">Highlight Kata</label>
+              <select class="v6-select">
+                <option value="pink">Electric Pink Glow</option>
+                <option value="yellow">Cinema Gold</option>
+                <option value="none">Polos Putih + Outline</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div id="stSubtitleList"></div>
+      </div>
+
+      <!-- ROOM 7: AUTOMATIC EDITOR & EXPORT STUDIO -->
+      <div id="st-view-export" class="st-view">
+        <div class="v6-card">
+          <strong style="display:block;font-size:0.86rem;margin-bottom:8px;">Automatic Video Editor &amp; Export MP4</strong>
+          <div class="st-form-grid-2">
+            <div>
+              <label class="st-label">Resolusi</label>
+              <select id="stExportRes" class="v6-select">
+                <option value="720p">720p HD</option>
+                <option value="1080p" selected>1080p Full HD</option>
+              </select>
+            </div>
+            <div>
+              <label class="st-label">Frame Rate</label>
+              <select id="stExportFps" class="v6-select">
+                <option value="24">24 FPS (Cinema)</option>
+                <option value="30" selected>30 FPS (Smooth)</option>
+              </select>
+            </div>
+          </div>
+          <p style="margin:4px 0 10px;font-size:0.68rem;color:var(--v6-dim);">Penggabungan scene, auto-trim klip 10s→6s, audio mix, subtitle burn-in, dan penyimpanan ke Projek.</p>
+          <button type="button" class="v6-cta-full" onclick="alert('Pipeline Export MP4 (FFmpeg / Job Queue) siap diaktifkan pada Tahap 7 setelah audit lingkungan server & Vercel.')">✦ Render &amp; Export MP4</button>
+        </div>
+      </div>
+    </section>
+
   </main>
 
+  <!-- FULLSCREEN LIGHTBOX -->
+  <div id="v6Lightbox" class="v6-lightbox">
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <strong style="font-size:0.86rem;">Preview Aset</strong>
+      <button type="button" class="v6-hdr-icon-btn" onclick="closeV6Lightbox()">×</button>
+    </div>
+    <div id="v6LightboxMedia" class="v6-lightbox-media"></div>
+    <div>
+      <p id="v6LightboxCaption" style="margin:0 0 10px;font-size:0.78rem;color:var(--v6-dim);"></p>
+      <a id="v6LightboxDownload" class="v6-cta-full" style="text-decoration:none;" download="ch-ai-studio-asset">Download Aset</a>
+    </div>
+  </div>
+
+  <!-- AUTH OVERLAY (Clerk Preserved) -->
   <div id="authOverlay" class="auth-overlay">
     <div class="auth-box">
       <button class="auth-close" onclick="closeAuth()">×</button>
@@ -277,18 +1098,12 @@
       <h2 class="auth-title" id="authTitle">Masuk ke CH AI Studio</h2>
       <p class="auth-subtitle" id="authSubtitle">Gunakan akun kamu untuk melanjutkan.</p>
       <div id="authError" class="auth-error"></div>
-      <div class="auth-field">
-        <label>Email</label>
-        <input id="authEmail" type="email" autocomplete="email" placeholder="nama@email.com">
-      </div>
-      <div class="auth-field">
-        <label>Password</label>
-        <input id="authPassword" type="password" autocomplete="current-password" placeholder="Password">
-      </div>
+      <div class="auth-field"><label>Email</label><input id="authEmail" type="email" autocomplete="email" placeholder="nama@email.com"></div>
+      <div class="auth-field"><label>Password</label><input id="authPassword" type="password" autocomplete="current-password" placeholder="Password"></div>
       <div class="auth-socials">
-        <button class="auth-social google" onclick="socialAuth('oauth_google')"><span class="social-icon google-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M21.35 12.27c0-.72-.06-1.42-.18-2.09H12v3.95h5.24a4.48 4.48 0 0 1-1.94 2.94v2.44h3.14c1.84-1.69 2.91-4.18 2.91-7.24z"/><path fill="#34A853" d="M12 21.9c2.62 0 4.82-.87 6.43-2.39l-3.14-2.44c-.87.58-1.98.92-3.29.92-2.53 0-4.68-1.71-5.45-4.01H3.3v2.52A9.71 9.71 0 0 0 12 21.9z"/><path fill="#FBBC05" d="M6.55 13.98A5.84 5.84 0 0 1 6.24 12c0-.69.12-1.36.31-1.98V7.5H3.3A9.72 9.72 0 0 0 2.28 12c0 1.57.38 3.06 1.02 4.5l3.25-2.52z"/><path fill="#EA4335" d="M12 6.01c1.43 0 2.71.49 3.72 1.45l2.79-2.79C16.82 3.05 14.62 2.1 12 2.1A9.71 9.71 0 0 0 3.3 7.5l3.25 2.52C7.32 7.72 9.47 6.01 12 6.01z"/></svg></span><span>Lanjutkan dengan Google</span></button>
-        <button class="auth-social facebook" onclick="socialAuth('oauth_facebook')"><span class="social-icon facebook-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#1877F2" d="M24 12.07C24 5.42 18.63 0 12 0S0 5.42 0 12.07C0 18.1 4.39 23.17 10.13 24v-8.44H7.08v-3.49h3.05V9.41c0-3.03 1.79-4.7 4.53-4.7 1.31 0 2.68.24 2.68.24v2.97h-1.51c-1.49 0-1.96.93-1.96 1.88v2.27h3.33l-.53 3.49h-2.8V24C19.61 23.17 24 18.1 24 12.07z"/></svg></span><span>Lanjutkan dengan Facebook</span></button>
-        <button class="auth-social tiktok" onclick="socialAuth('oauth_tiktok')" ><span class="social-icon tiktok-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#25F4EE" d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.11h-3.17v13.5a2.91 2.91 0 1 1-2-2.77V10.1a6.1 6.1 0 1 0 5.17 6V9.37a7.2 7.2 0 0 0 4.2 1.36V7.56a4.8 4.8 0 0 1-.43-.87z"/><path fill="#FE2C55" d="M20.02 7.56v3.17a7.2 7.2 0 0 1-4.2-1.36v6.73a6.1 6.1 0 1 1-5.17-6v3.21a2.91 2.91 0 1 0 2 2.77V2.58h3.17a4.83 4.83 0 0 0 3.77 4.11c.13.32.27.61.43.87z"/></svg></span><span>Lanjutkan dengan TikTok</span></button>
+        <button class="auth-social google" onclick="socialAuth('oauth_google')"><span>Lanjutkan dengan Google</span></button>
+        <button class="auth-social facebook" onclick="socialAuth('oauth_facebook')"><span>Lanjutkan dengan Facebook</span></button>
+        <button class="auth-social tiktok" onclick="socialAuth('oauth_tiktok')"><span>Lanjutkan dengan TikTok</span></button>
       </div>
       <div class="auth-divider"><span>atau</span></div>
       <button class="auth-button" id="authSubmit" onclick="submitAuth()">Masuk</button>
@@ -296,22 +1111,47 @@
       <div class="auth-secured">Secured by Cahya Handika</div>
     </div>
   </div>
+
   <div id="toast" class="toast"></div>
-  <script src="app.js?v=6"></script>
+
+  <!-- FLOATING BOTTOM NAVIGATION — WAJIB 4 MENU: BERANDA, ASET, PROJEK, PROFIL -->
+  <nav id="ch-mobile-nav" class="ch-mobile-nav v6-bottom-nav" aria-label="Navigasi utama">
+    <button type="button" data-mobile-page="home" class="ch-mobile-item active" onclick="go('home')">
+      <svg viewBox="0 0 24 24"><path d="m3 10 9-7 9 7M5 9v12h14V9M9 21v-7h6v7"/></svg>
+      <span>Beranda</span>
+    </button>
+    <button type="button" data-mobile-page="assets" class="ch-mobile-item" onclick="go('assets')">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
+      <span>Aset</span>
+    </button>
+    <button type="button" data-mobile-page="projects" class="ch-mobile-item" onclick="go('projects')">
+      <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M8 4V2h8v2M8 10h8M8 14h5"/></svg>
+      <span>Projek</span>
+    </button>
+    <button type="button" data-mobile-page="profile" class="ch-mobile-item" onclick="go('profile')">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/></svg>
+      <span>Profil</span>
+    </button>
+  </nav>
+
+  <!-- LEGACY COMPATIBILITY DRAWER -->
+  <div id="ch-profile-overlay" class="ch-profile-overlay" style="display:none;">
+    <aside class="ch-profile-drawer"><h2 id="ch-profile-title">Profil</h2><div id="ch-profile-account"></div><strong id="ch-profile-credits">0</strong><div id="ch-profile-auth"></div></aside>
+  </div>
+
+  <script src="app.js?v=ch-mobile-app-v5-20261109"></script>
+  <script src="v6-bridge.js?v=ch-v6-20261121-v11"></script>
   <script src="https://fine-toad-6346.clerk.accounts.dev/npm/@clerk/ui@1.33.0/dist/ui.browser.js"></script>
   <script async crossorigin="anonymous" data-clerk-publishable-key="pk_test_ZmluZS10b2FkLTYzNDYuY2xlcmsuYWNjb3VudHMuZGV2JA" src="https://cdn.jsdelivr.net/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"></script>
   <script>
     window.addEventListener("load", async () => {
-      await Clerk.load({ ui: { ClerkUI: window.__internal_ClerkUICtor } });
-      await syncCredits();
-      Clerk.addListener(() => syncCredits());
-      const el = document.getElementById("clerk-user-button");
-      if (Clerk.user) {
-        const name = Clerk.user.firstName || Clerk.user.primaryEmailAddress?.emailAddress || "Akun";
-        el.innerHTML = "<div class=\"ch-account\"><button class=\"ch-account-btn\" onclick=\"toggleAccountMenu()\"><span class=\"ch-avatar\">"+name.charAt(0).toUpperCase()+"</span><span class=\"ch-account-name\">"+name+"</span><span>⌄</span></button><div id=\"chAccountMenu\" class=\"ch-account-menu\"><button onclick=\"logoutCH()\">Keluar</button></div></div>";
-      } else {
-        el.innerHTML = "<button class=\"account\" onclick=\"openAuth()\">Masuk / Daftar</button>";
+      if (window.Clerk) {
+        await Clerk.load({ ui: { ClerkUI: window.__internal_ClerkUICtor } });
+        await syncCredits();
+        Clerk.addListener(() => syncCredits());
       }
-    });  </script>
+    });
+  </script>
+  <script src="storytelling/storytelling.js?v=ch-st-v1"></script>
 </body>
 </html>

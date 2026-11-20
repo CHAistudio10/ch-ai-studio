@@ -679,35 +679,52 @@ function toggleSidebar() {
 }
 
 function go(page, addHistory = true) {
+  if (typeof window.closeCHProfile === "function") window.closeCHProfile();
   const sidebar = document.querySelector(".sidebar");
   if (sidebar) {
     sidebar.classList.remove("open");
     document.body.classList.remove("menu-open");
   }
 
+  const target = document.getElementById("page-" + page);
+
+  if (!target) {
+    console.warn("Halaman tidak ditemukan:", page);
+    return;
+  }
+
   document.querySelectorAll(".page").forEach(el => {
+    el.classList.remove("active");
     el.style.display = "none";
   });
 
-  const target = document.getElementById("page-" + page);
-
-  if (target) {
-    target.style.display = "block";
-  }
+  target.classList.add("active");
+  target.style.display = "block";
 
   document.querySelectorAll(".nav-item").forEach(el => {
-    el.classList.remove("active");
+    el.classList.toggle("active", el.dataset.page === page);
   });
 
-  const nav = document.querySelector(`[data-page="${page}"]`);
+  document.querySelectorAll(".ch-mobile-item[data-mobile-page]").forEach(el => {
+    const isActive = el.dataset.mobilePage === page;
+    el.classList.toggle("active", isActive);
+    if (isActive) {
+      el.setAttribute("aria-current", "page");
+    } else {
+      el.removeAttribute("aria-current");
+    }
+  });
 
-  if (nav) {
-    nav.classList.add("active");
-  }
-
-  if (addHistory) {
+  if (addHistory && location.hash !== "#" + page) {
     history.pushState({ page }, "", "#" + page);
   }
+
+  if (page === "jedagjedug") {
+    window.dispatchEvent(new Event("resize"));
+  }
+
+  // Setiap halaman dimulai dari bagian atas, tanpa mengunci scroll dokumen.
+  window.scrollTo({ top: 0, left: 0, behavior: "instant" });
 }
 
 window.addEventListener("popstate", (event) => {
@@ -1236,9 +1253,198 @@ document.addEventListener("DOMContentLoaded",()=>{const form=document.getElement
   const startInput = document.getElementById("jj-music-start");
   const endInput = document.getElementById("jj-music-end");
 
+  const track = document.getElementById("jj-timeline-track");
+  const waveform = document.getElementById("jj-waveform");
+  const selection = document.getElementById("jj-selection-window");
+  const startHandle = document.getElementById("jj-trim-start");
+  const endHandle = document.getElementById("jj-trim-end");
+  const playhead = document.getElementById("jj-timeline-playhead");
+  const durationBadge = document.getElementById("jj-selection-duration");
+  const timeLabel = document.getElementById("jj-timeline-time");
+  const scaleStart = document.getElementById("jj-scale-start");
+  const scaleMiddle = document.getElementById("jj-scale-middle");
+  const scaleEnd = document.getElementById("jj-scale-end");
+  const previewButton = document.getElementById("jj-preview-selection");
+
   let musicFile = null;
   let musicUrl = null;
   let musicDuration = 0;
+  let trimStart = 0;
+  let trimEnd = 0;
+  let drag = null;
+
+  const MIN_CLIP = 30;
+
+  function clamp(value, min, max) {
+    return Math.max(min, Math.min(max, value));
+  }
+
+  function formatTime(seconds) {
+    seconds = Math.max(0, Number(seconds) || 0);
+    const minutes = Math.floor(seconds / 60);
+    const remaining = Math.floor(seconds % 60);
+    return String(minutes).padStart(2, "0") + ":" +
+      String(remaining).padStart(2, "0");
+  }
+
+  function makeWaveform() {
+    if (!waveform) return;
+
+    waveform.replaceChildren();
+    let seed = 271828;
+
+    for (let i = 0; i < 100; i++) {
+      seed = (seed * 16807) % 2147483647;
+      const value = seed / 2147483647;
+      const bar = document.createElement("span");
+      bar.style.setProperty("--wave-height", (14 + value * 78) + "%");
+      waveform.appendChild(bar);
+    }
+  }
+
+  function updateTimeline() {
+    if (!track || !selection || !musicDuration) return;
+
+    trimStart = clamp(trimStart, 0, Math.max(0, musicDuration - MIN_CLIP));
+    trimEnd = clamp(trimEnd, trimStart + MIN_CLIP, musicDuration);
+
+    const left = trimStart / musicDuration * 100;
+    const width = (trimEnd - trimStart) / musicDuration * 100;
+
+    selection.style.left = left + "%";
+    selection.style.width = width + "%";
+
+    startInput.value = trimStart.toFixed(1);
+    endInput.value = trimEnd.toFixed(1);
+    startInput.max = String(Math.max(0, musicDuration - MIN_CLIP));
+    endInput.max = String(musicDuration);
+
+    if (durationBadge) {
+      durationBadge.textContent = (trimEnd - trimStart).toFixed(1) + " dtk";
+    }
+
+    if (scaleStart) scaleStart.textContent = formatTime(trimStart);
+    if (scaleMiddle) scaleMiddle.textContent = formatTime((trimStart + trimEnd) / 2);
+    if (scaleEnd) scaleEnd.textContent = formatTime(trimEnd);
+
+    updatePlayhead();
+  }
+
+  function updatePlayhead() {
+    if (!musicDuration || !playhead) return;
+
+    const current = Number.isFinite(audio.currentTime) ? audio.currentTime : 0;
+    playhead.style.left = clamp(current / musicDuration * 100, 0, 100) + "%";
+
+    if (timeLabel) {
+      timeLabel.textContent = formatTime(current) + " / " + formatTime(musicDuration);
+    }
+  }
+
+  function timeAtPointer(event) {
+    const rect = track.getBoundingClientRect();
+    if (!rect.width) return 0;
+
+    return clamp((event.clientX - rect.left) / rect.width, 0, 1) * musicDuration;
+  }
+
+  function pausePreview() {
+    audio.pause();
+    if (previewButton) previewButton.textContent = "▶ Preview potongan";
+  }
+
+  function beginDrag(event, mode) {
+    if (!musicFile || !musicDuration || musicDuration < MIN_CLIP) return;
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    drag = {
+      mode,
+      pointerId: event.pointerId,
+      x: event.clientX,
+      start: trimStart,
+      end: trimEnd
+    };
+
+    if (mode === "start") startHandle.setPointerCapture?.(event.pointerId);
+    else if (mode === "end") endHandle.setPointerCapture?.(event.pointerId);
+    else selection.setPointerCapture?.(event.pointerId);
+  }
+
+  function moveDrag(event) {
+    if (!drag || event.pointerId !== drag.pointerId) return;
+
+    const delta = (event.clientX - drag.x) /
+      track.getBoundingClientRect().width * musicDuration;
+
+    if (drag.mode === "start") {
+      trimStart = clamp(drag.start + delta, 0, drag.end - MIN_CLIP);
+      trimEnd = drag.end;
+    } else if (drag.mode === "end") {
+      trimStart = drag.start;
+      trimEnd = clamp(drag.end + delta, drag.start + MIN_CLIP, musicDuration);
+    } else if (drag.mode === "move") {
+      const length = drag.end - drag.start;
+      trimStart = clamp(drag.start + delta, 0, musicDuration - length);
+      trimEnd = trimStart + length;
+    }
+
+    updateTimeline();
+  }
+
+  function endDrag(event) {
+    if (drag && event.pointerId === drag.pointerId) drag = null;
+  }
+
+  if (track && selection && startHandle && endHandle) {
+    makeWaveform();
+
+    startHandle.addEventListener("pointerdown", event => beginDrag(event, "start"));
+    endHandle.addEventListener("pointerdown", event => beginDrag(event, "end"));
+
+    selection.addEventListener("pointerdown", event => {
+      if (event.target === startHandle || event.target === endHandle ||
+          event.target.closest?.(".jj-trim-handle")) return;
+      beginDrag(event, "move");
+    });
+
+    for (const element of [track, selection, startHandle, endHandle]) {
+      element.addEventListener("pointermove", moveDrag);
+      element.addEventListener("pointerup", endDrag);
+      element.addEventListener("pointercancel", endDrag);
+      element.addEventListener("lostpointercapture", endDrag);
+    }
+
+    track.addEventListener("click", event => {
+      if (!musicFile || !musicDuration || drag) return;
+      if (event.target.closest?.(".jj-trim-handle")) return;
+
+      const time = timeAtPointer(event);
+      audio.currentTime = time;
+      updatePlayhead();
+    });
+  }
+
+  startInput.addEventListener("change", () => {
+    if (!musicDuration) return;
+
+    const value = Number(startInput.value);
+    if (!Number.isFinite(value)) return;
+
+    trimStart = clamp(value, 0, trimEnd - MIN_CLIP);
+    updateTimeline();
+  });
+
+  endInput.addEventListener("change", () => {
+    if (!musicDuration) return;
+
+    const value = Number(endInput.value);
+    if (!Number.isFinite(value)) return;
+
+    trimEnd = clamp(value, trimStart + MIN_CLIP, musicDuration);
+    updateTimeline();
+  });
 
   input.addEventListener("change", () => {
     const file = input.files?.[0];
@@ -1250,15 +1456,19 @@ document.addEventListener("DOMContentLoaded",()=>{const form=document.getElement
       return;
     }
 
+    pausePreview();
+
     if (musicUrl) URL.revokeObjectURL(musicUrl);
 
     musicFile = file;
     musicUrl = URL.createObjectURL(file);
     musicDuration = 0;
+    trimStart = 0;
+    trimEnd = 0;
 
     audio.src = musicUrl;
     audio.style.display = "block";
-    info.textContent = `Musik dipilih: ${file.name}. Membaca durasi...`;
+    info.textContent = "Musik dipilih: " + file.name + ". Membaca durasi...";
 
     audio.onloadedmetadata = () => {
       musicDuration = audio.duration;
@@ -1268,16 +1478,23 @@ document.addEventListener("DOMContentLoaded",()=>{const form=document.getElement
         return;
       }
 
-      startInput.max = String(Math.max(0, musicDuration - 30));
-      startInput.value = "0";
-      endInput.max = String(musicDuration);
-      endInput.value = String(Math.floor(musicDuration));
+      trimStart = 0;
+      trimEnd = musicDuration;
 
-      if (musicDuration < 30) {
-        info.textContent = `Durasi musik ${musicDuration.toFixed(1)} detik. Musik harus berdurasi minimal 30 detik.`;
+      updateTimeline();
+
+      if (musicDuration < MIN_CLIP) {
+        info.textContent = "Musik berdurasi " + musicDuration.toFixed(1) +
+          " detik. Minimal 30 detik untuk render video.";
+        if (previewButton) previewButton.disabled = true;
       } else {
-        info.textContent = `Musik siap: ${file.name} • ${musicDuration.toFixed(1)} detik.`;
+        info.textContent = "Musik siap: " + file.name + " • " +
+          musicDuration.toFixed(1) + " detik.";
+        if (previewButton) previewButton.disabled = false;
       }
+
+      audio.currentTime = 0;
+      updatePlayhead();
     };
 
     audio.onerror = () => {
@@ -1287,16 +1504,53 @@ document.addEventListener("DOMContentLoaded",()=>{const form=document.getElement
     input.value = "";
   });
 
+  if (previewButton) {
+    previewButton.addEventListener("click", async () => {
+      if (!musicFile || musicDuration < MIN_CLIP) {
+        info.textContent = "Pilih musik dengan durasi minimal 30 detik.";
+        return;
+      }
+
+      try {
+        if (!audio.paused && audio.currentTime >= trimStart &&
+            audio.currentTime < trimEnd) {
+          pausePreview();
+          return;
+        }
+
+        audio.currentTime = trimStart;
+        await audio.play();
+        previewButton.textContent = "⏸ Hentikan preview";
+      } catch {
+        info.textContent = "Preview tidak bisa diputar. Tekan tombol play pada pemutar musik.";
+      }
+    });
+  }
+
+  audio.addEventListener("timeupdate", () => {
+    updatePlayhead();
+
+    if (!audio.paused && audio.currentTime >= trimEnd) {
+      pausePreview();
+      audio.currentTime = trimStart;
+      updatePlayhead();
+    }
+  });
+
+  audio.addEventListener("ended", () => {
+    if (previewButton) previewButton.textContent = "▶ Preview potongan";
+  });
+
   function getSelection() {
     const start = Number(startInput.value);
     const end = Number(endInput.value);
 
     if (!musicFile) throw new Error("Pilih file musik terlebih dahulu.");
-    if (!Number.isFinite(musicDuration) || musicDuration < 30) {
+    if (!Number.isFinite(musicDuration) || musicDuration < MIN_CLIP) {
       throw new Error("Musik harus berdurasi minimal 30 detik.");
     }
     if (!Number.isFinite(start) || !Number.isFinite(end) ||
-        start < 0 || end > musicDuration || end - start < 30) {
+        start < 0 || end > musicDuration || end - start < MIN_CLIP) {
       throw new Error("Potongan musik harus berdurasi minimal 30 detik dan berada dalam durasi file.");
     }
 
@@ -1553,6 +1807,147 @@ document.addEventListener("DOMContentLoaded",()=>{const form=document.getElement
     return intensity === "high" ? 0.7 : intensity === "low" ? 0.2 : 0.4;
   }
 
+
+  function drawJJTransition(ctx, previous, current, w, h, time,
+    style, intensity, pulse, type, progress) {
+    const p = Math.max(0, Math.min(1, progress));
+
+    ctx.save();
+    ctx.fillStyle = "#080812";
+    ctx.fillRect(0, 0, w, h);
+
+    const drawItem = (item, alpha = 1, transform = null) => {
+      ctx.save();
+      ctx.globalAlpha = alpha;
+      if (transform) transform();
+      drawCover(ctx, item, w, h, time, style, intensity, pulse);
+      ctx.restore();
+    };
+
+    switch (type) {
+      case "whip":
+        drawItem(previous, 1, () => ctx.translate(-p * w, 0));
+        drawItem(current, 1, () => ctx.translate((1 - p) * w, 0));
+        break;
+
+      case "rotate3d":
+        drawItem(previous, 1, () => {
+          ctx.translate(w / 2, h / 2);
+          ctx.scale(Math.max(0.04, Math.cos(p * Math.PI / 2)), 1);
+          ctx.translate(-w / 2, -h / 2);
+        });
+        drawItem(current, 1, () => {
+          ctx.translate(w / 2, h / 2);
+          ctx.scale(Math.max(0.04, Math.sin(p * Math.PI / 2)), 1);
+          ctx.translate(-w / 2, -h / 2);
+        });
+        break;
+
+      case "neon":
+        drawItem(previous);
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(0, 0, w * p, h);
+        ctx.clip();
+        drawCover(ctx, current, w, h, time, style, intensity, pulse);
+        ctx.restore();
+
+        if (p < 1) {
+          ctx.save();
+          ctx.fillStyle = "rgba(232,121,249,0.95)";
+          ctx.shadowColor = "#d946ef";
+          ctx.shadowBlur = 24;
+          ctx.fillRect(w * p - 3, 0, 6, h);
+          ctx.restore();
+        }
+        break;
+
+      case "glitch":
+        drawItem(previous, 1 - p);
+        drawItem(current, p);
+
+        if (p > 0.12 && p < 0.9) {
+          for (let i = 0; i < 7; i++) {
+            const y = (i * 137 + Math.floor(time * 160)) % h;
+            const height = 4 + (i % 3) * 4;
+            ctx.fillStyle = i % 2
+              ? "rgba(255,40,170,0.4)"
+              : "rgba(40,220,255,0.4)";
+            ctx.fillRect((i % 2 ? -1 : 1) * p * 18, y, w, height);
+          }
+        }
+        break;
+
+      case "blur":
+        drawItem(previous, 1 - p);
+        ctx.save();
+        ctx.globalAlpha = p;
+        if ("filter" in ctx) {
+          ctx.filter = `blur(${Math.sin(p * Math.PI) * 9}px)`;
+        }
+        drawCover(ctx, current, w, h, time, style, intensity, pulse);
+        ctx.restore();
+        break;
+
+      case "flash": {
+        drawItem(previous, 1 - p);
+        drawItem(current, p);
+        const flash = Math.max(0, 1 - Math.abs(p - 0.5) * 2);
+        const strength = intensity === "high" ? 0.8
+          : intensity === "low" ? 0.3 : 0.55;
+        ctx.fillStyle = `rgba(255,255,255,${flash * strength})`;
+        ctx.fillRect(0, 0, w, h);
+        break;
+      }
+
+      case "fade":
+        drawItem(previous, 1 - p);
+        drawItem(current, p);
+        break;
+
+      case "velocity":
+      default:
+        drawItem(previous, 1 - p);
+        ctx.save();
+        ctx.globalAlpha = p;
+        ctx.translate(w / 2, h / 2);
+        const zoom = 1.25 - 0.25 * p;
+        ctx.scale(zoom, zoom);
+        ctx.translate(-w / 2, -h / 2);
+        drawCover(ctx, current, w, h, time, style, intensity, pulse);
+        ctx.restore();
+
+        if (p > 0.7) {
+          ctx.fillStyle = `rgba(145,80,255,${(p - 0.7) * 0.45})`;
+          ctx.fillRect(0, 0, w, h);
+        }
+    }
+
+    ctx.restore();
+  }
+
+  const jjTransitionDurationInput =
+    document.getElementById("jj-transition-duration");
+  const jjTransitionDurationValue =
+    document.getElementById("jj-transition-duration-value");
+
+  if (jjTransitionDurationInput && jjTransitionDurationValue &&
+      !jjTransitionDurationInput.dataset.ready) {
+    jjTransitionDurationInput.dataset.ready = "1";
+
+    const updateJJTransitionDuration = () => {
+      const value = Number(jjTransitionDurationInput.value) || 0.5;
+      jjTransitionDurationValue.textContent =
+        value.toLocaleString("id-ID", { maximumFractionDigits: 1 }) +
+        " detik";
+    };
+
+    jjTransitionDurationInput.addEventListener(
+      "input", updateJJTransitionDuration
+    );
+    updateJJTransitionDuration();
+  }
+
   button.addEventListener("click", async () => {
     let loaded = [];
     let audioUrl = null;
@@ -1580,6 +1975,15 @@ document.addEventListener("DOMContentLoaded",()=>{const form=document.getElement
 
       const style = document.getElementById("jj-style").value;
       const intensity = document.getElementById("jj-intensity").value;
+      const transition =
+        document.querySelector('input[name="jj-transition"]:checked')?.value
+        || "velocity";
+      const transitionSlider =
+        document.getElementById("jj-transition-duration");
+      const requestedTransitionDuration = Math.max(
+        0.2,
+        Math.min(0.9, Number(transitionSlider?.value) || 0.5)
+      );
       const effects = new Set(
         Array.from(document.querySelectorAll(".jj-effect:checked")).map(x => x.value)
       );
@@ -1689,6 +2093,9 @@ document.addEventListener("DOMContentLoaded",()=>{const form=document.getElement
 
       const duration = Math.floor(music.end - music.start);
       const segmentDuration = duration / 5;
+      const transitionDuration = Math.min(
+        requestedTransitionDuration, segmentDuration * 0.42
+      );
       let startTime = 0;
       let lastBeat = -1;
       const frequency = new Uint8Array(analyser.frequencyBinCount);
@@ -1740,11 +2147,28 @@ document.addEventListener("DOMContentLoaded",()=>{const form=document.getElement
 
             const segment = Math.min(4, Math.floor(elapsed / segmentDuration));
             const media = loaded[segment];
+            const segmentStart = segment * segmentDuration;
+            const transitionProgress =
+              segment > 0 && elapsed < segmentStart + transitionDuration
+                ? (elapsed - segmentStart) / transitionDuration
+                : 1;
 
             ctx.fillStyle = "#080812";
             ctx.fillRect(0, 0, w, h);
 
-            drawCover(ctx, media, w, h, elapsed, style, intensity, pulse);
+            if (segment > 0 && transitionProgress < 1) {
+              drawJJTransition(
+                ctx,
+                loaded[segment - 1],
+                media,
+                w, h, elapsed,
+                style, intensity, pulse,
+                transition,
+                transitionProgress
+              );
+            } else {
+              drawCover(ctx, media, w, h, elapsed, style, intensity, pulse);
+            }
 
             if (style === "flash" && pulse > 0.68) {
               ctx.fillStyle = `rgba(255,255,255,${(pulse - 0.68) * 1.8})`;
@@ -1836,6 +2260,420 @@ document.addEventListener("DOMContentLoaded",()=>{const form=document.getElement
         try { item.cleanup(); } catch {}
       }
       button.disabled = false;
+    }
+  });
+})();
+
+/* CH JJ MOBILE EDITOR STEPS */
+(function () {
+  function initJJMobileSteps() {
+    const page = document.querySelector("#page-jedagjedug");
+    if (!page || page.dataset.jjMobileStepsReady === "1") return;
+
+    const panels = Array.from(page.querySelectorAll(".jj-panel"));
+    if (panels.length < 2) {
+      console.warn("CH JJ: panel editor tidak ditemukan lengkap.");
+      return;
+    }
+
+    const labels = ["Media", "Musik", "Gaya", "Transisi", "Efek", "Render"];
+    const icons = [
+      '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="8.5" cy="9" r="1.5"/><path d="m21 15-5-5L5 20"/></svg>',
+      '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>',
+      '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2 2.2 7.8L22 12l-7.8 2.2L12 22l-2.2-7.8L2 12l7.8-2.2Z"/></svg>',
+      '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h12l-3-3M20 17H8l3 3"/><path d="m16 4 3 3-3 3M8 14l-3 3 3 3"/></svg>',
+      '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2 1.8 6.2L20 10l-6.2 1.8L12 18l-1.8-6.2L4 10l6.2-1.8Z"/><path d="m19 16 .8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8Z"/></svg>',
+      '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 5 11 7-11 7Z"/><path d="M4 4v16"/></svg>'
+    ];
+
+    const nav = document.createElement("nav");
+    nav.className = "jj-mobile-step-nav";
+    nav.setAttribute("aria-label", "Navigasi editor Jedag Jedug");
+
+    panels.forEach((panel, index) => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "jj-step-tab";
+      button.setAttribute("aria-controls", panel.id || "jj-editor-panel-" + (index + 1));
+      if (!panel.id) panel.id = "jj-editor-panel-" + (index + 1);
+      button.innerHTML =
+        '<span class="jj-step-icon">' + (icons[index] || icons[0]) +
+        '</span><span>' + (labels[index] || ("Langkah " + (index + 1))) +
+        "</span>";
+
+      button.addEventListener("click", function () {
+        activate(index);
+        button.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "nearest" });
+      });
+
+      nav.appendChild(button);
+    });
+
+    function activate(index) {
+      panels.forEach(function (panel, i) {
+        panel.classList.toggle("jj-step-active", i === index);
+      });
+
+      Array.from(nav.children).forEach(function (button, i) {
+        button.classList.toggle("active", i === index);
+        button.setAttribute("aria-current", i === index ? "step" : "false");
+      });
+    }
+
+    const firstPanel = panels[0];
+    firstPanel.parentNode.insertBefore(nav, firstPanel);
+
+    page.classList.add("jj-mobile-steps");
+    page.dataset.jjMobileStepsReady = "1";
+    activate(0);
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initJJMobileSteps);
+  } else {
+    initJJMobileSteps();
+  }
+})();
+
+/* CH AI STUDIO - ACCESSIBLE PROFILE DRAWER CONTROLLER */
+(function () {
+  let lastFocusedElement = null;
+
+  function getProfileOverlay() {
+    return document.getElementById("ch-profile-overlay");
+  }
+
+  function getFocusableElements(overlay) {
+    return Array.from(overlay.querySelectorAll(
+      'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+    )).filter((element) => element.getClientRects().length > 0);
+  }
+
+  window.openCHProfile = function () {
+    const overlay = getProfileOverlay();
+    if (!overlay) {
+      console.error("Panel Profil tidak ditemukan.");
+      return;
+    }
+
+    if (!overlay.classList.contains("ch-profile-open")) {
+      lastFocusedElement = document.activeElement;
+    }
+
+    overlay.classList.add("ch-profile-open");
+    overlay.setAttribute("aria-hidden", "false");
+    document.body.classList.add("ch-profile-visible");
+
+    document.querySelectorAll("[data-mobile-profile]").forEach((button) => {
+      button.setAttribute("aria-expanded", "true");
+    });
+
+    const closeButton = overlay.querySelector(".ch-profile-close");
+    if (closeButton) {
+      window.setTimeout(() => closeButton.focus(), 100);
+    }
+  };
+
+  window.closeCHProfile = function () {
+    const overlay = getProfileOverlay();
+    if (!overlay) return;
+
+    overlay.classList.remove("ch-profile-open");
+    overlay.setAttribute("aria-hidden", "true");
+    document.body.classList.remove("ch-profile-visible");
+
+    document.querySelectorAll("[data-mobile-profile]").forEach((button) => {
+      button.setAttribute("aria-expanded", "false");
+    });
+
+    const focusTarget = lastFocusedElement && document.contains(lastFocusedElement)
+      ? lastFocusedElement
+      : document.querySelector("[data-mobile-profile]");
+    if (focusTarget && typeof focusTarget.focus === "function") {
+      window.setTimeout(() => focusTarget.focus(), 0);
+    }
+    lastFocusedElement = null;
+  };
+
+  document.addEventListener("keydown", function (event) {
+    const overlay = getProfileOverlay();
+    if (!overlay || !overlay.classList.contains("ch-profile-open")) return;
+
+    if (event.key === "Escape") {
+      event.preventDefault();
+      window.closeCHProfile();
+      return;
+    }
+
+    if (event.key === "Tab") {
+      const focusable = getFocusableElements(overlay);
+      if (!focusable.length) {
+        event.preventDefault();
+        overlay.querySelector(".ch-profile-drawer")?.focus();
+        return;
+      }
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && (document.activeElement === first || !overlay.contains(document.activeElement))) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && (document.activeElement === last || !overlay.contains(document.activeElement))) {
+        event.preventDefault();
+        first.focus();
+      }
+    }
+  });
+})();
+
+// ===== CH AI STUDIO: PROFILE ACCOUNT INTEGRATION =====
+(() => {
+  function getClerkUser() {
+    return window.Clerk?.user || null;
+  }
+
+  function profileMessage(message) {
+    if (typeof window.showToast === "function") {
+      window.showToast(message);
+    } else {
+      alert(message);
+    }
+  }
+
+  function escapeProfileText(value) {
+    return String(value || "").replace(/[&<>"']/g, char => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;"
+    })[char]);
+  }
+
+  window.refreshCHProfile = async function () {
+    const account = document.getElementById("ch-profile-account");
+    const creditsEl = document.getElementById("ch-profile-credits");
+    const auth = document.getElementById("ch-profile-auth");
+    const user = getClerkUser();
+
+    if (!account) return;
+
+    if (!user) {
+      account.innerHTML = `
+        <div class="ch-profile-avatar">CH</div>
+        <div class="ch-profile-identity">
+          <strong>Belum masuk</strong>
+          <span>Masuk untuk melihat profil dan kredit</span>
+        </div>`;
+      if (creditsEl) creditsEl.textContent = "0";
+      if (auth) {
+        auth.innerHTML = `
+          <button type="button" class="ch-profile-login"
+            onclick="closeCHProfile();openAuth('signin')">
+            Masuk / Daftar
+          </button>`;
+      }
+      return;
+    }
+
+    const fullName = [user.firstName, user.lastName]
+      .filter(Boolean).join(" ").trim();
+    const email = user.primaryEmailAddress?.emailAddress || "";
+    const displayName = fullName || email.split("@")[0] || "Pengguna";
+    const avatar = user.imageUrl;
+
+    account.innerHTML = `
+      ${avatar
+        ? `<img class="ch-profile-avatar ch-profile-avatar-image"
+             src="${escapeProfileText(avatar)}" alt="Foto profil">`
+        : `<div class="ch-profile-avatar">${escapeProfileText(
+             displayName.slice(0, 2).toUpperCase()
+           )}</div>`}
+      <div class="ch-profile-identity">
+        <strong>${escapeProfileText(displayName)}</strong>
+        <span>${escapeProfileText(email)}</span>
+        <small class="ch-profile-online">● Akun terhubung</small>
+      </div>`;
+
+    if (auth) {
+      auth.innerHTML = `
+        <button type="button" class="ch-profile-action"
+          onclick="logoutCH()">
+          <span class="ch-profile-action-icon">
+            <svg viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="1.8"
+              stroke-linecap="round" stroke-linejoin="round"
+              aria-hidden="true">
+              <path d="M10 17l5-5-5-5"/>
+              <path d="M15 12H3"/>
+              <path d="M12 3h6a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-6"/>
+            </svg>
+          </span>
+          <span><strong>Keluar akun</strong>
+            <small>Keluar dari CH AI Studio</small></span>
+          <svg class="ch-profile-chevron" viewBox="0 0 24 24"
+            aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+        </button>`;
+    }
+
+    // Ambil saldo melalui fungsi sinkronisasi yang sudah ada.
+    if (typeof window.syncCredits === "function") {
+      await window.syncCredits();
+    } else {
+      try {
+        const token = await window.Clerk.session?.getToken();
+        if (token) {
+          const response = await fetch("/api/credits", {
+            headers: { Authorization: "Bearer " + token }
+          });
+          if (response.ok) {
+            const data = await response.json();
+            if (creditsEl) {
+              creditsEl.textContent = String(Number(data.credits || 0));
+            }
+          }
+        }
+      } catch (error) {
+        console.error("CH Profile credits:", error);
+      }
+    }
+
+    // Sinkronkan angka pada panel profil setelah syncCredits selesai.
+    try {
+      const token = await window.Clerk.session?.getToken();
+      if (token) {
+        const response = await fetch("/api/credits", {
+          headers: { Authorization: "Bearer " + token }
+        });
+        if (response.ok) {
+          const data = await response.json();
+          if (creditsEl) {
+            creditsEl.textContent = String(Number(data.credits || 0));
+          }
+        }
+      }
+    } catch (error) {
+      console.error("CH Profile credit display:", error);
+    }
+  };
+
+  window.editCHProfileName = async function () {
+    const user = getClerkUser();
+
+    if (!user) {
+      profileMessage("Silakan masuk terlebih dahulu.");
+      return;
+    }
+
+    const currentName = [user.firstName, user.lastName]
+      .filter(Boolean).join(" ").trim();
+
+    const input = prompt("Masukkan nama tampilan baru:", currentName);
+    if (input === null) return;
+
+    const name = input.trim();
+    if (name.length < 2) {
+      profileMessage("Nama minimal 2 karakter.");
+      return;
+    }
+
+    if (name.length > 60) {
+      profileMessage("Nama maksimal 60 karakter.");
+      return;
+    }
+
+    const parts = name.split(/\s+/);
+    const firstName = parts.shift();
+    const lastName = parts.join(" ");
+
+    try {
+      await user.update({ firstName, lastName });
+      await window.refreshCHProfile();
+      profileMessage("Nama profil berhasil diperbarui.");
+    } catch (error) {
+      console.error("CH Edit profile:", error);
+      profileMessage(
+        error?.errors?.[0]?.longMessage ||
+        "Nama belum berhasil diubah. Coba lagi."
+      );
+    }
+  };
+
+  window.showCHCreditHistory = async function () {
+    const user = getClerkUser();
+
+    if (!user) {
+      profileMessage("Masuk terlebih dahulu untuk melihat akun.");
+      return;
+    }
+
+    // Belum mengklaim riwayat transaksi yang belum disediakan API.
+    profileMessage(
+      "Saldo kamu ditampilkan di panel profil. " +
+      "Riwayat transaksi perlu dihubungkan ke data pembayaran."
+    );
+  };
+
+  window.openCHSettings = function () {
+    if (!getClerkUser()) {
+      profileMessage("Masuk terlebih dahulu untuk mengatur akun.");
+      return;
+    }
+
+    const choice = confirm(
+      "PENGATURAN CH AI STUDIO\n\n" +
+      "OK: Muat ulang aplikasi\n" +
+      "Batal: Kembali ke profil"
+    );
+
+    if (choice) location.reload();
+  };
+
+  window.openCHHelp = function () {
+    alert(
+      "PUSAT BANTUAN — CH AI STUDIO\n\n" +
+      "• Profil dan email: gunakan akun Clerk yang sedang login.\n" +
+      "• Kredit: periksa saldo pada kartu profil.\n" +
+      "• Beli kredit: tekan tombol Beli kredit.\n\n" +
+      "Jika ada masalah, catat pesan error yang muncul."
+    );
+  };
+
+  // Tambahkan kelas gambar profil tanpa mengubah gaya ikon SVG.
+  if (!document.getElementById("ch-profile-account-extra-style")) {
+    const style = document.createElement("style");
+    style.id = "ch-profile-account-extra-style";
+    style.textContent = `
+      #ch-profile-account .ch-profile-avatar-image {
+        display: block;
+        width: 48px;
+        height: 48px;
+        min-width: 48px;
+        border-radius: 15px;
+        object-fit: cover;
+      }
+      #ch-profile-account .ch-profile-online {
+        display: block;
+        margin-top: 4px;
+        color: #80e6bd;
+        font-size: 11px;
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
+  // Bungkus fungsi pembuka yang sudah ada agar desain drawer tetap dipakai.
+  const originalOpen = window.openCHProfile;
+  window.openCHProfile = function () {
+    if (typeof originalOpen === "function") originalOpen();
+    window.refreshCHProfile();
+  };
+
+  // Isi profil saat Clerk selesai memuat dan ketika status login berubah.
+  window.addEventListener("load", () => {
+    window.refreshCHProfile();
+    if (window.Clerk?.addListener) {
+      window.Clerk.addListener(() => window.refreshCHProfile());
     }
   });
 })();

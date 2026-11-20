@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#080910">
+<title>CH STORYBOARD X</title>
+<link rel="stylesheet" href="/storyboard/storyboard.css">
+</head>
+<body>
+<div class="studio">
+  <header class="topbar">
+    <a class="brand" href="/">
+      <span class="brand-mark">CH</span>
+      <span class="brand-name">STORYBOARD <b>X</b><small>AI FILMMAKING STUDIO</small></span>
+    </a>
+    <button class="icon-button" id="saveTop" aria-label="Simpan project">↥</button>
+  </header>
+
+  <main class="workspace">
+    <section class="welcome">
+      <div class="eyebrow"><span class="live-dot"></span> CREATIVE WORKSPACE</div>
+      <h1>Direct your<br><span>own universe.</span></h1>
+      <p>Five frames. One story. Infinite possibilities.</p>
+    </section>
+
+    <section class="project-bar">
+      <div class="project-symbol">✦</div>
+      <div class="project-field">
+        <small>PROJECT TITLE</small>
+        <input id="projectTitle" value="Untitled Cinematic Story" maxlength="80">
+      </div>
+      <div class="project-format">9:16</div>
+    </section>
+
+    <section class="preview-section">
+      <div class="section-top">
+        <div><span class="eyebrow">01 / VISUAL DIRECTION</span><h2>Scene preview</h2></div>
+        <span class="time-chip" id="sceneTime">00:00 — 00:06</span>
+      </div>
+
+      <div class="preview-wrap">
+        <div class="preview-frame" id="previewFrame">
+          <img id="previewImage" alt="Scene preview">
+          <div class="preview-placeholder" id="previewPlaceholder">
+            <div class="orb">✦</div>
+            <b>YOUR SCENE STARTS HERE</b>
+            <span>Upload an image to build your frame</span>
+          </div>
+          <div class="frame-top"><span>CH / FILM 001</span><span id="frameNumber">SCENE 01</span></div>
+          <div class="frame-bottom">
+            <span class="frame-tag">CINEMATIC FRAME</span>
+            <span>9:16</span>
+          </div>
+        </div>
+        <div class="preview-side">
+          <span class="side-label">SCENE</span>
+          <b id="sideNumber">01</b>
+          <span class="side-line"></span>
+          <span class="side-label">DURATION</span>
+          <b id="sideDuration">06s</b>
+          <span class="side-line"></span>
+          <span class="side-label">FORMAT</span>
+          <b>9:16</b>
+        </div>
+      </div>
+      <div class="preview-controls">
+        <button class="upload-button" id="uploadButton">＋ Add image</button>
+        <button class="ghost-button" id="clearImage">Remove image</button>
+        <input type="file" id="imageInput" accept="image/png,image/jpeg,image/webp" hidden>
+      </div>
+    </section>
+
+    <section class="sequence-section">
+      <div class="section-top">
+        <div><span class="eyebrow">02 / STORY STRUCTURE</span><h2>Your sequence</h2></div>
+        <span class="total-time">30<span>s</span></span>
+      </div>
+      <div class="scene-strip" id="sceneStrip">
+        <button class="scene-tile active" data-index="0"><span class="tile-image">01</span><b>OPENING</b><small>00–06s</small></button>
+        <button class="scene-tile" data-index="1"><span class="tile-image">02</span><b>INTRO</b><small>06–12s</small></button>
+        <button class="scene-tile" data-index="2"><span class="tile-image">03</span><b>STORY</b><small>12–18s</small></button>
+        <button class="scene-tile" data-index="3"><span class="tile-image">04</span><b>CLIMAX</b><small>18–24s</small></button>
+        <button class="scene-tile" data-index="4"><span class="tile-image">05</span><b>ENDING</b><small>24–30s</small></button>
+      </div>
+      <div class="timeline">
+        <div class="timeline-progress" id="timelineProgress"></div>
+      </div>
+      <div class="timeline-scale"><span>00:00</span><span>00:15</span><span>00:30</span></div>
+    </section>
+
+    <section class="direction-section">
+      <div class="section-top">
+        <div><span class="eyebrow">03 / DIRECT THE SCENE</span><h2 id="directionHeading">Opening scene</h2></div>
+        <span class="edit-label">EDITING</span>
+      </div>
+
+      <label class="field-label" for="sceneTitle">SCENE NAME</label>
+      <input class="text-field" id="sceneTitle" maxlength="80" placeholder="Name this scene">
+
+      <div class="field-label prompt-label"><span>MOTION DIRECTION</span><span>AI VIDEO PROMPT</span></div>
+      <textarea id="motionPrompt" maxlength="1500" placeholder="Describe the camera movement, character action, lighting, atmosphere and cinematic motion..."></textarea>
+      <div class="prompt-footer"><span>Describe how your scene comes alive</span><span id="charCount">0 / 1500</span></div>
+
+      <div class="field-label">SCENE LENGTH</div>
+      <div class="duration-options">
+        <button class="duration active" data-duration="6">6 SEC</button>
+        <button class="duration" data-duration="8">8 SEC</button>
+        <button class="duration" data-duration="10">10 SEC</button>
+      </div>
+      <p class="duration-note">Durasi adegan dapat disesuaikan saat proses penyuntingan akhir.</p>
+
+      <div class="direction-actions">
+        <button class="secondary-button" id="previousScene">← PREVIOUS</button>
+        <button class="primary-button" id="nextScene">NEXT SCENE ↗</button>
+      </div>
+    </section>
+
+    <section class="output-section">
+      <div class="eyebrow">04 / FINAL OUTPUT</div>
+      <h2>Ready for production?</h2>
+      <p>Rancang semua scene terlebih dahulu. Setelah itu, storyboard dapat dihubungkan ke mesin generasi video.</p>
+      <div class="output-specs">
+        <div><small>SCENES</small><b>05</b></div>
+        <div><small>FORMAT</small><b>9:16</b></div>
+        <div><small>TARGET</small><b>30s</b></div>
+      </div>
+      <div class="video-production">
+  <button class="save-button" id="generateAllScenes">✦ GENERATE 5 SCENES</button>
+  <p id="batchStatus" aria-live="polite">Siapkan lima gambar dan lima prompt.</p>
+  <div id="batchResults"></div>
+</div>
+    <button class="save-button" id="saveProject">✦ SAVE STORYBOARD</button>
+      <div class="save-message" id="saveMessage" aria-live="polite"></div>
+      <p class="integration-note">VIDEO GENERATION · DEAPI INTEGRATION COMING NEXT</p>
+    </section>
+  </main>
+
+  <nav class="bottom-nav">
+    <a href="/"><span>⌂</span><small>HOME</small></a>
+    <a href="#" class="active"><span>▧</span><small>STUDIO</small></a>
+    <a href="/"><span>▤</span><small>PROJECTS</small></a>
+    <a href="/"><span>◉</span><small>PROFILE</small></a>
+  </nav>
+</div>
+<script src="/storyboard/storyboard.js"></script>
+</body>
+</html>
