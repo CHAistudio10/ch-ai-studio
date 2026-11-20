@@ -746,3 +746,5 @@ app.post("/api/storytelling/generate-scene-images", wrapStRoute("./api/storytell
 app.post("/api/storytelling/generate-scene-video", wrapStRoute("./api/storytelling/generate-scene-video.js"));
 app.all("/api/storytelling/generation-status", wrapStRoute("./api/storytelling/generation-status.js"));
 
+
+export default app;
