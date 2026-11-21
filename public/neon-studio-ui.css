@@ -1,0 +1,392 @@
+/* ==========================================================================
+   CH AI STUDIO — NEON DARK STUDIO UI SKIN (VISUAL OVERRIDE ONLY)
+   Preserves all DOM IDs, JS handlers, APIs, Clerk, Supabase & Midtrans
+   ========================================================================== */
+
+:root {
+  --ns-bg: #080512;
+  --ns-surface: rgba(20, 14, 38, 0.86);
+  --ns-surface-2: rgba(29, 20, 54, 0.92);
+  --ns-border: rgba(168, 85, 247, 0.28);
+  --ns-border-glow: rgba(217, 70, 239, 0.72);
+  --ns-purple: #8B5CF6;
+  --ns-magenta: #EC4899;
+  --ns-cyan: #22D3EE;
+  --ns-grad-cta: linear-gradient(90deg, #D946EF 0%, #8B5CF6 48%, #22D3EE 100%);
+  --ns-grad-pill: linear-gradient(135deg, rgba(139, 92, 246, 0.32), rgba(236, 72, 153, 0.28));
+  --ns-shadow-glow: 0 0 18px rgba(217, 70, 239, 0.35), 0 0 32px rgba(34, 211, 238, 0.16);
+}
+
+body {
+  background:
+    radial-gradient(circle at 18% 8%, rgba(139, 92, 246, 0.22), transparent 42%),
+    radial-gradient(circle at 86% 24%, rgba(236, 72, 153, 0.16), transparent 45%),
+    radial-gradient(circle at 50% 92%, rgba(34, 211, 238, 0.12), transparent 48%),
+    var(--ns-bg) !important;
+}
+
+/* Header & Subpage Title Lockup */
+.v6-topbar {
+  background: rgba(10, 7, 22, 0.88) !important;
+  backdrop-filter: blur(18px) !important;
+  border-bottom: 1px solid rgba(168, 85, 247, 0.2) !important;
+}
+
+.v6-subpage-bar h2 {
+  font-size: 1.18rem !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.02em;
+  background: linear-gradient(90deg, #FFFFFF 0%, #E9D5FF 75%, #A5F3FC 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.v6-back-btn,
+.v6-crown-badge,
+.v6-inline-action-btn {
+  background: var(--ns-surface-2) !important;
+  border: 1px solid var(--ns-border) !important;
+  color: #F5F3FF !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+}
+
+/* Shared Primary Gradient CTA (BUAT GAMBAR / VIDEO / JJ / CERITA) */
+#page-generate .v6-cta-full,
+#page-jedagjedug .v6-cta-full,
+#page-storytelling .v6-cta-full,
+#page-storytelling button[onclick*="generateST"],
+#page-jedagjedug #jj-render-btn {
+  background: var(--ns-grad-cta) !important;
+  border: 1px solid rgba(255, 255, 255, 0.28) !important;
+  border-radius: 999px !important;
+  color: #FFFFFF !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.04em !important;
+  text-transform: uppercase;
+  min-height: 48px !important;
+  box-shadow: var(--ns-shadow-glow) !important;
+  transition: transform 0.16s ease, box-shadow 0.2s ease !important;
+}
+
+#page-generate .v6-cta-full:active,
+#page-jedagjedug .v6-cta-full:active,
+#page-storytelling .v6-cta-full:active {
+  transform: scale(0.985);
+}
+
+/* ==========================================================================
+   1 & 2. GENERATOR GAMBAR & GAMBAR KE VIDEO (#page-generate)
+   ========================================================================== */
+#page-generate .v6-segmented {
+  background: rgba(16, 11, 32, 0.9) !important;
+  border: 1px solid var(--ns-border) !important;
+  border-radius: 999px !important;
+  padding: 4px !important;
+}
+
+#page-generate .v6-seg-btn {
+  border-radius: 999px !important;
+  font-weight: 700 !important;
+  color: rgba(233, 213, 255, 0.72) !important;
+}
+
+#page-generate .v6-seg-btn.is-active {
+  background: var(--ns-grad-pill) !important;
+  border: 1px solid var(--ns-border-glow) !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 0 14px rgba(217, 70, 239, 0.32);
+}
+
+#page-generate .v6-prompt-card {
+  position: relative;
+  background: linear-gradient(155deg, rgba(26, 17, 50, 0.92), rgba(14, 10, 28, 0.95)) !important;
+  border: 1px solid rgba(168, 85, 247, 0.38) !important;
+  border-radius: 18px !important;
+  padding: 13px 14px !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07), 0 10px 26px rgba(5, 3, 14, 0.55) !important;
+}
+
+#page-generate .v6-prompt-card textarea#prompt {
+  min-height: 78px !important;
+  color: #F8FAFC !important;
+  font-size: 0.85rem !important;
+  line-height: 1.48 !important;
+}
+
+#page-generate .upload-row .upload {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(139, 92, 246, 0.18);
+  border: 1px solid rgba(168, 85, 247, 0.45);
+  color: #E9D5FF;
+  font-weight: 700;
+}
+
+/* Pill Style & Ratio Cards matching Reference Screens 1 & 2 */
+#page-generate .v6-control-label span:first-child {
+  font-size: 0.8rem !important;
+  font-weight: 700 !important;
+  color: #F3E8FF !important;
+}
+
+#page-generate .v6-style-grid {
+  display: flex !important;
+  gap: 8px !important;
+  overflow-x: auto !important;
+  padding-bottom: 4px;
+  scrollbar-width: none;
+}
+#page-generate .v6-style-grid::-webkit-scrollbar { display: none; }
+
+#page-generate .v6-style-card {
+  flex: 0 0 auto !important;
+  min-width: 84px !important;
+  padding: 7px 13px !important;
+  border-radius: 999px !important;
+  background: rgba(22, 15, 42, 0.88) !important;
+  border: 1px solid rgba(168, 85, 247, 0.26) !important;
+  display: inline-flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+}
+
+#page-generate .v6-style-card svg {
+  width: 16px !important;
+  height: 16px !important;
+  border-radius: 999px !important;
+  flex-shrink: 0;
+}
+
+#page-generate .v6-style-card span {
+  font-size: 0.74rem !important;
+  font-weight: 700 !important;
+  color: rgba(243, 232, 255, 0.84) !important;
+}
+
+#page-generate .v6-style-card.is-active {
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.34), rgba(236, 72, 153, 0.28)) !important;
+  border: 1.5px solid #E879F9 !important;
+  box-shadow: 0 0 16px rgba(232, 121, 249, 0.42) !important;
+}
+
+#page-generate .v6-style-card.is-active span {
+  color: #FFFFFF !important;
+}
+
+#page-generate .v6-ratio-grid {
+  display: flex !important;
+  gap: 8px !important;
+}
+
+#page-generate .v6-ratio-card {
+  flex: 0 0 auto !important;
+  min-width: 66px !important;
+  padding: 7px 14px !important;
+  border-radius: 999px !important;
+  background: rgba(22, 15, 42, 0.88) !important;
+  border: 1px solid rgba(168, 85, 247, 0.26) !important;
+  flex-direction: row !important;
+  gap: 6px !important;
+}
+
+#page-generate .v6-ratio-card .v6-ratio-box,
+#page-generate .v6-ratio-card span:last-child {
+  display: none !important;
+}
+
+#page-generate .v6-ratio-card.is-active {
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.34), rgba(236, 72, 153, 0.28)) !important;
+  border: 1.5px solid #E879F9 !important;
+  box-shadow: 0 0 16px rgba(232, 121, 249, 0.42) !important;
+  color: #FFFFFF !important;
+}
+
+/* Video Duration & FPS Pills */
+#page-generate .v6-video-pill-group {
+  background: var(--ns-surface) !important;
+  border: 1px solid var(--ns-border) !important;
+  border-radius: 16px !important;
+}
+
+#page-generate .v6-mini-seg button {
+  border-radius: 999px !important;
+}
+
+#page-generate .v6-mini-seg button.is-active {
+  background: var(--ns-grad-pill) !important;
+  border: 1px solid #E879F9 !important;
+  box-shadow: 0 0 12px rgba(232, 121, 249, 0.35);
+}
+
+#page-generate .v6-stepper-row,
+#page-generate .v6-video-cost-bar {
+  background: var(--ns-surface) !important;
+  border: 1px solid var(--ns-border) !important;
+  border-radius: 16px !important;
+}
+
+/* Hasil Generasi / Hasil Video Frame */
+#page-generate #results {
+  background: linear-gradient(160deg, rgba(22, 14, 44, 0.92), rgba(11, 8, 24, 0.96)) !important;
+  border: 1px solid rgba(168, 85, 247, 0.35) !important;
+  border-radius: 20px !important;
+  padding: 12px !important;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+}
+
+#page-generate #results img,
+#page-generate #results video {
+  border-radius: 14px !important;
+  border: 1px solid rgba(232, 121, 249, 0.35);
+}
+
+#page-generate #results button,
+#page-generate #results a {
+  border-radius: 12px !important;
+  background: rgba(34, 24, 62, 0.92) !important;
+  border: 1px solid rgba(168, 85, 247, 0.36) !important;
+  color: #F5F3FF !important;
+  font-weight: 700 !important;
+}
+
+/* ==========================================================================
+   3. CH CHAT AI (#page-chat) — Reference Screen 5
+   ========================================================================== */
+#page-chat .v6-subpage-bar h2::after {
+  content: "CH-4o";
+  display: inline-block;
+  margin-left: 8px;
+  padding: 2px 9px;
+  border-radius: 999px;
+  font-size: 0.66rem;
+  font-weight: 800;
+  vertical-align: middle;
+  background: rgba(139, 92, 246, 0.26);
+  border: 1px solid rgba(217, 70, 239, 0.6);
+  color: #E9D5FF;
+  -webkit-text-fill-color: #E9D5FF;
+}
+
+#page-chat .chat-shell {
+  background: linear-gradient(180deg, rgba(16, 11, 32, 0.85), rgba(9, 6, 20, 0.95)) !important;
+  border: 1px solid rgba(168, 85, 247, 0.28) !important;
+  border-radius: 22px !important;
+  padding: 12px !important;
+}
+
+#page-chat .chat-messages .msg.user,
+#page-chat .chat-bubble.user,
+#page-chat [class*="user"] > .bubble {
+  background: linear-gradient(125deg, #7E22CE 0%, #6D28D9 48%, #0E7490 100%) !important;
+  border: 1px solid rgba(217, 70, 239, 0.45) !important;
+  border-radius: 18px 18px 4px 18px !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 8px 20px rgba(109, 40, 217, 0.28);
+}
+
+#page-chat .chat-messages .msg.assistant,
+#page-chat .chat-messages .msg.ai,
+#page-chat .chat-bubble.assistant {
+  background: rgba(24, 17, 46, 0.92) !important;
+  border: 1px solid rgba(168, 85, 247, 0.34) !important;
+  border-radius: 18px 18px 18px 4px !important;
+  color: #F3E8FF !important;
+  box-shadow: 0 8px 22px rgba(4, 2, 12, 0.45);
+}
+
+#page-chat .chat-input-wrap {
+  background: rgba(22, 15, 42, 0.96) !important;
+  border: 1px solid rgba(168, 85, 247, 0.42) !important;
+  border-radius: 999px !important;
+  padding: 6px 8px 6px 14px !important;
+  box-shadow: 0 0 18px rgba(139, 92, 246, 0.22);
+}
+
+#page-chat #chatSend {
+  width: 38px !important;
+  height: 38px !important;
+  border-radius: 999px !important;
+  background: var(--ns-grad-cta) !important;
+  color: #FFFFFF !important;
+  border: none !important;
+  box-shadow: 0 0 14px rgba(217, 70, 239, 0.5);
+}
+
+/* ==========================================================================
+   4. CH AI JEDAG JEDUG (#page-jedagjedug) — Reference Screen 3
+   ========================================================================== */
+#page-jedagjedug .jj-panel {
+  background: linear-gradient(155deg, rgba(24, 16, 46, 0.92), rgba(12, 9, 26, 0.96)) !important;
+  border: 1px solid rgba(168, 85, 247, 0.32) !important;
+  border-radius: 18px !important;
+  box-shadow: 0 10px 26px rgba(4, 2, 14, 0.48) !important;
+}
+
+#page-jedagjedug .jj-preview {
+  background: radial-gradient(circle at center, rgba(139, 92, 246, 0.24), rgba(10, 7, 22, 0.95)) !important;
+  border: 1.5px solid rgba(217, 70, 239, 0.48) !important;
+  box-shadow: inset 0 0 24px rgba(139, 92, 246, 0.22);
+}
+
+#page-jedagjedug .v6-jj-dock {
+  background: rgba(20, 14, 38, 0.92) !important;
+  border: 1px solid rgba(168, 85, 247, 0.34) !important;
+  border-radius: 16px !important;
+}
+
+#page-jedagjedug .v6-jj-dock-btn.is-active,
+#page-jedagjedug .v6-jj-trans-tab.is-active {
+  background: var(--ns-grad-pill) !important;
+  border: 1px solid #E879F9 !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 0 14px rgba(232, 121, 249, 0.36);
+}
+
+#page-jedagjedug .jj-timeline-editor {
+  background: rgba(15, 10, 30, 0.92) !important;
+  border: 1px solid rgba(34, 211, 238, 0.3) !important;
+  border-radius: 14px !important;
+}
+
+#page-jedagjedug .jj-waveform {
+  background: linear-gradient(90deg, rgba(236, 72, 153, 0.22), rgba(139, 92, 246, 0.28), rgba(34, 211, 238, 0.24)) !important;
+}
+
+/* ==========================================================================
+   5. CH STORYTELLING (#page-storytelling) — Reference Screen 4
+   ========================================================================== */
+#page-storytelling .st-header-card,
+#page-storytelling .v6-card {
+  background: linear-gradient(155deg, rgba(25, 16, 48, 0.92), rgba(12, 9, 26, 0.96)) !important;
+  border: 1px solid rgba(168, 85, 247, 0.36) !important;
+  border-radius: 18px !important;
+  box-shadow: 0 10px 26px rgba(4, 2, 14, 0.5) !important;
+}
+
+#page-storytelling .st-room-tab {
+  background: rgba(22, 15, 42, 0.9) !important;
+  border: 1px solid rgba(168, 85, 247, 0.28) !important;
+  color: rgba(243, 232, 255, 0.8) !important;
+}
+
+#page-storytelling .st-room-tab.is-active,
+#page-storytelling .st-room-tab.active {
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.38), rgba(236, 72, 153, 0.3)) !important;
+  border: 1.5px solid #E879F9 !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 0 15px rgba(232, 121, 249, 0.42) !important;
+}
+
+#page-storytelling .v6-input,
+#page-storytelling textarea,
+#page-storytelling select {
+  background: rgba(14, 10, 28, 0.92) !important;
+  border: 1px solid rgba(168, 85, 247, 0.34) !important;
+  border-radius: 14px !important;
+  color: #F8FAFC !important;
+}
