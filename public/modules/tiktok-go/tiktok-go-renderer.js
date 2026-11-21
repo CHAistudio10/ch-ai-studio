@@ -1,7 +1,7 @@
 export class TikTokGoVideoRenderer {
   constructor(canvasElement) {
     this.canvas = canvasElement;
-    this.ctx = canvasElement.getContext('2d');
+    this.ctx = canvasElement.getContext('2d', { alpha: false });
     this.isRendering = false;
   }
 
@@ -25,7 +25,6 @@ export class TikTokGoVideoRenderer {
     const numScenes = scenes.length;
     if (numScenes === 0 || images.length === 0) return;
 
-    // Kunci t agar tidak pernah melewati totalDuration
     const clampedT = Math.min(Math.max(0, t), Math.max(0.01, totalDuration - 0.001));
     const sceneDuration = totalDuration / numScenes;
     const sceneIndex = Math.min(numScenes - 1, Math.floor(clampedT / sceneDuration));
@@ -189,30 +188,44 @@ export class TikTokGoVideoRenderer {
   }
 
   /**
-   * Export video menggunakan real-time clock (getCurrentTime) sehingga video & lagu berhenti di detik yang sama persis
+   * Merekam canvas + audio dengan format valid untuk Galeri Android & TikTok (bebas bug 00:00)
    */
   async exportVideo({ totalDuration, fps = 30, renderParams, audioStream = null, getCurrentTime = null, onProgress }) {
     if (this.isRendering) return null;
     this.isRendering = true;
 
+    // Gambar frame awal terlebih dahulu sebelum captureStream agar track video langsung aktif
+    this.renderFrame({ ...renderParams, t: 0, totalDuration });
+
     const canvasStream = this.canvas.captureStream(fps);
+    const videoTrack = canvasStream.getVideoTracks()[0];
+
+    const combinedStream = new MediaStream();
+    if (videoTrack) combinedStream.addTrack(videoTrack);
     if (audioStream) {
-      audioStream.getAudioTracks().forEach(track => canvasStream.addTrack(track));
+      audioStream.getAudioTracks().forEach(track => combinedStream.addTrack(track));
     }
 
-    // Prioritaskan MP4 H.264 jika didukung Android Chrome, fallback ke WebM VP8/VP9 yang valid
-    const candidates = [
-      { mime: 'video/mp4;codecs=avc1,mp4a.40.2', ext: 'mp4' },
-      { mime: 'video/mp4', ext: 'mp4' },
-      { mime: 'video/webm;codecs=vp8,opus', ext: 'webm' },
-      { mime: 'video/webm;codecs=vp9,opus', ext: 'webm' },
-      { mime: 'video/webm', ext: 'webm' }
-    ];
+    // Hindari bug fragmented MP4 Chrome Android yang menghasilkan durasi 00:00 di Galeri;
+    // gunakan WebM VP8/VP9 yang diputar sempurna di Android Gallery & TikTok, atau MP4 khusus iOS/Safari
+    const isApple = /iPad|iPhone|iPod|Safari/i.test(navigator.userAgent) && !/Chrome|Android/i.test(navigator.userAgent);
+    const candidates = isApple
+      ? [
+          { mime: 'video/mp4', ext: 'mp4' },
+          { mime: 'video/webm', ext: 'webm' }
+        ]
+      : [
+          { mime: 'video/webm;codecs=vp8,opus', ext: 'webm' },
+          { mime: 'video/webm;codecs=vp9,opus', ext: 'webm' },
+          { mime: 'video/webm', ext: 'webm' },
+          { mime: 'video/mp4', ext: 'mp4' }
+        ];
+
     const chosen = candidates.find(c => MediaRecorder.isTypeSupported(c.mime)) || { mime: '', ext: 'webm' };
 
-    const recorder = new MediaRecorder(canvasStream, {
+    const recorder = new MediaRecorder(combinedStream, {
       ...(chosen.mime ? { mimeType: chosen.mime } : {}),
-      videoBitsPerSecond: this.canvas.width === 1080 ? 6_500_000 : 3_800_000
+      videoBitsPerSecond: this.canvas.width === 1080 ? 5_500_000 : 3_200_000
     });
 
     const chunks = [];
@@ -229,35 +242,45 @@ export class TikTokGoVideoRenderer {
         resolve({ blob, url, mimeType: finalMime, ext: chosen.ext });
       };
 
-      // Gambar frame 0 dulu sebelum mulai merekam
-      this.renderFrame({ ...renderParams, t: 0, totalDuration });
-      recorder.start(250);
+      // Timeslice 500ms memaksa MediaRecorder menulis cluster frame secara rutin ke buffer
+      recorder.start(500);
 
       const startPerf = performance.now();
       let stopped = false;
+      const frameMs = Math.round(1000 / fps);
 
-      const step = () => {
+      // Gunakan timer stabil 30fps agar frame tetap ditulis walau layar HP sedikit terbebani
+      const intervalId = setInterval(() => {
         if (stopped) return;
         const elapsed = getCurrentTime ? getCurrentTime() : (performance.now() - startPerf) / 1000;
 
         if (elapsed >= totalDuration) {
           stopped = true;
+          clearInterval(intervalId);
           this.renderFrame({ ...renderParams, t: totalDuration - 0.01, totalDuration });
+          if (videoTrack && typeof videoTrack.requestFrame === 'function') {
+            videoTrack.requestFrame();
+          }
           if (onProgress) onProgress(100);
+
+          try {
+            if (recorder.state === 'recording') recorder.requestData();
+          } catch (e) {}
+
           setTimeout(() => {
             if (recorder.state !== 'inactive') recorder.stop();
-          }, 120);
+          }, 300);
           return;
         }
 
         this.renderFrame({ ...renderParams, t: elapsed, totalDuration });
+        if (videoTrack && typeof videoTrack.requestFrame === 'function') {
+          videoTrack.requestFrame();
+        }
         if (onProgress) {
           onProgress(Math.min(99, Math.round((elapsed / totalDuration) * 100)));
         }
-        requestAnimationFrame(step);
-      };
-
-      requestAnimationFrame(step);
+      }, frameMs);
     });
   }
 }
