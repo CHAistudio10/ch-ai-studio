@@ -7,12 +7,9 @@ async function initClerk() {
       return;
     }
 
-    await window.Clerk.load({
-      ui: {
-        ClerkUI: window.__internal_ClerkUICtor
-      },
-      publishableKey: CLERK_PUBLISHABLE_KEY
-    });
+    if (!window.Clerk.loaded) {
+      await window.Clerk.load({ publishableKey: CLERK_PUBLISHABLE_KEY });
+    }
 
     const loginButton = document.getElementById('login-button');
     const auth = document.getElementById('clerk-auth');
@@ -53,6 +50,8 @@ async function initClerk() {
     if (window.Clerk.user) {
       console.log('CH AI Studio: LOGIN BERHASIL');
       showUser();
+      if (typeof window.syncV6ClerkAndCredits === 'function') window.syncV6ClerkAndCredits();
+      if (typeof window.syncCredits === 'function') window.syncCredits();
     } else {
       console.log('CH AI Studio: BELUM LOGIN');
       showLogin();
@@ -62,6 +61,8 @@ async function initClerk() {
       if (user) {
         console.log('CH AI Studio: USER LOGIN', user);
         showUser();
+        if (typeof window.syncV6ClerkAndCredits === 'function') window.syncV6ClerkAndCredits();
+        if (typeof window.syncCredits === 'function') window.syncCredits();
 
         if (auth) {
           auth.style.display = 'none';

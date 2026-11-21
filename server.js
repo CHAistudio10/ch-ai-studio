@@ -12,7 +12,7 @@ async function getClerkUserId(req) {
   if (!authHeader.startsWith("Bearer ")) return null;
   const token = authHeader.slice(7);
   try {
-    const payload = await verifyToken(token, { secretKey: process.env.CLERK_SECRET_KEY });
+    const payload = await verifyToken(token, { secretKey: process.env.CLERK_SECRET_KEY, clockSkewInMs: 60000 });
     return payload.sub || null;
   } catch (error) {
     console.error("Clerk token verify error:", error?.name, error?.message);
@@ -170,15 +170,6 @@ app.post("/api/generate", async (req, res) => {
 });
 
 
-// Global error handler. Vercel's native Express runtime turns the app into a single
-// Function; an unhandled error can leave that Function in an undefined state, so we
-// always convert errors into a clean JSON response instead of letting Express swallow them.
-app.use((err, req, res, next) => {
-  console.error(err);
-  if (res.headersSent) return next(err);
-  res.status(500).json({ error: err?.message || "Terjadi kesalahan pada server." });
-});
-
 // Only bind a port when running locally. On Vercel the default export is used directly.
 
 
@@ -191,13 +182,43 @@ app.post("/api/generate-video", async (req, res) => {
     if (!prompt?.trim())
       return res.status(400).json({ error: "Prompt video wajib diisi." });
 
-    if (!image_b64)
+    let effectiveImageB64 = image_b64;
+    if (!effectiveImageB64 && process.env.PIXAZO_API_KEY) {
+      const seedImgResp = await fetch("https://gateway.pixazo.ai/flux-1-schnell/v1/getData", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Ocp-Apim-Subscription-Key": process.env.PIXAZO_API_KEY
+        },
+        body: JSON.stringify({
+          prompt: "Cinematic video keyframe: " + prompt.trim() + ", high detail, clean composition",
+          num_steps: 6,
+          num_frames: 240,
+          frame_rate: 24,
+          width: 512,
+          height: 512
+        })
+      });
+      if (seedImgResp.ok) {
+        const seedData = await seedImgResp.json();
+        const seedUrl = seedData?.output || seedData?.image_url || seedData?.url || seedData?.output?.media_url?.[0];
+        if (seedUrl) {
+          const imgFetch = await fetch(seedUrl);
+          if (imgFetch.ok) {
+            const arrBuf = await imgFetch.arrayBuffer();
+            effectiveImageB64 = Buffer.from(arrBuf).toString("base64");
+          }
+        }
+      }
+    }
+
+    if (!effectiveImageB64)
       return res.status(400).json({ error: "Gambar wajib diisi untuk video I2V." });
 
     if (!process.env.DEAPI_API_KEY)
       return res.status(500).json({ error: "DEAPI_API_KEY belum dikonfigurasi." });
 
-    const base64 = image_b64.replace(/^data:image\/[^;]+;base64,/, "");
+    const base64 = effectiveImageB64.replace(/^data:image\/[^;]+;base64,/, "");
     const imageBuffer = Buffer.from(base64, "base64");
 
     if (!imageBuffer.length)
@@ -649,10 +670,10 @@ app.post("/api/chat", async (req, res) => {
     }));
 
     const models = [
-      "gemini-3.8-flash",
-      "gemini-3.7-flash",
-      "gemini-3.6-flash",
-      "gemini-3.5-flash-lite"
+      "gemini-2.5-flash",
+      "gemini-2.5-flash-lite",
+      "gemini-2.0-flash",
+      "gemini-1.5-flash"
     ];
 
     const systemText = "Kamu adalah CH Chat AI, asisten AI di dalam CH AI Studio yang dikembangkan oleh Cahya Handika. Gaya utama: teman ngobrol yang pintar, bukan robot yang sok pintar. Gunakan Bahasa Indonesia natural dan terasa Gen Z. Boleh memakai gue, lo, cuy, bro, wkwk, ngakak, lah, buset, atau slang lain jika cocok dengan konteks, tetapi jangan dipaksakan. Sesuaikan gaya dengan pengguna: santai untuk obrolan santai, serius dan fokus untuk masalah serius, teknis dan jelas untuk coding, bisnis, atau pertanyaan profesional. Pahami typo, bahasa gaul, singkatan, dan campuran Indonesia-Inggris. CH AI Studio adalah platform AI kreatif yang sudah memiliki fitur Generate Gambar, Generate Video, CH Chat AI, Instant untuk ide gerakan video, Template, Asset, dan Project Saya. Jangan mengatakan bahwa CH AI Studio hanya berfokus pada teks atau bahwa Generate Gambar dan Generate Video belum tersedia. Jika ditanya tentang fitur tertentu yang belum diketahui tersedia, jangan mengarang; jelaskan dengan jujur bahwa fitur tersebut belum tersedia atau belum dapat dipastikan. Jika pengguna bertanya apakah video bisa langsung otomatis di-upload ke TikTok dari CH AI Studio, jelaskan bahwa Generate Video sudah tersedia, tetapi otomatisasi upload TikTok belum tersedia jika memang belum ada. Jangan mengarang fakta, pengalaman, identitas, roadmap, atau keberadaan tim yang tidak diketahui. Jika ditanya siapa yang membuatmu, jelaskan bahwa kamu dikembangkan oleh Cahya Handika melalui CH AI Studio. Jangan menyebut dirimu ChatGPT dan jangan mengaku sebagai produk OpenAI. Jawab natural, responsif, akurat, jujur, membantu, aman, dan tidak terlalu bertele-tele kecuali pengguna meminta penjelasan detail.";
@@ -682,12 +703,15 @@ app.post("/api/chat", async (req, res) => {
 
           const msg = String(lastError).toLowerCase();
           const retryable =
+            response.status === 404 ||
             response.status === 429 ||
             response.status === 503 ||
             msg.includes("high demand") ||
             msg.includes("overloaded") ||
             msg.includes("temporarily") ||
-            msg.includes("unavailable");
+            msg.includes("unavailable") ||
+            msg.includes("not found") ||
+            msg.includes("is not supported");
 
           if (retryable) continue;
 
@@ -751,5 +775,11 @@ app.post("/api/storytelling/generate-script", wrapStRoute("./api/storytelling/ge
 app.post("/api/storytelling/generate-scene-images", wrapStRoute("./api/storytelling/generate-scene-images.js"));
 app.post("/api/storytelling/generate-scene-video", wrapStRoute("./api/storytelling/generate-scene-video.js"));
 app.all("/api/storytelling/generation-status", wrapStRoute("./api/storytelling/generation-status.js"));
+
+app.use((err, req, res, next) => {
+  console.error(err);
+  if (res.headersSent) return next(err);
+  res.status(500).json({ error: err?.message || "Terjadi kesalahan pada server." });
+});
 
 export default app;

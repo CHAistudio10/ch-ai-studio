@@ -503,14 +503,39 @@
         })
       });
       const data = await resp.json();
-      if (!resp.ok || !data.videoUrl) throw new Error(data.error || "Endpoint DeAPI Storytelling belum terhubung");
+      if (!resp.ok || data.ok === false) {
+        throw new Error(data.error || "Gagal memulai video scene");
+      }
+
+      let finalVideoUrl = data.videoUrl || "";
+      const taskId = data.taskId || data.requestId;
+
+      if (!finalVideoUrl && taskId) {
+        for (let attempt = 0; attempt < 90; attempt++) {
+          await new Promise((r) => setTimeout(r, 5000));
+          const stResp = await fetch("/api/storytelling/generation-status?taskId=" + encodeURIComponent(taskId));
+          const stData = await stResp.json();
+          if (stData.status === "Completed" && stData.videoUrl) {
+            finalVideoUrl = stData.videoUrl;
+            break;
+          }
+          if (stData.status === "Failed") {
+            throw new Error(stData.error || "Video scene gagal diproses deAPI");
+          }
+        }
+      }
+
+      if (!finalVideoUrl) {
+        throw new Error("Proses video scene melebihi batas waktu tunggu.");
+      }
+
       updateProject((p) => {
-        p.scenes[idx].videoUrl = data.videoUrl;
+        p.scenes[idx].videoUrl = finalVideoUrl;
         p.scenes[idx].videoStatus = "Completed";
       });
     } catch (err) {
       updateProject((p) => { p.scenes[idx].videoStatus = "Failed"; });
-      alert("Generate Video Scene gagal: " + err.message + " (Akan dihubungkan ke DeAPI pada Tahap 5 setelah audit API)");
+      alert("Generate Video Scene gagal: " + err.message);
     }
     renderSTStoryboard();
   };

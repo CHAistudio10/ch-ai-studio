@@ -99,6 +99,9 @@ async function syncCredits() {
     console.error("Sync credits:", error);
   }
 }
+window.syncCredits = syncCredits;
+setTimeout(() => { if (typeof syncCredits === "function") syncCredits(); }, 2500);
+setTimeout(() => { if (typeof syncCredits === "function") syncCredits(); }, 6000);
 
 async function useCredit(cost) {
   if (!window.Clerk?.user) return false;
