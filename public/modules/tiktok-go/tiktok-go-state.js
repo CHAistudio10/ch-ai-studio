@@ -1,4 +1,4 @@
-const STORAGE_KEY = 'ch_ai_studio_tiktok_go_projects_v3';
+const STORAGE_KEY = 'ch_ai_studio_tiktok_go_projects_v4';
 
 export class RestaurantProjectManager {
   constructor() {
@@ -53,6 +53,7 @@ export class RestaurantProjectManager {
         promoPrice: '',
         promoInfo: '',
         highlights: '',
+        menuCardDataUrl: '', // Screenshot / gambar menu toko
         tiktokLocationTag: '',
         tiktokPromoTag: ''
       },

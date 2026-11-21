@@ -16,7 +16,7 @@ export class TikTokGoVideoRenderer {
     }
   }
 
-  renderFrame({ t, totalDuration, images, scenes, beats, restaurantData }) {
+  renderFrame({ t, totalDuration, images, menuCardImage = null, scenes, beats, restaurantData }) {
     const { width, height } = this.canvas;
     const ctx = this.ctx;
 
@@ -38,15 +38,16 @@ export class TikTokGoVideoRenderer {
 
     ctx.save();
 
-    const baseZoom = 1.0 + sceneProgress * 0.12;
-    const beatPulse = isOnBeat ? 0.04 : 0;
+    // Zoom halus agar subjek foto tetap utuh dan tidak terpotong berlebihan
+    const baseZoom = 1.0 + sceneProgress * 0.08;
+    const beatPulse = isOnBeat ? 0.03 : 0;
     const scale = baseZoom + beatPulse;
 
     let offsetX = 0;
     let offsetY = 0;
     if (isOnBeat) {
-      offsetX = (Math.random() - 0.5) * 14;
-      offsetY = (Math.random() - 0.5) * 14;
+      offsetX = (Math.random() - 0.5) * 10;
+      offsetY = (Math.random() - 0.5) * 10;
     }
 
     ctx.translate(width / 2 + offsetX, height / 2 + offsetY);
@@ -70,47 +71,103 @@ export class TikTokGoVideoRenderer {
     ctx.restore();
 
     if (isOnBeat) {
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.14)';
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.10)';
       ctx.fillRect(0, 0, width, height);
     }
 
-    const topGrad = ctx.createLinearGradient(0, 0, 0, height * 0.22);
-    topGrad.addColorStop(0, 'rgba(5, 5, 12, 0.8)');
+    // Gradasi tipis hanya di tepi atas & tepi bawah agar bagian tengah foto terbuka bersih
+    const topGrad = ctx.createLinearGradient(0, 0, 0, height * 0.16);
+    topGrad.addColorStop(0, 'rgba(5, 5, 12, 0.72)');
     topGrad.addColorStop(1, 'rgba(5, 5, 12, 0)');
     ctx.fillStyle = topGrad;
-    ctx.fillRect(0, 0, width, height * 0.22);
+    ctx.fillRect(0, 0, width, height * 0.16);
 
-    const botGrad = ctx.createLinearGradient(0, height * 0.58, 0, height);
+    const botGrad = ctx.createLinearGradient(0, height * 0.72, 0, height);
     botGrad.addColorStop(0, 'rgba(5, 5, 12, 0)');
-    botGrad.addColorStop(1, 'rgba(5, 5, 12, 0.92)');
+    botGrad.addColorStop(1, 'rgba(5, 5, 12, 0.88)');
     ctx.fillStyle = botGrad;
-    ctx.fillRect(0, height * 0.58, width, height * 0.42);
+    ctx.fillRect(0, height * 0.72, width, height * 0.28);
 
+    // 1. Badge Nama Restoran Ringkas di Kiri Atas
     this.drawTopBadge(ctx, width, restaurantData);
+
+    // 2. Kartu Referensi Screenshot Menu Toko di Pojok Kanan Atas (tidak menutupi tengah foto)
+    if (menuCardImage && menuCardImage.complete && menuCardImage.naturalWidth > 0) {
+      const showMenuCard = ['INTRO_RESTO', 'SHOWCASE', 'CTA_PROMO'].includes(currentScene.phase) || sceneIndex >= 2;
+      if (showMenuCard) {
+        this.drawFloatingMenuCard(ctx, width, height, menuCardImage, sceneLocalTime);
+      }
+    }
+
+    // 3. Teks Storytelling di Posisi Bawah Rapi (tidak menutupi objek utama di tengah)
     this.drawStoryText(ctx, width, height, currentScene, sceneLocalTime);
 
+    // 4. Pill CTA Maps & Promo Ringkas di atas teks bawah pada 2 scene terakhir
     if (currentScene.phase === 'CTA_MAPS' || currentScene.phase === 'CTA_PROMO') {
       this.drawCtaOverlay(ctx, width, height, currentScene.phase, restaurantData);
     }
   }
 
   drawTopBadge(ctx, width, data) {
-    const pad = width * 0.05;
+    const pad = width * 0.04;
     ctx.save();
-    ctx.fillStyle = 'rgba(18, 18, 30, 0.78)';
+    ctx.fillStyle = 'rgba(14, 14, 26, 0.78)';
     ctx.strokeStyle = '#00F0FF';
     ctx.lineWidth = 2;
 
-    const boxW = width * 0.65;
-    const boxH = width * 0.085;
+    const boxW = width * 0.54;
+    const boxH = width * 0.072;
     ctx.beginPath();
-    ctx.roundRect(pad, pad * 1.4, boxW, boxH, 16);
+    ctx.roundRect(pad, pad * 1.2, boxW, boxH, 14);
     ctx.fill();
     ctx.stroke();
 
     ctx.fillStyle = '#FFFFFF';
-    ctx.font = `bold ${Math.round(width * 0.032)}px Inter, sans-serif`;
-    ctx.fillText(`📍 ${data.name || 'Nama Restoran'}`, pad + 20, pad * 1.4 + boxH * 0.62);
+    ctx.font = `bold ${Math.round(width * 0.028)}px Inter, sans-serif`;
+    ctx.fillText(`📍 ${data.name || 'Restoran'}`, pad + 14, pad * 1.2 + boxH * 0.64);
+    ctx.restore();
+  }
+
+  drawFloatingMenuCard(ctx, width, height, menuImg, localTime) {
+    ctx.save();
+    const slideIn = Math.min(1, localTime * 4);
+    const pad = width * 0.04;
+    const cardW = width * 0.34;
+    const aspect = menuImg.naturalHeight / menuImg.naturalWidth;
+    const cardH = Math.min(height * 0.28, cardW * aspect);
+
+    const x = width - cardW - pad + (1 - slideIn) * 40;
+    const y = pad * 1.2;
+
+    ctx.globalAlpha = slideIn;
+
+    // Bingkai kartu menu melayang dengan shadow & border neon
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.65)';
+    ctx.shadowBlur = 18;
+    ctx.fillStyle = '#0F0D22';
+    ctx.strokeStyle = '#8E2DE2';
+    ctx.lineWidth = 3;
+
+    ctx.beginPath();
+    ctx.roundRect(x - 4, y - 4, cardW + 8, cardH + 28, 14);
+    ctx.fill();
+    ctx.stroke();
+
+    // Clip & gambar screenshot menu
+    ctx.save();
+    ctx.beginPath();
+    ctx.roundRect(x, y, cardW, cardH, 10);
+    ctx.clip();
+    ctx.drawImage(menuImg, x, y, cardW, cardH);
+    ctx.restore();
+
+    // Label kecil di bawah kartu menu
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = '#00F0FF';
+    ctx.font = `bold ${Math.round(width * 0.022)}px Inter, sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.fillText('🧾 KARTU MENU TOKO', x + cardW / 2, y + cardH + 17);
+
     ctx.restore();
   }
 
@@ -119,11 +176,12 @@ export class TikTokGoVideoRenderer {
     ctx.save();
     ctx.globalAlpha = alpha;
 
-    const fontSize = Math.round(width * 0.044);
+    // Ukuran font proporsional & ditempatkan di area bawah (height * 0.80) agar tengah foto bersih
+    const fontSize = Math.round(width * 0.036);
     ctx.font = `800 ${fontSize}px Inter, sans-serif`;
     ctx.textAlign = 'center';
 
-    const maxTextWidth = width * 0.84;
+    const maxTextWidth = width * 0.86;
     const words = scene.text.split(' ');
     const lines = [];
     let currentLine = '';
@@ -139,13 +197,13 @@ export class TikTokGoVideoRenderer {
     }
     if (currentLine) lines.push(currentLine);
 
-    const startY = height * 0.72;
-    const lineHeight = fontSize * 1.32;
+    const startY = height * 0.81;
+    const lineHeight = fontSize * 1.28;
 
     lines.forEach((line, idx) => {
       const y = startY + idx * lineHeight;
-      ctx.strokeStyle = '#000000';
-      ctx.lineWidth = Math.round(fontSize * 0.22);
+      ctx.strokeStyle = 'rgba(0, 0, 0, 0.92)';
+      ctx.lineWidth = Math.round(fontSize * 0.24);
       ctx.strokeText(line, width / 2, y);
 
       ctx.fillStyle = idx === 0 && scene.phase === 'HOOK' ? '#00F0FF' : '#FFFFFF';
@@ -157,34 +215,34 @@ export class TikTokGoVideoRenderer {
 
   drawCtaOverlay(ctx, width, height, phase, data) {
     ctx.save();
-    const boxW = width * 0.82;
-    const boxH = width * 0.13;
+    const boxW = width * 0.78;
+    const boxH = width * 0.085;
     const x = (width - boxW) / 2;
-    const y = height * 0.52;
+    const y = height * 0.69;
 
     const grad = ctx.createLinearGradient(x, y, x + boxW, y + boxH);
     if (phase === 'CTA_MAPS') {
-      grad.addColorStop(0, '#00B4DB');
-      grad.addColorStop(1, '#0083B0');
+      grad.addColorStop(0, 'rgba(0, 180, 219, 0.92)');
+      grad.addColorStop(1, 'rgba(0, 131, 176, 0.92)');
     } else {
-      grad.addColorStop(0, '#8E2DE2');
-      grad.addColorStop(1, '#4A00E0');
+      grad.addColorStop(0, 'rgba(142, 45, 226, 0.92)');
+      grad.addColorStop(1, 'rgba(74, 0, 224, 0.92)');
     }
 
     ctx.fillStyle = grad;
     ctx.beginPath();
-    ctx.roundRect(x, y, boxW, boxH, 24);
+    ctx.roundRect(x, y, boxW, boxH, 18);
     ctx.fill();
 
     ctx.fillStyle = '#FFFFFF';
     ctx.textAlign = 'center';
-    ctx.font = `bold ${Math.round(width * 0.036)}px Inter, sans-serif`;
+    ctx.font = `bold ${Math.round(width * 0.030)}px Inter, sans-serif`;
 
     const title = phase === 'CTA_MAPS'
       ? `🗺️ KLIK TAG MAPS: ${data.tiktokLocationTag || data.name || 'Lokasi Restoran'}`
       : `🎟️ KLIK PROMO TIKTOK: ${data.tiktokPromoTag || data.menuName || 'Paket Promo'}`;
 
-    ctx.fillText(title, width / 2, y + boxH * 0.6);
+    ctx.fillText(title, width / 2, y + boxH * 0.62);
     ctx.restore();
   }
 

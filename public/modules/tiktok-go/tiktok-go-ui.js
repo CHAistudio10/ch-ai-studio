@@ -10,6 +10,7 @@ export function initTikTokGoModule(containerId) {
   const projectManager = new RestaurantProjectManager();
   const audioEngine = new BeatSyncAudioEngine();
   let loadedImages = [];
+  let loadedMenuCardImg = null;
   let previewAnimId = null;
   let lastRenderedVideoUrl = null;
   let lastRenderedBlob = null;
@@ -30,8 +31,8 @@ export function initTikTokGoModule(containerId) {
           <div id="ttg-banner-address" class="ttg-resto-addr">📍 Lengkapi alamat restoran</div>
           <div class="ttg-resto-chips">
             <span class="ttg-chip">📷 <b id="ttg-chip-photos">0 Foto</b></span>
-            <span class="ttg-chip">⏱️ <b id="ttg-chip-dur">20s</b></span>
-            <span class="ttg-chip">🎵 <b id="ttg-chip-music">Belum ada</b></span>
+            <span class="ttg-chip">🧾 <b id="ttg-chip-menu">Menu SS</b></span>
+            <span class="ttg-chip">🎵 <b id="ttg-chip-music">Musik</b></span>
           </div>
         </div>
         <button type="button" id="ttg-new-project-btn" class="ttg-next-proj-btn" title="Proyek Baru">+</button>
@@ -41,7 +42,7 @@ export function initTikTokGoModule(containerId) {
         <div class="ttg-stepper-line"></div>
         <button type="button" class="ttg-step active" data-step="1">
           <span class="ttg-step-circle">1</span>
-          <span class="ttg-step-label">Data<br>Resto</span>
+          <span class="ttg-step-label">Data &amp;<br>Menu SS</span>
         </button>
         <button type="button" class="ttg-step" data-step="2">
           <span class="ttg-step-circle">2</span>
@@ -75,18 +76,23 @@ export function initTikTokGoModule(containerId) {
             <input id="ttg-location" class="ttg-field" placeholder="Alamat / Lokasi Restoran" style="margin-top:6px;" />
           </div>
 
+          <!-- KARTU REFERENSI SCREENSHOT MENU TOKO -->
           <div class="ttg-glass-card">
             <div class="ttg-card-hdr">
-              <span>🏷️ Penawaran &amp; Keunggulan</span>
-              <span class="ttg-badge-purple">Opsional</span>
+              <span>🧾 Referensi Screenshot Menu Toko</span>
+              <span id="ttg-menucard-status" class="ttg-badge-purple">Kartu Menu</span>
             </div>
-            <div class="ttg-grid-2">
-              <input id="ttg-normal-price" class="ttg-field" placeholder="Harga Normal" />
-              <input id="ttg-promo-price" class="ttg-field" placeholder="Harga Promo" />
-            </div>
-            <div class="ttg-grid-2" style="margin-top:6px;">
-              <input id="ttg-promo-info" class="ttg-field" placeholder="Info Promo TikTok" />
-              <input id="ttg-highlights" class="ttg-field" placeholder="Keunggulan Menu" />
+            <input type="file" id="ttg-menucard-input" accept="image/*" style="display:none;" />
+            <div class="ttg-menucard-row">
+              <div id="ttg-menucard-preview-box" class="ttg-menucard-thumb">
+                <span>🧾</span>
+              </div>
+              <div style="flex:1; display:flex; flex-direction:column; gap:5px;">
+                <button type="button" id="ttg-pick-menucard-btn" class="ttg-upload-drop" style="margin:0; padding:6px;">
+                  📸 Upload SS Menu / Harga Toko
+                </button>
+                <input id="ttg-promo-info" class="ttg-field" placeholder="Catatan promo singkat (opsional)" />
+              </div>
             </div>
           </div>
 
@@ -113,7 +119,7 @@ export function initTikTokGoModule(containerId) {
             </div>
             <input type="file" id="ttg-photo-input" accept="image/*" multiple style="display:none;" />
             <button type="button" id="ttg-pick-photos-btn" class="ttg-upload-drop">
-              + Pilih 5–20 Foto Makanan, Interior &amp; Menu
+              + Pilih 5–20 Foto Makanan, Interior &amp; Suasana
             </button>
             <div id="ttg-photo-grid" class="ttg-photo-grid"></div>
           </div>
@@ -153,8 +159,8 @@ export function initTikTokGoModule(containerId) {
             <div class="ttg-card-hdr">
               <span>✨ Satu Instruksi Storytelling AI</span>
               <select id="ttg-res-select" class="ttg-mini-select">
-                <option value="1080x1920">1080×1920 HD</option>
-                <option value="720x1280">720×1280 Ringan</option>
+                <option value="720x1280">720×1280 (Cepat &amp; Ringan)</option>
+                <option value="1080x1920">1080×1920 Full HD</option>
               </select>
             </div>
             <textarea id="ttg-prompt" rows="2" class="ttg-field" style="resize:none;"></textarea>
@@ -178,7 +184,7 @@ export function initTikTokGoModule(containerId) {
 
             <div class="ttg-large-video-box" id="ttg-video-box-normal">
               <canvas id="ttg-preview-canvas" width="720" height="1280"></canvas>
-              <span class="ttg-duration-badge">00:20 • AUDIO SYNC</span>
+              <span class="ttg-duration-badge">00:20 • KARTU MENU + SYNC</span>
             </div>
 
             <div class="ttg-video-controls">
@@ -206,7 +212,7 @@ export function initTikTokGoModule(containerId) {
             <textarea id="ttg-caption-output" class="ttg-caption-full" readonly></textarea>
             <div class="ttg-guide-box">
               <b>📌 Panduan Wajib Saat Posting di TikTok:</b><br>
-              1. Upload file video yang sudah disimpan di HP.<br>
+              1. Upload file MP4 yang sudah disimpan di HP.<br>
               2. Klik <b>+ Tambah Tautan</b> → pilih <b>Lokasi (Maps)</b>: <b id="ttg-guide-maps" style="color:#00f0ff;">-</b>.<br>
               3. Tambahkan <b>Tag Promo TikTok</b>: <b id="ttg-guide-promo" style="color:#f472b6;">-</b>.<br>
               4. Tempel caption di atas agar selaras dengan ajakan di akhir video.
@@ -214,7 +220,7 @@ export function initTikTokGoModule(containerId) {
           </div>
           <div class="ttg-action-row">
             <button type="button" class="ttg-act-btn dark" data-goto="4">← Kembali ke Video</button>
-            <button type="button" id="ttg-download-again-btn" class="ttg-act-btn cyan">⬇ Simpan Video ke HP</button>
+            <button type="button" id="ttg-download-again-btn" class="ttg-act-btn cyan">⬇ Simpan MP4 ke HP</button>
           </div>
         </div>
       </div>
@@ -227,7 +233,7 @@ export function initTikTokGoModule(containerId) {
         <div id="ttg-modal-canvas-slot" class="ttg-modal-slot"></div>
         <div class="ttg-modal-bottom">
           <button type="button" id="ttg-modal-play-btn" class="ttg-play-bar" style="flex:1;">▶ Putar Preview</button>
-          <button type="button" id="ttg-modal-download-btn" class="ttg-act-btn cyan" style="flex:1; padding:10px;">⬇ Simpan ke HP</button>
+          <button type="button" id="ttg-modal-download-btn" class="ttg-act-btn cyan" style="flex:1; padding:10px;">⬇ Simpan MP4</button>
         </div>
       </div>
     </div>
@@ -315,6 +321,14 @@ export function initTikTokGoModule(containerId) {
         border-radius: 8px; padding: 6px 8px; color: #fff; font-size: 11px; outline: none;
       }
       .ttg-field:focus { border-color: #00f0ff; }
+      .ttg-menucard-row { display: flex; gap: 8px; align-items: center; }
+      .ttg-menucard-thumb {
+        width: 52px; height: 64px; border-radius: 8px;
+        background: rgba(11, 10, 24, 0.9); border: 1px dashed rgba(139, 92, 246, 0.6);
+        display: flex; align-items: center; justify-content: center;
+        overflow: hidden; flex-shrink: 0; font-size: 20px;
+      }
+      .ttg-menucard-thumb img { width: 100%; height: 100%; object-fit: cover; }
       .ttg-primary-btn {
         margin-top: auto; width: 100%; padding: 9px; border-radius: 11px; border: none;
         background: linear-gradient(90deg, #7c3aed, #2563eb, #00f0ff);
@@ -457,17 +471,28 @@ export function initTikTokGoModule(containerId) {
     document.getElementById('ttg-name').value = d.name;
     document.getElementById('ttg-menu').value = d.menuName;
     document.getElementById('ttg-location').value = d.location;
-    document.getElementById('ttg-normal-price').value = d.normalPrice;
-    document.getElementById('ttg-promo-price').value = d.promoPrice;
     document.getElementById('ttg-promo-info').value = d.promoInfo;
-    document.getElementById('ttg-highlights').value = d.highlights;
     document.getElementById('ttg-tag-maps').value = d.tiktokLocationTag;
     document.getElementById('ttg-tag-promo').value = d.tiktokPromoTag;
     document.getElementById('ttg-prompt').value = proj.promptInstruction;
 
     document.getElementById('ttg-banner-address').textContent = d.location ? `📍 ${d.location}` : '📍 Lengkapi alamat restoran';
     document.getElementById('ttg-chip-photos').textContent = `${proj.photos.length} Foto`;
-    document.getElementById('ttg-chip-music').textContent = proj.audioConfig.fileName ? 'Aktif' : 'Belum ada';
+    document.getElementById('ttg-chip-menu').textContent = d.menuCardDataUrl ? 'SS Siap' : 'Menu SS';
+    document.getElementById('ttg-chip-music').textContent = proj.audioConfig.fileName ? 'Aktif' : 'Musik';
+
+    const menuBox = document.getElementById('ttg-menucard-preview-box');
+    if (d.menuCardDataUrl) {
+      menuBox.innerHTML = `<img src="${d.menuCardDataUrl}" alt="Menu" />`;
+      document.getElementById('ttg-menucard-status').textContent = '✓ Terpasang';
+      const img = new Image();
+      img.src = d.menuCardDataUrl;
+      img.onload = () => { loadedMenuCardImg = img; };
+    } else {
+      menuBox.innerHTML = '<span>🧾</span>';
+      document.getElementById('ttg-menucard-status').textContent = 'Kartu Menu';
+      loadedMenuCardImg = null;
+    }
 
     if (proj.photos.length > 0 && proj.photos[0].dataUrl) {
       document.getElementById('ttg-banner-thumb').src = proj.photos[0].dataUrl;
@@ -514,10 +539,7 @@ export function initTikTokGoModule(containerId) {
     'ttg-name': 'name',
     'ttg-menu': 'menuName',
     'ttg-location': 'location',
-    'ttg-normal-price': 'normalPrice',
-    'ttg-promo-price': 'promoPrice',
     'ttg-promo-info': 'promoInfo',
-    'ttg-highlights': 'highlights',
     'ttg-tag-maps': 'tiktokLocationTag',
     'ttg-tag-promo': 'tiktokPromoTag'
   };
@@ -535,10 +557,30 @@ export function initTikTokGoModule(containerId) {
     });
   });
 
+  // UPLOAD SCREENSHOT REFERENSI MENU TOKO
+  document.getElementById('ttg-pick-menucard-btn').onclick = () => document.getElementById('ttg-menucard-input').click();
+  document.getElementById('ttg-menucard-input').onchange = async e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const dataUrl = await new Promise(res => {
+      const reader = new FileReader();
+      reader.onload = () => res(reader.result);
+      reader.readAsDataURL(file);
+    });
+    const img = new Image();
+    img.src = dataUrl;
+    await new Promise(res => (img.onload = res));
+    loadedMenuCardImg = img;
+
+    projectManager.updateRestaurantData({ menuCardDataUrl: dataUrl });
+    syncUiFromProject();
+  };
+
   document.getElementById('ttg-new-project-btn').onclick = () => {
     const nama = prompt('Nama restoran untuk proyek baru:', '');
     if (nama !== null) {
       loadedImages = [];
+      loadedMenuCardImg = null;
       projectManager.createNewProject(nama);
       syncUiFromProject();
       goToStep(1);
@@ -605,7 +647,6 @@ export function initTikTokGoModule(containerId) {
     document.getElementById('ttg-audio-filename').textContent = file.name;
     document.getElementById('ttg-beat-badge').textContent = `${info.beats.length} Beat`;
     document.getElementById('ttg-chip-music').textContent = 'Aktif';
-    document.getElementById('ttg-chip-dur').textContent = `${Math.round(info.clipDuration)}s`;
     document.getElementById('ttg-trim-range-text').textContent = `Potongan: 00:00 – ${fmtTime(info.clipDuration)}`;
     renderWaveform(currentPeaks, 0, info.totalDuration, info.clipDuration);
   };
@@ -658,6 +699,7 @@ export function initTikTokGoModule(containerId) {
           t: 0.1,
           totalDuration: audioEngine.clipDuration || 20,
           images: loadedImages,
+          menuCardImage: loadedMenuCardImg,
           scenes: proj.generatedContent.scenes,
           beats: proj.audioConfig.beatTimestamps,
           restaurantData: proj.restaurantData
@@ -700,6 +742,7 @@ export function initTikTokGoModule(containerId) {
           t: elapsed,
           totalDuration,
           images: loadedImages,
+          menuCardImage: loadedMenuCardImg,
           scenes: proj.generatedContent.scenes,
           beats: proj.audioConfig.beatTimestamps,
           restaurantData: proj.restaurantData
@@ -710,6 +753,7 @@ export function initTikTokGoModule(containerId) {
           t: totalDuration - 0.01,
           totalDuration,
           images: loadedImages,
+          menuCardImage: loadedMenuCardImg,
           scenes: proj.generatedContent.scenes,
           beats: proj.audioConfig.beatTimestamps,
           restaurantData: proj.restaurantData
@@ -766,7 +810,7 @@ export function initTikTokGoModule(containerId) {
       ? audioEngine.playClip({ captureForVideo: true, monitorSpeaker: true })
       : null;
 
-    document.getElementById('ttg-render-title').textContent = '⏳ Merender Video + Musik...';
+    document.getElementById('ttg-render-title').textContent = '⏳ Merender Video + Kartu Menu...';
 
     const startPerf = performance.now();
     const result = await renderer.exportVideo({
@@ -776,6 +820,7 @@ export function initTikTokGoModule(containerId) {
       getCurrentTime: () => hasAudio ? audioEngine.getElapsedPlaybackTime() : (performance.now() - startPerf) / 1000,
       renderParams: {
         images: loadedImages,
+        menuCardImage: loadedMenuCardImg,
         scenes: proj.generatedContent.scenes,
         beats: proj.audioConfig.beatTimestamps,
         restaurantData: proj.restaurantData
