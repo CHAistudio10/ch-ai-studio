@@ -91,12 +91,9 @@ export class TikTokGoVideoRenderer {
     // 1. Badge Nama Restoran Ringkas di Kiri Atas
     this.drawTopBadge(ctx, width, restaurantData);
 
-    // 2. Kartu Referensi Screenshot Menu Toko di Pojok Kanan Atas (tidak menutupi tengah foto)
-    if (menuCardImage && menuCardImage.complete && menuCardImage.naturalWidth > 0) {
-      const showMenuCard = ['INTRO_RESTO', 'SHOWCASE', 'CTA_PROMO'].includes(currentScene.phase) || sceneIndex >= 2;
-      if (showMenuCard) {
-        this.drawFloatingMenuCard(ctx, width, height, menuCardImage, sceneLocalTime);
-      }
+    // 2. Kartu Referensi Screenshot Menu Toko selalu tampil rapi di pojok kanan atas
+    if (menuCardImage && menuCardImage.naturalWidth > 0) {
+      this.drawFloatingMenuCard(ctx, width, height, menuCardImage, sceneLocalTime);
     }
 
     // 3. Teks Storytelling di Posisi Bawah Rapi (tidak menutupi objek utama di tengah)

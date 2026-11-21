@@ -12,9 +12,11 @@ export function initTikTokGoModule(containerId) {
   let loadedImages = [];
   let loadedMenuCardImg = null;
   let previewAnimId = null;
-  let lastRenderedVideoUrl = null;
-  let lastRenderedBlob = null;
-  let lastRenderedFileName = 'ch-ai-tiktok-go.mp4';
+
+  // State hasil render 1x jadi (mencegah render berulang-ulang)
+  let renderedVideoUrl = null;
+  let renderedFileName = 'ch-ai-tiktok-go.mp4';
+  let isRenderedReady = false;
   let currentPeaks = [];
 
   container.innerHTML = `
@@ -54,7 +56,7 @@ export function initTikTokGoModule(containerId) {
         </button>
         <button type="button" class="ttg-step" data-step="4">
           <span class="ttg-step-circle">4</span>
-          <span class="ttg-step-label">Preview<br>&amp; Render</span>
+          <span class="ttg-step-label">Render<br>&amp; Putar</span>
         </button>
         <button type="button" class="ttg-step" data-step="5">
           <span class="ttg-step-circle">5</span>
@@ -63,6 +65,7 @@ export function initTikTokGoModule(containerId) {
       </div>
 
       <div class="ttg-stage">
+        <!-- STEP 1 -->
         <div class="ttg-panel active" data-panel="1">
           <div class="ttg-glass-card">
             <div class="ttg-card-hdr">
@@ -76,7 +79,6 @@ export function initTikTokGoModule(containerId) {
             <input id="ttg-location" class="ttg-field" placeholder="Alamat / Lokasi Restoran" style="margin-top:6px;" />
           </div>
 
-          <!-- KARTU REFERENSI SCREENSHOT MENU TOKO -->
           <div class="ttg-glass-card">
             <div class="ttg-card-hdr">
               <span>🧾 Referensi Screenshot Menu Toko</span>
@@ -111,6 +113,7 @@ export function initTikTokGoModule(containerId) {
           </button>
         </div>
 
+        <!-- STEP 2 -->
         <div class="ttg-panel" data-panel="2">
           <div class="ttg-glass-card" style="flex:1; display:flex; flex-direction:column; min-height:0;">
             <div class="ttg-card-hdr">
@@ -128,6 +131,7 @@ export function initTikTokGoModule(containerId) {
           </button>
         </div>
 
+        <!-- STEP 3 -->
         <div class="ttg-panel" data-panel="3">
           <div class="ttg-glass-card">
             <div class="ttg-card-hdr">
@@ -168,14 +172,15 @@ export function initTikTokGoModule(containerId) {
           </div>
 
           <button type="button" id="ttg-generate-and-render-btn" class="ttg-primary-btn">
-            ⚡ Generate Cerita &amp; Buka Preview Besar →
+            ⚡ Siapkan Cerita &amp; Lanjut ke Render →
           </button>
         </div>
 
+        <!-- STEP 4: TOMBOL TERPISAH (PREVIEW / RENDER 1X / PUTAR VIDEO JADI / SIMPAN HP) -->
         <div class="ttg-panel" data-panel="4">
           <div class="ttg-glass-card ttg-big-video-card">
             <div class="ttg-card-hdr" style="margin-bottom:4px;">
-              <span id="ttg-render-title" style="color:#00f0ff;">🎬 Preview Video Promosi (9:16)</span>
+              <span id="ttg-render-title" style="color:#00f0ff;">🎬 Studio Render &amp; Pemutar</span>
               <div style="display:flex; gap:6px; align-items:center;">
                 <span id="ttg-progress-pill" class="ttg-bolt-pill">⚡ Siap</span>
                 <button type="button" id="ttg-expand-btn" class="ttg-expand-btn">🔍 Perbesar</button>
@@ -184,25 +189,36 @@ export function initTikTokGoModule(containerId) {
 
             <div class="ttg-large-video-box" id="ttg-video-box-normal">
               <canvas id="ttg-preview-canvas" width="720" height="1280"></canvas>
-              <span class="ttg-duration-badge">00:20 • KARTU MENU + SYNC</span>
+              <video id="ttg-final-video-player" controls playsinline style="display:none; position:absolute; inset:0; width:100%; height:100%; object-fit:contain; background:#000; border-radius:12px; z-index:5;"></video>
+              <span id="ttg-box-badge" class="ttg-duration-badge">00:20 • SIAP</span>
             </div>
 
+            <!-- TOMBOL TERPISAH JELAS -->
             <div class="ttg-video-controls">
-              <button type="button" id="ttg-preview-btn" class="ttg-play-bar">
-                ▶ Putar Preview + Musik
-              </button>
               <div class="ttg-action-row">
-                <button type="button" id="ttg-render-btn" class="ttg-act-btn cyan">
-                  ⬇ Render &amp; Simpan MP4
+                <button type="button" id="ttg-preview-btn" class="ttg-act-btn dark">
+                  👁 Preview Live
                 </button>
-                <button type="button" class="ttg-act-btn purple" data-goto="5">
-                  📄 Lihat Caption &amp; Tag →
+                <button type="button" id="ttg-render-btn" class="ttg-act-btn purple">
+                  ⚡ Render Video (1x)
                 </button>
               </div>
+              <div class="ttg-action-row">
+                <button type="button" id="ttg-play-final-btn" class="ttg-act-btn blue" disabled style="opacity:0.5;">
+                  ▶ Putar Hasil Jadi
+                </button>
+                <button type="button" id="ttg-save-file-btn" class="ttg-act-btn cyan" disabled style="opacity:0.5;">
+                  ⬇ Simpan ke HP
+                </button>
+              </div>
+              <button type="button" class="ttg-next-caption-btn" data-goto="5">
+                📄 Lanjut Salin Caption &amp; Tag TikTok →
+              </button>
             </div>
           </div>
         </div>
 
+        <!-- STEP 5 -->
         <div class="ttg-panel" data-panel="5">
           <div class="ttg-glass-card" style="flex:1; display:flex; flex-direction:column; min-height:0;">
             <div class="ttg-card-hdr">
@@ -225,15 +241,16 @@ export function initTikTokGoModule(containerId) {
         </div>
       </div>
 
+      <!-- MODAL PERBESAR -->
       <div id="ttg-fullscreen-modal" class="ttg-modal" style="display:none;">
         <div class="ttg-modal-top">
-          <span style="font-weight:800; color:#00f0ff; font-size:13px;">PREVIEW LAYAR PENUH (9:16)</span>
+          <span style="font-weight:800; color:#00f0ff; font-size:13px;">LAYAR PENUH (9:16)</span>
           <button type="button" id="ttg-close-modal-btn" class="ttg-close-modal">✕ Tutup</button>
         </div>
         <div id="ttg-modal-canvas-slot" class="ttg-modal-slot"></div>
         <div class="ttg-modal-bottom">
-          <button type="button" id="ttg-modal-play-btn" class="ttg-play-bar" style="flex:1;">▶ Putar Preview</button>
-          <button type="button" id="ttg-modal-download-btn" class="ttg-act-btn cyan" style="flex:1; padding:10px;">⬇ Simpan MP4</button>
+          <button type="button" id="ttg-modal-play-btn" class="ttg-act-btn blue" style="flex:1; padding:10px;">▶ Putar</button>
+          <button type="button" id="ttg-modal-download-btn" class="ttg-act-btn cyan" style="flex:1; padding:10px;">⬇ Simpan ke HP</button>
         </div>
       </div>
     </div>
@@ -358,7 +375,7 @@ export function initTikTokGoModule(containerId) {
       .ttg-trim-labels { display: flex; justify-content: space-between; font-size: 10px; color: #cbd5e1; margin-top: 2px; }
       .ttg-mini-select { background: #171433; color: #00f0ff; border: 1px solid rgba(0, 240, 255, 0.35); border-radius: 6px; font-size: 10px; padding: 2px 5px; }
       .ttg-scene-scroll { margin-top: 5px; flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; }
-      .ttg-big-video-card { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 7px; }
+      .ttg-big-video-card { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 6px; }
       .ttg-bolt-pill { background: linear-gradient(90deg, #4f46e5, #06b6d4); padding: 2px 8px; border-radius: 99px; font-size: 10px; font-weight: 800; }
       .ttg-expand-btn {
         background: rgba(0, 240, 255, 0.15); border: 1px solid #00f0ff; color: #00f0ff;
@@ -373,23 +390,22 @@ export function initTikTokGoModule(containerId) {
       #ttg-preview-canvas { height: 100%; width: auto; max-width: 100%; aspect-ratio: 9 / 16; object-fit: contain; border-radius: 8px; }
       .ttg-duration-badge {
         position: absolute; bottom: 8px; right: 8px; background: rgba(0, 0, 0, 0.78);
-        border: 1px solid rgba(255,255,255,0.15); padding: 2px 7px; border-radius: 6px; font-size: 10px; font-weight: 700;
+        border: 1px solid rgba(255,255,255,0.15); padding: 2px 7px; border-radius: 6px; font-size: 10px; font-weight: 700; z-index: 6;
       }
-      .ttg-video-controls { display: flex; flex-direction: column; gap: 6px; flex-shrink: 0; }
-      .ttg-play-bar {
-        width: 100%; padding: 8px; border-radius: 10px;
-        border: 1px solid rgba(96, 165, 250, 0.5);
-        background: linear-gradient(90deg, #4338ca, #2563eb);
-        color: #fff; font-weight: 800; font-size: 12px; cursor: pointer;
-      }
+      .ttg-video-controls { display: flex; flex-direction: column; gap: 5px; flex-shrink: 0; }
       .ttg-action-row { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
       .ttg-act-btn {
-        padding: 9px 6px; border-radius: 10px; font-size: 11px; font-weight: 800;
+        padding: 8px 6px; border-radius: 10px; font-size: 11px; font-weight: 800;
         cursor: pointer; border: 1px solid rgba(255, 255, 255, 0.18); color: #fff;
       }
+      .ttg-act-btn.blue { background: linear-gradient(135deg, #1d4ed8, #3b82f6); }
       .ttg-act-btn.cyan { background: linear-gradient(135deg, #0284c7, #06b6d4); }
       .ttg-act-btn.purple { background: linear-gradient(135deg, #6d28d9, #9333ea); }
       .ttg-act-btn.dark { background: rgba(30, 27, 62, 0.95); }
+      .ttg-next-caption-btn {
+        width: 100%; padding: 7px; border-radius: 9px; border: 1px solid rgba(139, 92, 246, 0.45);
+        background: rgba(24, 19, 54, 0.9); color: #e2e8f0; font-size: 11px; font-weight: 700; cursor: pointer;
+      }
       .ttg-caption-full {
         width: 100%; box-sizing: border-box; flex: 1; min-height: 0;
         background: rgba(9, 8, 20, 0.9); border: 1px solid rgba(99, 102, 241, 0.35);
@@ -412,7 +428,50 @@ export function initTikTokGoModule(containerId) {
   `;
 
   const canvas = document.getElementById('ttg-preview-canvas');
+  const videoPlayer = document.getElementById('ttg-final-video-player');
   const renderer = new TikTokGoVideoRenderer(canvas);
+
+  function resetRenderedState() {
+    isRenderedReady = false;
+    renderedVideoUrl = null;
+    videoPlayer.pause();
+    videoPlayer.style.display = 'none';
+    canvas.style.display = 'block';
+
+    const renderBtn = document.getElementById('ttg-render-btn');
+    const playFinalBtn = document.getElementById('ttg-play-final-btn');
+    const saveBtn = document.getElementById('ttg-save-file-btn');
+
+    renderBtn.textContent = '⚡ Render Video (1x)';
+    playFinalBtn.disabled = true;
+    playFinalBtn.style.opacity = '0.5';
+    saveBtn.disabled = true;
+    saveBtn.style.opacity = '0.5';
+    document.getElementById('ttg-box-badge').textContent = '00:20 • BELUM DIRENDER';
+  }
+
+  function markRenderedReady(url, fileName) {
+    isRenderedReady = true;
+    renderedVideoUrl = url;
+    renderedFileName = fileName;
+
+    // Tampilkan elemen video jadi & sembunyikan canvas agar tidak ada render berulang
+    canvas.style.display = 'none';
+    videoPlayer.src = url;
+    videoPlayer.style.display = 'block';
+    videoPlayer.load();
+
+    const renderBtn = document.getElementById('ttg-render-btn');
+    const playFinalBtn = document.getElementById('ttg-play-final-btn');
+    const saveBtn = document.getElementById('ttg-save-file-btn');
+
+    renderBtn.textContent = '🔄 Render Ulang';
+    playFinalBtn.disabled = false;
+    playFinalBtn.style.opacity = '1';
+    saveBtn.disabled = false;
+    saveBtn.style.opacity = '1';
+    document.getElementById('ttg-box-badge').textContent = '00:20 • VIDEO JADI';
+  }
 
   function fmtTime(sec) {
     const m = Math.floor(sec / 60);
@@ -459,7 +518,27 @@ export function initTikTokGoModule(containerId) {
     btn.onclick = () => goToStep(Number(btn.dataset.goto));
   });
 
-  function syncUiFromProject() {
+  function loadMenuCardFromDataUrl(dataUrl) {
+    return new Promise(resolve => {
+      if (!dataUrl) {
+        loadedMenuCardImg = null;
+        resolve(null);
+        return;
+      }
+      const img = new Image();
+      img.onload = () => {
+        loadedMenuCardImg = img;
+        resolve(img);
+      };
+      img.onerror = () => {
+        loadedMenuCardImg = null;
+        resolve(null);
+      };
+      img.src = dataUrl;
+    });
+  }
+
+  async function syncUiFromProject() {
     const proj = projectManager.getActiveProject();
     const d = proj.restaurantData;
 
@@ -485,9 +564,7 @@ export function initTikTokGoModule(containerId) {
     if (d.menuCardDataUrl) {
       menuBox.innerHTML = `<img src="${d.menuCardDataUrl}" alt="Menu" />`;
       document.getElementById('ttg-menucard-status').textContent = '✓ Terpasang';
-      const img = new Image();
-      img.src = d.menuCardDataUrl;
-      img.onload = () => { loadedMenuCardImg = img; };
+      await loadMenuCardFromDataUrl(d.menuCardDataUrl);
     } else {
       menuBox.innerHTML = '<span>🧾</span>';
       document.getElementById('ttg-menucard-status').textContent = 'Kartu Menu';
@@ -557,7 +634,6 @@ export function initTikTokGoModule(containerId) {
     });
   });
 
-  // UPLOAD SCREENSHOT REFERENSI MENU TOKO
   document.getElementById('ttg-pick-menucard-btn').onclick = () => document.getElementById('ttg-menucard-input').click();
   document.getElementById('ttg-menucard-input').onchange = async e => {
     const file = e.target.files[0];
@@ -567,30 +643,29 @@ export function initTikTokGoModule(containerId) {
       reader.onload = () => res(reader.result);
       reader.readAsDataURL(file);
     });
-    const img = new Image();
-    img.src = dataUrl;
-    await new Promise(res => (img.onload = res));
-    loadedMenuCardImg = img;
-
+    await loadMenuCardFromDataUrl(dataUrl);
     projectManager.updateRestaurantData({ menuCardDataUrl: dataUrl });
-    syncUiFromProject();
+    resetRenderedState();
+    await syncUiFromProject();
   };
 
-  document.getElementById('ttg-new-project-btn').onclick = () => {
+  document.getElementById('ttg-new-project-btn').onclick = async () => {
     const nama = prompt('Nama restoran untuk proyek baru:', '');
     if (nama !== null) {
       loadedImages = [];
       loadedMenuCardImg = null;
+      resetRenderedState();
       projectManager.createNewProject(nama);
-      syncUiFromProject();
+      await syncUiFromProject();
       goToStep(1);
     }
   };
 
-  document.getElementById('ttg-project-select').onchange = e => {
+  document.getElementById('ttg-project-select').onchange = async e => {
     loadedImages = [];
+    resetRenderedState();
     projectManager.switchProject(e.target.value);
-    syncUiFromProject();
+    await syncUiFromProject();
   };
 
   document.getElementById('ttg-pick-photos-btn').onclick = () => document.getElementById('ttg-photo-input').click();
@@ -623,6 +698,7 @@ export function initTikTokGoModule(containerId) {
 
     if (proj.photos[0]) document.getElementById('ttg-banner-thumb').src = proj.photos[0].dataUrl;
     projectManager.saveProjects();
+    resetRenderedState();
     renderPhotoGrid(proj);
   };
 
@@ -648,6 +724,7 @@ export function initTikTokGoModule(containerId) {
     document.getElementById('ttg-beat-badge').textContent = `${info.beats.length} Beat`;
     document.getElementById('ttg-chip-music').textContent = 'Aktif';
     document.getElementById('ttg-trim-range-text').textContent = `Potongan: 00:00 – ${fmtTime(info.clipDuration)}`;
+    resetRenderedState();
     renderWaveform(currentPeaks, 0, info.totalDuration, info.clipDuration);
   };
 
@@ -661,6 +738,7 @@ export function initTikTokGoModule(containerId) {
     const endSec = startSec + audioEngine.clipDuration;
     document.getElementById('ttg-trim-range-text').textContent = `Potongan: ${fmtTime(startSec)} – ${fmtTime(endSec)}`;
     document.getElementById('ttg-beat-badge').textContent = `${audioEngine.beats.length} Beat`;
+    resetRenderedState();
     renderWaveform(currentPeaks, startSec, audioEngine.audioBuffer.duration, audioEngine.clipDuration);
   };
 
@@ -683,7 +761,7 @@ export function initTikTokGoModule(containerId) {
     }
   };
 
-  document.getElementById('ttg-generate-and-render-btn').onclick = () => {
+  document.getElementById('ttg-generate-and-render-btn').onclick = async () => {
     const proj = projectManager.getActiveProject();
     proj.promptInstruction = document.getElementById('ttg-prompt').value;
 
@@ -691,10 +769,10 @@ export function initTikTokGoModule(containerId) {
       const result = CulinaryStoryteller.generateStoryboard(proj);
       proj.generatedContent = result;
       projectManager.saveProjects();
-      syncUiFromProject();
+      await syncUiFromProject();
       goToStep(4);
 
-      if (loadedImages.length > 0) {
+      if (loadedImages.length > 0 && !isRenderedReady) {
         renderer.renderFrame({
           t: 0.1,
           totalDuration: audioEngine.clipDuration || 20,
@@ -705,22 +783,28 @@ export function initTikTokGoModule(containerId) {
           restaurantData: proj.restaurantData
         });
       }
-      document.getElementById('ttg-render-title').textContent = '🎬 Preview Siap Diputar & Dirender';
-      document.getElementById('ttg-progress-pill').textContent = '⚡ Siap';
+      document.getElementById('ttg-render-title').textContent = isRenderedReady ? '✅ Video Sudah Jadi' : '🎬 Siap Preview atau Render (1x)';
     } catch (err) {
       alert(err.message);
     }
   };
 
-  function startLivePreview() {
+  // TOMBOL 1: PREVIEW LIVE (HANYA PREVIEW CANVAS, TIDAK MEREKAM)
+  document.getElementById('ttg-preview-btn').onclick = async () => {
     const proj = projectManager.getActiveProject();
     if (loadedImages.length < 5 || proj.generatedContent.scenes.length === 0) {
       alert('Pastikan minimal 5 foto terunggah dan cerita sudah dibuat.');
       return;
     }
 
-    const oldVid = document.getElementById('ttg-final-video-player');
-    if (oldVid) oldVid.remove();
+    if (proj.restaurantData.menuCardDataUrl && !loadedMenuCardImg) {
+      await loadMenuCardFromDataUrl(proj.restaurantData.menuCardDataUrl);
+    }
+
+    // Tampilkan canvas untuk preview live
+    videoPlayer.pause();
+    videoPlayer.style.display = 'none';
+    canvas.style.display = 'block';
 
     if (previewAnimId) cancelAnimationFrame(previewAnimId);
     audioEngine.stopAudio();
@@ -749,57 +833,30 @@ export function initTikTokGoModule(containerId) {
         });
         previewAnimId = requestAnimationFrame(loop);
       } else {
-        renderer.renderFrame({
-          t: totalDuration - 0.01,
-          totalDuration,
-          images: loadedImages,
-          menuCardImage: loadedMenuCardImg,
-          scenes: proj.generatedContent.scenes,
-          beats: proj.audioConfig.beatTimestamps,
-          restaurantData: proj.restaurantData
-        });
         audioEngine.stopAudio();
       }
     }
     previewAnimId = requestAnimationFrame(loop);
-  }
+  };
 
-  document.getElementById('ttg-preview-btn').onclick = startLivePreview;
-  document.getElementById('ttg-modal-play-btn').onclick = startLivePreview;
-
-  function triggerMobileSave(blob, url, fileName) {
-    const a = document.createElement('a');
-    a.style.display = 'none';
-    a.href = url;
-    a.download = fileName;
-    document.body.appendChild(a);
-    a.click();
-    setTimeout(() => document.body.removeChild(a), 1500);
-
-    const box = document.getElementById('ttg-video-box-normal');
-    let vidEl = document.getElementById('ttg-final-video-player');
-    if (!vidEl) {
-      vidEl = document.createElement('video');
-      vidEl.id = 'ttg-final-video-player';
-      vidEl.controls = true;
-      vidEl.playsInline = true;
-      vidEl.style.cssText = 'position:absolute; inset:0; width:100%; height:100%; object-fit:contain; background:#000; border-radius:12px; z-index:5;';
-      box.appendChild(vidEl);
-    }
-    vidEl.src = url;
-    vidEl.load();
-  }
-
-  async function executeRenderAndDownload() {
+  // TOMBOL 2: RENDER VIDEO 1X JADI
+  async function renderOnce() {
     const proj = projectManager.getActiveProject();
     if (loadedImages.length < 5 || proj.generatedContent.scenes.length === 0) {
-      alert('Upload minimal 5 foto dan generate cerita terlebih dahulu.');
+      alert('Upload minimal 5 foto dan siapkan cerita terlebih dahulu.');
       return;
     }
 
+    if (proj.restaurantData.menuCardDataUrl && !loadedMenuCardImg) {
+      await loadMenuCardFromDataUrl(proj.restaurantData.menuCardDataUrl);
+    }
+
     if (previewAnimId) cancelAnimationFrame(previewAnimId);
-    const oldVid = document.getElementById('ttg-final-video-player');
-    if (oldVid) oldVid.remove();
+    audioEngine.stopAudio();
+
+    videoPlayer.pause();
+    videoPlayer.style.display = 'none';
+    canvas.style.display = 'block';
 
     const resMode = document.getElementById('ttg-res-select').value;
     renderer.setResolution(resMode);
@@ -810,7 +867,7 @@ export function initTikTokGoModule(containerId) {
       ? audioEngine.playClip({ captureForVideo: true, monitorSpeaker: true })
       : null;
 
-    document.getElementById('ttg-render-title').textContent = '⏳ Merender Video + Kartu Menu...';
+    document.getElementById('ttg-render-title').textContent = '⏳ Merender Video 1x...';
 
     const startPerf = performance.now();
     const result = await renderer.exportVideo({
@@ -836,39 +893,66 @@ export function initTikTokGoModule(containerId) {
     audioEngine.stopAudio();
 
     if (result && result.url) {
-      lastRenderedBlob = result.blob;
-      lastRenderedVideoUrl = result.url;
       const safeName = (proj.restaurantData.name || 'restoran').toLowerCase().replace(/[^a-z0-9]+/g, '-');
-      lastRenderedFileName = `ch-ai-tiktok-go-${safeName}.${result.ext}`;
-
-      document.getElementById('ttg-render-title').textContent = '✅ Selesai! Tersimpan di HP';
+      const fileName = `ch-ai-tiktok-go-${safeName}.${result.ext}`;
+      document.getElementById('ttg-render-title').textContent = '✅ Video Sudah Jadi!';
       document.getElementById('ttg-progress-pill').textContent = '⚡ 100%';
-
-      triggerMobileSave(lastRenderedBlob, lastRenderedVideoUrl, lastRenderedFileName);
+      markRenderedReady(result.url, fileName);
     }
   }
 
-  document.getElementById('ttg-render-btn').onclick = executeRenderAndDownload;
-  document.getElementById('ttg-modal-download-btn').onclick = executeRenderAndDownload;
-  document.getElementById('ttg-download-again-btn').onclick = () => {
-    if (lastRenderedVideoUrl) {
-      triggerMobileSave(lastRenderedBlob, lastRenderedVideoUrl, lastRenderedFileName);
-    } else {
-      executeRenderAndDownload();
-    }
-  };
+  document.getElementById('ttg-render-btn').onclick = renderOnce;
 
+  // TOMBOL 3: PUTAR VIDEO JADI (TIDAK MERENDER ULANG!)
+  function playFinalRenderedVideo() {
+    if (!isRenderedReady || !renderedVideoUrl) {
+      alert('Klik "Render Video (1x)" terlebih dahulu sampai selesai 100%.');
+      return;
+    }
+    if (previewAnimId) cancelAnimationFrame(previewAnimId);
+    audioEngine.stopAudio();
+    canvas.style.display = 'none';
+    videoPlayer.style.display = 'block';
+    videoPlayer.currentTime = 0;
+    videoPlayer.play();
+  }
+
+  document.getElementById('ttg-play-final-btn').onclick = playFinalRenderedVideo;
+  document.getElementById('ttg-modal-play-btn').onclick = playFinalRenderedVideo;
+
+  // TOMBOL 4: SIMPAN KE HP (HANYA MENGUNDUH FILE JADI, TANPA RENDER ULANG)
+  function downloadFinalVideo() {
+    if (!isRenderedReady || !renderedVideoUrl) {
+      alert('Video belum dirender. Klik "Render Video (1x)" dulu.');
+      return;
+    }
+    const a = document.createElement('a');
+    a.style.display = 'none';
+    a.href = renderedVideoUrl;
+    a.download = renderedFileName;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => document.body.removeChild(a), 1500);
+  }
+
+  document.getElementById('ttg-save-file-btn').onclick = downloadFinalVideo;
+  document.getElementById('ttg-modal-download-btn').onclick = downloadFinalVideo;
+  document.getElementById('ttg-download-again-btn').onclick = downloadFinalVideo;
+
+  // MODAL PERBESAR
   const modal = document.getElementById('ttg-fullscreen-modal');
   const modalSlot = document.getElementById('ttg-modal-canvas-slot');
   const normalBox = document.getElementById('ttg-video-box-normal');
 
   document.getElementById('ttg-expand-btn').onclick = () => {
-    modalSlot.appendChild(canvas);
+    const activeTarget = isRenderedReady ? videoPlayer : canvas;
+    modalSlot.appendChild(activeTarget);
     modal.style.display = 'flex';
   };
 
   document.getElementById('ttg-close-modal-btn').onclick = () => {
     normalBox.insertBefore(canvas, normalBox.firstChild);
+    normalBox.insertBefore(videoPlayer, document.getElementById('ttg-box-badge'));
     modal.style.display = 'none';
   };
 
