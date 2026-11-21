@@ -4,11 +4,5 @@
     "server.js": {
       "includeFiles": "{public/**,api/storytelling/**}"
     }
-  },
-  "rewrites": [
-    {
-      "source": "/api/(.*)",
-      "destination": "/server.js"
-    }
-  ]
+  }
 }
