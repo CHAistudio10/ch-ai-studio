@@ -724,15 +724,21 @@ app.post("/api/chat", async (req, res) => {
 
 
 
+
+
 // === ISOLATED STORYTELLING ROUTES ===
+const loadStHandler = async (relPath) => {
+  const mod = await import(new URL(relPath, import.meta.url).href);
+  return mod && mod.default;
+};
+
 const wrapStRoute = (relPath) => async (req, res) => {
   try {
-    const mod = await import(relPath);
-    const fn = mod && mod.default;
-    if (typeof fn !== "function") {
+    const handler = await loadStHandler(relPath);
+    if (typeof handler !== "function") {
       return res.status(200).json({ ok: false, error: "Handler storytelling tidak ditemukan" });
     }
-    return await fn(req, res);
+    return await handler(req, res);
   } catch (err) {
     console.error("[Storytelling Route Error]", err?.message || err);
     if (!res.headersSent) {
@@ -745,6 +751,5 @@ app.post("/api/storytelling/generate-script", wrapStRoute("./api/storytelling/ge
 app.post("/api/storytelling/generate-scene-images", wrapStRoute("./api/storytelling/generate-scene-images.js"));
 app.post("/api/storytelling/generate-scene-video", wrapStRoute("./api/storytelling/generate-scene-video.js"));
 app.all("/api/storytelling/generation-status", wrapStRoute("./api/storytelling/generation-status.js"));
-
 
 export default app;
