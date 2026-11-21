@@ -1,0 +1,286 @@
+/* ==========================================================================
+   CH AI JEDAG JEDUG — FRAME-BY-FRAME EDITOR STYLES (ISOLATED)
+   ========================================================================== */
+#jj-fbf-root {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.jj-fbf-card {
+  background: linear-gradient(155deg, rgba(24, 16, 46, 0.94), rgba(11, 8, 24, 0.97));
+  border: 1px solid rgba(168, 85, 247, 0.34);
+  border-radius: 18px;
+  padding: 12px 13px;
+  box-shadow: 0 10px 26px rgba(4, 2, 14, 0.5);
+}
+
+.jj-fbf-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.jj-fbf-title {
+  margin: 0;
+  font-size: 0.86rem;
+  font-weight: 800;
+  color: #F5F3FF;
+  letter-spacing: -0.01em;
+}
+
+.jj-fbf-badge {
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 0.66rem;
+  font-weight: 800;
+  background: rgba(139, 92, 246, 0.24);
+  border: 1px solid rgba(217, 70, 239, 0.55);
+  color: #F0ABFC;
+}
+
+/* Preview Canvas Box */
+.jj-fbf-stage-wrap {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at center, rgba(139, 92, 246, 0.2), rgba(7, 5, 16, 0.98));
+  border: 1.5px solid rgba(217, 70, 239, 0.45);
+  border-radius: 16px;
+  padding: 10px;
+  overflow: hidden;
+}
+
+#jj-fbf-canvas {
+  display: block;
+  max-width: 100%;
+  max-height: 340px;
+  border-radius: 12px;
+  background: #06040D;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.65);
+}
+
+.jj-fbf-transport {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.jj-fbf-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-height: 34px;
+  padding: 0 11px;
+  border-radius: 11px;
+  background: rgba(32, 22, 58, 0.94);
+  border: 1px solid rgba(168, 85, 247, 0.36);
+  color: #F5F3FF;
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.14s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.jj-fbf-btn:active {
+  transform: scale(0.97);
+}
+
+.jj-fbf-btn:disabled {
+  opacity: 0.42;
+  pointer-events: none;
+}
+
+.jj-fbf-btn-primary {
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.42), rgba(236, 72, 153, 0.34));
+  border-color: #E879F9;
+  box-shadow: 0 0 14px rgba(232, 121, 249, 0.35);
+}
+
+.jj-fbf-btn-danger {
+  border-color: rgba(244, 63, 94, 0.45);
+  color: #FDA4AF;
+}
+
+.jj-fbf-scrubber {
+  flex: 1;
+  accent-color: #E879F9;
+  height: 5px;
+}
+
+.jj-fbf-time {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #CBD5E1;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* Toolbar Undo / Redo / Copy / Paste / Apply All */
+.jj-fbf-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 9px;
+}
+
+/* Visual Frame Timeline */
+.jj-fbf-timeline-strip {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 4px 2px 8px;
+  scrollbar-width: thin;
+}
+
+.jj-fbf-frame-card {
+  flex: 0 0 88px;
+  border-radius: 13px;
+  background: rgba(18, 13, 36, 0.92);
+  border: 1.5px solid rgba(168, 85, 247, 0.25);
+  padding: 5px;
+  cursor: pointer;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.15s ease;
+}
+
+.jj-fbf-frame-card.is-selected {
+  border-color: #E879F9;
+  background: linear-gradient(160deg, rgba(168, 85, 247, 0.28), rgba(236, 72, 153, 0.18));
+  box-shadow: 0 0 16px rgba(232, 121, 249, 0.42);
+  transform: translateY(-2px);
+}
+
+.jj-fbf-frame-thumb {
+  width: 100%;
+  height: 62px;
+  object-fit: cover;
+  border-radius: 8px;
+  background: #090612;
+  display: block;
+}
+
+.jj-fbf-frame-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 4px;
+  font-size: 0.64rem;
+  font-weight: 800;
+  color: #F3E8FF;
+}
+
+.jj-fbf-frame-tags {
+  margin-top: 2px;
+  font-size: 0.58rem;
+  color: #67E8F9;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.jj-fbf-frame-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+/* Parameter Grid */
+.jj-fbf-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.jj-fbf-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: rgba(14, 10, 28, 0.85);
+  border: 1px solid rgba(168, 85, 247, 0.24);
+  border-radius: 12px;
+  padding: 7px 9px;
+}
+
+.jj-fbf-field-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #E9D5FF;
+}
+
+.jj-fbf-field-val {
+  color: #22D3EE;
+  font-weight: 800;
+}
+
+.jj-fbf-field select,
+.jj-fbf-field input[type="number"] {
+  width: 100%;
+  min-height: 32px;
+  border-radius: 9px;
+  background: rgba(24, 17, 46, 0.96);
+  border: 1px solid rgba(168, 85, 247, 0.36);
+  color: #FFFFFF;
+  font-size: 0.74rem;
+  font-weight: 700;
+  padding: 0 8px;
+}
+
+.jj-fbf-field input[type="range"] {
+  width: 100%;
+  accent-color: #22D3EE;
+}
+
+.jj-fbf-pill-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.jj-fbf-pill {
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: rgba(20, 14, 38, 0.92);
+  border: 1px solid rgba(168, 85, 247, 0.28);
+  color: rgba(243, 232, 255, 0.82);
+  font-size: 0.68rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.jj-fbf-pill.is-active {
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.38), rgba(236, 72, 153, 0.3));
+  border-color: #E879F9;
+  color: #FFFFFF;
+  box-shadow: 0 0 12px rgba(232, 121, 249, 0.38);
+}
+
+.jj-fbf-export-btn {
+  width: 100%;
+  min-height: 48px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  background: linear-gradient(90deg, #D946EF 0%, #8B5CF6 48%, #22D3EE 100%);
+  color: #FFFFFF;
+  font-size: 0.84rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  box-shadow: 0 0 20px rgba(217, 70, 239, 0.4);
+  cursor: pointer;
+}
+
+.jj-fbf-export-btn:disabled {
+  opacity: 0.55;
+  pointer-events: none;
+}
