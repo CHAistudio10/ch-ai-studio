@@ -20,11 +20,16 @@ async function getClerkUserId(req) {
   }
 }
 async function getUserCredits(clerkUserId) {
+  if (!supabase) {
+    const err = new Error("Koneksi Supabase belum dikonfigurasi.");
+    err.statusCode = 503;
+    throw err;
+  }
   const { data, error } = await supabase.rpc("get_or_create_user_credits", {
     p_clerk_user_id: clerkUserId
   });
   if (error) throw error;
-  return Number(data || 0);
+  return Number(data ?? 0);
 }
 
 
@@ -42,12 +47,13 @@ app.get("/", (req, res) => {
 app.get("/api/credits", async (req, res) => {
   try {
     const clerkUserId = await getClerkUserId(req);
-    if (!clerkUserId) return res.status(401).json({ error: "Login diperlukan." });
+    if (!clerkUserId) return res.status(401).json({ error: "Login diperlukan atau sesi kedaluwarsa." });
     const credits = await getUserCredits(clerkUserId);
-    res.json({ credits });
+    res.json({ credits, clerkUserId });
   } catch (error) {
     console.error("Credits error:", error);
-    res.status(500).json({ error: "Gagal mengambil credit." });
+    const status = error?.statusCode || 500;
+    res.status(status).json({ error: error?.message || "Gagal mengambil credit." });
   }
 });
 
@@ -55,7 +61,8 @@ app.post("/api/use-credit", async (req, res) => {
   try {
     const { cost } = req.body || {};
     const clerkUserId = await getClerkUserId(req);
-    if (!clerkUserId) return res.status(401).json({ error: "Login diperlukan." });
+    if (!clerkUserId) return res.status(401).json({ error: "Login diperlukan atau sesi kedaluwarsa." });
+    if (!supabase) return res.status(503).json({ error: "Koneksi Supabase belum dikonfigurasi." });
 
     const { data, error } = await supabase.rpc("use_user_credit", {
       p_clerk_user_id: clerkUserId,
@@ -67,7 +74,7 @@ app.post("/api/use-credit", async (req, res) => {
     const result = Array.isArray(data) ? data[0] : data;
     res.json({
       success: Boolean(result?.success),
-      credits: Number(result?.credits || 0)
+      credits: Number(result?.credits ?? 0)
     });
   } catch (error) {
     console.error("Use credit error:", error);

@@ -52,11 +52,30 @@ function save() {
 }
 
 function renderCredits() {
+  const num = Math.max(0, Number(state.credits || 0));
   const a = document.getElementById("topCredits");
   const b = document.getElementById("sideCredits");
+  if (a) a.textContent = String(num);
+  if (b) b.textContent = String(num);
 
-  if (a) a.textContent = state.credits;
-  if (b) b.textContent = state.credits;
+  const walletVal = document.querySelector(".v6-wallet-value");
+  if (walletVal) walletVal.textContent = String(num);
+
+  const profMain = document.getElementById("ch-profile-credits");
+  if (profMain) profMain.textContent = String(num);
+
+  document.querySelectorAll("#v6ProfileCredits, .v6-profile-credits, #credits, #creditCount, #creditBalance").forEach((el) => {
+    el.textContent = String(num);
+  });
+}
+
+async function getFreshClerkToken(forceRefresh = false) {
+  if (!window.Clerk?.session) return null;
+  try {
+    return await window.Clerk.session.getToken(forceRefresh ? { skipCache: true } : undefined);
+  } catch {
+    return null;
+  }
 }
 
 async function syncCredits() {
@@ -73,26 +92,46 @@ async function syncCredits() {
   if (KEY !== accountKey) {
     const saved = JSON.parse(localStorage.getItem(accountKey) || "null");
     KEY = accountKey;
+    state.credits = 0;
     state.assets = Array.isArray(saved?.assets) ? saved.assets : [];
     state.projects = Array.isArray(saved?.projects) ? saved.projects : [];
     state.mode = saved?.mode || "image";
+    renderCredits();
     renderRecent();
     renderAssets();
     renderProjects();
   }
 
   try {
-    const token = await Clerk.session?.getToken();
+    let token = await getFreshClerkToken(false);
     if (!token) return;
 
-    const response = await fetch("/api/credits", {
-      headers: { Authorization: "Bearer " + token }
+    let response = await fetch("/api/credits", {
+      headers: {
+        "Accept": "application/json",
+        "Authorization": "Bearer " + token
+      }
     });
 
-    if (!response.ok) return;
+    if (response.status === 401) {
+      token = await getFreshClerkToken(true);
+      if (token) {
+        response = await fetch("/api/credits", {
+          headers: {
+            "Accept": "application/json",
+            "Authorization": "Bearer " + token
+          }
+        });
+      }
+    }
+
+    if (!response.ok) {
+      console.warn("Sync credits HTTP:", response.status);
+      return;
+    }
 
     const data = await response.json();
-    state.credits = Number(data.credits || 0);
+    state.credits = Number(data.credits ?? 0);
     localStorage.setItem(KEY, JSON.stringify(state));
     renderCredits();
   } catch (error) {
@@ -100,33 +139,50 @@ async function syncCredits() {
   }
 }
 window.syncCredits = syncCredits;
-setTimeout(() => { if (typeof syncCredits === "function") syncCredits(); }, 2500);
-setTimeout(() => { if (typeof syncCredits === "function") syncCredits(); }, 6000);
+window.renderCredits = renderCredits;
+setTimeout(() => { if (typeof syncCredits === "function") syncCredits(); }, 1500);
+setTimeout(() => { if (typeof syncCredits === "function") syncCredits(); }, 4000);
 
 async function useCredit(cost) {
   if (!window.Clerk?.user) return false;
 
-  const token = await Clerk.session?.getToken();
+  let token = await getFreshClerkToken(false);
   if (!token) return false;
 
-  const response = await fetch("/api/use-credit", {
+  let response = await fetch("/api/use-credit", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: "Bearer " + token
+      "Authorization": "Bearer " + token
     },
     body: JSON.stringify({ cost })
   });
 
-  const data = await response.json();
+  if (response.status === 401) {
+    token = await getFreshClerkToken(true);
+    if (token) {
+      response = await fetch("/api/use-credit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + token
+        },
+        body: JSON.stringify({ cost })
+      });
+    }
+  }
+
+  const data = await response.json().catch(() => ({}));
 
   if (!response.ok || !data.success) {
-    state.credits = Number(data.credits || 0);
-    renderCredits();
+    if (typeof data.credits === "number") {
+      state.credits = Number(data.credits);
+      renderCredits();
+    }
     return false;
   }
 
-  state.credits = Number(data.credits);
+  state.credits = Number(data.credits ?? 0);
   renderCredits();
   localStorage.setItem(KEY, JSON.stringify(state));
   return true;

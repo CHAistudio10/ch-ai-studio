@@ -723,7 +723,7 @@
     if (walletVal) walletVal.textContent = String(num);
 
     // 3. Profil & Legacy Elements
-    document.querySelectorAll("#v6ProfileCredits, .v6-profile-credits, #credits, #creditCount, #creditBalance").forEach((el) => {
+    document.querySelectorAll("#ch-profile-credits, #v6ProfileCredits, .v6-profile-credits, #credits, #creditCount, #creditBalance").forEach((el) => {
       el.textContent = String(num);
     });
   }
@@ -809,6 +809,7 @@
         const data = await res.json();
         if (typeof data.credits === "number") {
           applyCreditsToAllUI(data.credits);
+          if (typeof window.syncCredits === "function") window.syncCredits();
         }
       } else {
         console.warn("[CH Credits] HTTP", res.status);
