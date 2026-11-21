@@ -3,6 +3,7 @@ export class TikTokGoVideoRenderer {
     this.canvas = canvasElement;
     this.ctx = canvasElement.getContext('2d', { alpha: false });
     this.isRendering = false;
+    this.ffmpeg = null;
   }
 
   setResolution(mode = '1080x1920') {
@@ -187,14 +188,57 @@ export class TikTokGoVideoRenderer {
     ctx.restore();
   }
 
-  /**
-   * Merekam canvas + audio dengan format valid untuk Galeri Android & TikTok (bebas bug 00:00)
-   */
-  async exportVideo({ totalDuration, fps = 30, renderParams, audioStream = null, getCurrentTime = null, onProgress }) {
+  async convertToGallerySafeMp4(rawBlob, onStatus) {
+    try {
+      if (onStatus) onStatus('Mengemas MP4 Galeri...');
+      if (!this.ffmpeg) {
+        const { FFmpeg } = await import('https://esm.sh/@ffmpeg/ffmpeg@0.12.10');
+        const { toBlobURL } = await import('https://esm.sh/@ffmpeg/util@0.12.1');
+        const ff = new FFmpeg();
+        const baseURL = 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/esm';
+        await ff.load({
+          coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
+          wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm')
+        });
+        this.ffmpeg = ff;
+      }
+
+      const inputBytes = new Uint8Array(await rawBlob.arrayBuffer());
+      await this.ffmpeg.writeFile('raw_input.webm', inputBytes);
+
+      await this.ffmpeg.exec([
+        '-i', 'raw_input.webm',
+        '-c:v', 'libx264',
+        '-preset', 'ultrafast',
+        '-crf', '24',
+        '-pix_fmt', 'yuv420p',
+        '-c:a', 'aac',
+        '-b:a', '128k',
+        '-movflags', '+faststart',
+        'output_gallery.mp4'
+      ]);
+
+      const mp4Data = await this.ffmpeg.readFile('output_gallery.mp4');
+      await this.ffmpeg.deleteFile('raw_input.webm');
+      await this.ffmpeg.deleteFile('output_gallery.mp4');
+
+      const mp4Blob = new Blob([mp4Data.buffer], { type: 'video/mp4' });
+      return {
+        blob: mp4Blob,
+        url: URL.createObjectURL(mp4Blob),
+        mimeType: 'video/mp4',
+        ext: 'mp4'
+      };
+    } catch (err) {
+      console.warn('[TikTok Go] Fallback ke raw stream:', err);
+      return null;
+    }
+  }
+
+  async exportVideo({ totalDuration, fps = 30, renderParams, audioStream = null, getCurrentTime = null, onProgress, onStatus }) {
     if (this.isRendering) return null;
     this.isRendering = true;
 
-    // Gambar frame awal terlebih dahulu sebelum captureStream agar track video langsung aktif
     this.renderFrame({ ...renderParams, t: 0, totalDuration });
 
     const canvasStream = this.canvas.captureStream(fps);
@@ -206,21 +250,11 @@ export class TikTokGoVideoRenderer {
       audioStream.getAudioTracks().forEach(track => combinedStream.addTrack(track));
     }
 
-    // Hindari bug fragmented MP4 Chrome Android yang menghasilkan durasi 00:00 di Galeri;
-    // gunakan WebM VP8/VP9 yang diputar sempurna di Android Gallery & TikTok, atau MP4 khusus iOS/Safari
-    const isApple = /iPad|iPhone|iPod|Safari/i.test(navigator.userAgent) && !/Chrome|Android/i.test(navigator.userAgent);
-    const candidates = isApple
-      ? [
-          { mime: 'video/mp4', ext: 'mp4' },
-          { mime: 'video/webm', ext: 'webm' }
-        ]
-      : [
-          { mime: 'video/webm;codecs=vp8,opus', ext: 'webm' },
-          { mime: 'video/webm;codecs=vp9,opus', ext: 'webm' },
-          { mime: 'video/webm', ext: 'webm' },
-          { mime: 'video/mp4', ext: 'mp4' }
-        ];
-
+    const candidates = [
+      { mime: 'video/webm;codecs=vp8,opus', ext: 'webm' },
+      { mime: 'video/webm', ext: 'webm' },
+      { mime: 'video/mp4', ext: 'mp4' }
+    ];
     const chosen = candidates.find(c => MediaRecorder.isTypeSupported(c.mime)) || { mime: '', ext: 'webm' };
 
     const recorder = new MediaRecorder(combinedStream, {
@@ -233,23 +267,19 @@ export class TikTokGoVideoRenderer {
       if (e.data && e.data.size > 0) chunks.push(e.data);
     };
 
-    return new Promise((resolve) => {
+    const rawResult = await new Promise((resolve) => {
       recorder.onstop = () => {
-        this.isRendering = false;
         const finalMime = chosen.mime || recorder.mimeType || 'video/webm';
         const blob = new Blob(chunks, { type: finalMime });
-        const url = URL.createObjectURL(blob);
-        resolve({ blob, url, mimeType: finalMime, ext: chosen.ext });
+        resolve({ blob, url: URL.createObjectURL(blob), mimeType: finalMime, ext: chosen.ext });
       };
 
-      // Timeslice 500ms memaksa MediaRecorder menulis cluster frame secara rutin ke buffer
       recorder.start(500);
 
       const startPerf = performance.now();
       let stopped = false;
       const frameMs = Math.round(1000 / fps);
 
-      // Gunakan timer stabil 30fps agar frame tetap ditulis walau layar HP sedikit terbebani
       const intervalId = setInterval(() => {
         if (stopped) return;
         const elapsed = getCurrentTime ? getCurrentTime() : (performance.now() - startPerf) / 1000;
@@ -258,10 +288,8 @@ export class TikTokGoVideoRenderer {
           stopped = true;
           clearInterval(intervalId);
           this.renderFrame({ ...renderParams, t: totalDuration - 0.01, totalDuration });
-          if (videoTrack && typeof videoTrack.requestFrame === 'function') {
-            videoTrack.requestFrame();
-          }
-          if (onProgress) onProgress(100);
+          if (videoTrack && typeof videoTrack.requestFrame === 'function') videoTrack.requestFrame();
+          if (onProgress) onProgress(95);
 
           try {
             if (recorder.state === 'recording') recorder.requestData();
@@ -274,13 +302,17 @@ export class TikTokGoVideoRenderer {
         }
 
         this.renderFrame({ ...renderParams, t: elapsed, totalDuration });
-        if (videoTrack && typeof videoTrack.requestFrame === 'function') {
-          videoTrack.requestFrame();
-        }
+        if (videoTrack && typeof videoTrack.requestFrame === 'function') videoTrack.requestFrame();
         if (onProgress) {
-          onProgress(Math.min(99, Math.round((elapsed / totalDuration) * 100)));
+          onProgress(Math.min(90, Math.round((elapsed / totalDuration) * 90)));
         }
       }, frameMs);
     });
+
+    const safeMp4 = await this.convertToGallerySafeMp4(rawResult.blob, onStatus);
+    this.isRendering = false;
+    if (onProgress) onProgress(100);
+
+    return safeMp4 || rawResult;
   }
 }

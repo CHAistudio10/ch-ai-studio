@@ -782,6 +782,9 @@ export function initTikTokGoModule(containerId) {
       },
       onProgress: pct => {
         document.getElementById('ttg-progress-pill').textContent = `⚡ ${pct}%`;
+      },
+      onStatus: msg => {
+        document.getElementById('ttg-render-title').textContent = `⏳ ${msg}`;
       }
     });
 
