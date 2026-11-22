@@ -1179,12 +1179,152 @@ async function logoutCH() {
   }
 }
 /* CH CHAT AI */
-let chChatMessages=[];
-function newChat(){chChatMessages=[];renderChatMessages();}
-function escapeChatHtml(t){return String(t||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
-function renderChatMessages(){const b=document.getElementById("chatMessages");if(!b)return;if(!chChatMessages.length){b.innerHTML=`<div class="chat-empty"><div class="chat-logo">CH</div><h3>Halo, gue CH Chat AI 👋</h3><p>Tanya apa aja. Mau serius, santai, cari ide, atau sekadar ngobrol.</p></div>`;return;}b.innerHTML=chChatMessages.map(m=>`<div class="chat-bubble ${m.role==="user"?"user":"ai"}"><div class="chat-name">${m.role==="user"?"Kamu":"CH Chat AI"}</div><div class="chat-text">${escapeChatHtml(m.content).replace(/\n/g,"<br>")}</div></div>`).join("");b.scrollTop=b.scrollHeight;}
-async function sendChatMessage(){const input=document.getElementById("chatInput");if(!input)return;const text=input.value.trim();if(!text)return;input.value="";chChatMessages.push({role:"user",content:text});renderChatMessages();const btn=document.getElementById("chatSend");if(btn)btn.disabled=true;chChatMessages.push({role:"assistant",content:"Sedang mikir..."});renderChatMessages();try{const res=await fetch("/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({messages:chChatMessages.slice(0,-1)})});const data=await res.json();chChatMessages.pop();if(!res.ok)throw new Error(data.error||"Gagal menghubungi CH Chat AI");chChatMessages.push({role:"assistant",content:data.reply||"Maaf, belum ada jawaban."});}catch(err){chChatMessages.pop();chChatMessages.push({role:"assistant",content:"Maaf, CH Chat AI sedang mengalami kendala. Coba lagi ya."});console.error("CH CHAT ERROR:",err);}finally{if(btn)btn.disabled=false;renderChatMessages();}}
-document.addEventListener("DOMContentLoaded",()=>{const form=document.getElementById("chatForm");const input=document.getElementById("chatInput");if(form)form.addEventListener("submit",e=>{e.preventDefault();sendChatMessage();});if(input)input.addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();sendChatMessage();}});renderChatMessages();});
+let chChatMessages = [];
+let chChatSending = false;
+
+function newChat() {
+  if (chChatSending) return;
+  chChatMessages = [];
+  renderChatMessages();
+}
+
+function escapeChatHtml(t) {
+  return String(t || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+function copyChatReply(idx, btnEl) {
+  const item = chChatMessages[idx];
+  if (!item || !item.content) return;
+  const raw = String(item.content);
+  const done = () => {
+    if (!btnEl) return;
+    const prev = btnEl.textContent;
+    btnEl.textContent = "Tersalin ✓";
+    btnEl.classList.add("is-copied");
+    setTimeout(() => {
+      btnEl.textContent = prev || "Salin";
+      btnEl.classList.remove("is-copied");
+    }, 1800);
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(raw).then(done).catch(() => {
+      const ta = document.createElement("textarea");
+      ta.value = raw;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      ta.remove();
+      done();
+    });
+  } else {
+    const ta = document.createElement("textarea");
+    ta.value = raw;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand("copy");
+    ta.remove();
+    done();
+  }
+}
+
+function renderChatMessages() {
+  const b = document.getElementById("chatMessages");
+  if (!b) return;
+  if (!chChatMessages.length) {
+    b.innerHTML = `<div class="chat-empty"><div class="chat-logo">CH</div><h3>Halo, gue CH Chat AI 👋</h3><p>Tanya apa aja. Mau serius, santai, cari ide, atau sekadar ngobrol.</p></div>`;
+    return;
+  }
+  b.innerHTML = chChatMessages
+    .map((m, idx) => {
+      const isUser = m.role === "user";
+      if (m.loading) {
+        return `<div class="chat-bubble ai is-loading"><div class="chat-name">CH Chat AI</div><div class="chat-text chat-typing"><span></span><span></span><span></span> <em>Sedang berpikir...</em></div></div>`;
+      }
+      const errClass = m.isError ? " is-error" : "";
+      const copyBtnHtml = !isUser && !m.isError
+        ? `<div class="chat-bubble-actions"><button type="button" class="chat-copy-btn" onclick="copyChatReply(${idx}, this)">Salin</button></div>`
+        : "";
+      return `<div class="chat-bubble ${isUser ? "user" : "ai"}${errClass}"><div class="chat-name">${isUser ? "Kamu" : "CH Chat AI"}</div><div class="chat-text">${escapeChatHtml(m.content).replace(/\n/g, "<br>")}</div>${copyBtnHtml}</div>`;
+    })
+    .join("");
+  b.scrollTop = b.scrollHeight;
+}
+
+async function sendChatMessage() {
+  if (chChatSending) return;
+  const input = document.getElementById("chatInput");
+  if (!input) return;
+  const text = input.value.trim();
+  if (!text) return;
+
+  chChatSending = true;
+  input.value = "";
+  input.style.height = "";
+
+  // Simpan pesan user ke riwayat percakapan (tanpa potongan kredit)
+  chChatMessages.push({ role: "user", content: text });
+  const contextPayload = chChatMessages
+    .filter(m => !m.isError && !m.loading && (m.role === "user" || m.role === "assistant"))
+    .map(m => ({ role: m.role, content: m.content }));
+
+  chChatMessages.push({ role: "assistant", content: "", loading: true });
+  renderChatMessages();
+
+  const btn = document.getElementById("chatSend");
+  if (btn) btn.disabled = true;
+
+  try {
+    const res = await fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ messages: contextPayload })
+    });
+    const data = await res.json().catch(() => ({}));
+    chChatMessages.pop();
+    if (!res.ok || !data.reply) {
+      throw new Error(data.error || "Gagal menghubungi CH Chat AI (" + res.status + ")");
+    }
+    chChatMessages.push({ role: "assistant", content: data.reply });
+  } catch (err) {
+    if (chChatMessages.length && chChatMessages[chChatMessages.length - 1].loading) {
+      chChatMessages.pop();
+    }
+    const errMsg = err?.message || "Maaf, CH Chat AI sedang mengalami kendala. Coba lagi ya.";
+    chChatMessages.push({ role: "assistant", content: "⚠️ " + errMsg, isError: true });
+    console.error("CH CHAT ERROR:", err);
+  } finally {
+    chChatSending = false;
+    if (btn) btn.disabled = false;
+    renderChatMessages();
+    input.focus();
+  }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const form = document.getElementById("chatForm");
+  const input = document.getElementById("chatInput");
+  if (form && !form.dataset.chatBound) {
+    form.dataset.chatBound = "1";
+    form.addEventListener("submit", e => {
+      e.preventDefault();
+      sendChatMessage();
+    });
+  }
+  if (input && !input.dataset.chatBound) {
+    input.dataset.chatBound = "1";
+    input.addEventListener("keydown", e => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        sendChatMessage();
+      }
+    });
+  }
+  renderChatMessages();
+});
 
 // ===== CH JEDAG JEDUG AI: MEDIA PICKER =====
 (() => {

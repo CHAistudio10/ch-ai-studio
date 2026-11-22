@@ -1,3 +1,5 @@
+import { registerAffiliateStoryboardRoute } from "./api/affiliate-tiktok/storyboard.js";
+import { registerAffiliateRenderRoute } from "./api/affiliate-tiktok/render.js";
 import crypto from "crypto";
 import "dotenv/config";
 import express from "express";
@@ -15,7 +17,7 @@ async function getClerkUserId(req) {
     const payload = await verifyToken(token, { secretKey: process.env.CLERK_SECRET_KEY, clockSkewInMs: 60000 });
     return payload.sub || null;
   } catch (error) {
-    console.error("Clerk token verify error:", error?.name, error?.message);
+    if (process.env.VERCEL) console.error("Clerk token verify error:", error?.name, error?.message);
     return null;
   }
 }
@@ -664,7 +666,7 @@ app.post("/api/chat", async (req, res) => {
       return res.status(400).json({ error: "Pesan chat tidak boleh kosong." });
     }
     if (!process.env.GEMINI_API_KEY) {
-      return res.status(500).json({ error: "GEMINI_API_KEY belum dikonfigurasi." });
+      return res.status(500).json({ error: "GEMINI_API_KEY belum dikonfigurasi di server." });
     }
 
     const safeMessages = messages
@@ -676,24 +678,26 @@ app.post("/api/chat", async (req, res) => {
       parts: [{ text: String(m.content || "").slice(0, 12000) }]
     }));
 
-    const models = [
-      "gemini-2.5-flash",
-      "gemini-2.5-flash-lite",
-      "gemini-2.0-flash",
-      "gemini-1.5-flash"
-    ];
+    const modelSet = new Set([
+      ...(process.env.GEMINI_MODEL ? [process.env.GEMINI_MODEL.trim()] : []),
+      "gemini-3.5-flash-lite",
+      "gemini-3.8-flash",
+      "gemini-3-flash-preview",
+      "gemini-flash-latest"
+    ]);
 
     const systemText = "Kamu adalah CH Chat AI, asisten AI di dalam CH AI Studio yang dikembangkan oleh Cahya Handika. Gaya utama: teman ngobrol yang pintar, bukan robot yang sok pintar. Gunakan Bahasa Indonesia natural dan terasa Gen Z. Boleh memakai gue, lo, cuy, bro, wkwk, ngakak, lah, buset, atau slang lain jika cocok dengan konteks, tetapi jangan dipaksakan. Sesuaikan gaya dengan pengguna: santai untuk obrolan santai, serius dan fokus untuk masalah serius, teknis dan jelas untuk coding, bisnis, atau pertanyaan profesional. Pahami typo, bahasa gaul, singkatan, dan campuran Indonesia-Inggris. CH AI Studio adalah platform AI kreatif yang sudah memiliki fitur Generate Gambar, Generate Video, CH Chat AI, Instant untuk ide gerakan video, Template, Asset, dan Project Saya. Jangan mengatakan bahwa CH AI Studio hanya berfokus pada teks atau bahwa Generate Gambar dan Generate Video belum tersedia. Jika ditanya tentang fitur tertentu yang belum diketahui tersedia, jangan mengarang; jelaskan dengan jujur bahwa fitur tersebut belum tersedia atau belum dapat dipastikan. Jika pengguna bertanya apakah video bisa langsung otomatis di-upload ke TikTok dari CH AI Studio, jelaskan bahwa Generate Video sudah tersedia, tetapi otomatisasi upload TikTok belum tersedia jika memang belum ada. Jangan mengarang fakta, pengalaman, identitas, roadmap, atau keberadaan tim yang tidak diketahui. Jika ditanya siapa yang membuatmu, jelaskan bahwa kamu dikembangkan oleh Cahya Handika melalui CH AI Studio. Jangan menyebut dirimu ChatGPT dan jangan mengaku sebagai produk OpenAI. Jawab natural, responsif, akurat, jujur, membantu, aman, dan tidak terlalu bertele-tele kecuali pengguna meminta penjelasan detail.";
 
-    let lastError = null;
-
-    for (const model of models) {
+    const callGeminiModel = async (modelName) => {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 15000);
       try {
         const response = await fetch(
-          "https://generativelanguage.googleapis.com/v1beta/models/" + model + ":generateContent?key=" + encodeURIComponent(process.env.GEMINI_API_KEY),
+          "https://generativelanguage.googleapis.com/v1beta/models/" + encodeURIComponent(modelName) + ":generateContent?key=" + encodeURIComponent(process.env.GEMINI_API_KEY),
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
+            signal: controller.signal,
             body: JSON.stringify({
               systemInstruction: { parts: [{ text: systemText }] },
               contents,
@@ -701,49 +705,98 @@ app.post("/api/chat", async (req, res) => {
             })
           }
         );
-
         const data = await response.json();
+        return { response, data };
+      } finally {
+        clearTimeout(timer);
+      }
+    };
 
-        if (!response.ok) {
-          lastError = data?.error?.message || ("Model " + model + " gagal.");
-          console.error("GEMINI CHAT MODEL ERROR:", model, data);
+    let lastError = null;
+    let triedAny = false;
 
-          const msg = String(lastError).toLowerCase();
-          const retryable =
-            response.status === 404 ||
-            response.status === 429 ||
-            response.status === 503 ||
-            msg.includes("high demand") ||
-            msg.includes("overloaded") ||
-            msg.includes("temporarily") ||
-            msg.includes("unavailable") ||
-            msg.includes("not found") ||
-            msg.includes("is not supported");
+    const tryCandidateModels = async (candidates) => {
+      for (const model of candidates) {
+        triedAny = true;
+        try {
+          const { response, data } = await callGeminiModel(model);
+          if (!response.ok) {
+            lastError = data?.error?.message || ("Model " + model + " gagal.");
+            console.error("GEMINI CHAT MODEL ERROR:", model, response.status, lastError);
+            const msg = String(lastError).toLowerCase();
+            const retryable =
+              response.status === 404 ||
+              response.status === 429 ||
+              response.status === 503 ||
+              msg.includes("high demand") ||
+              msg.includes("overloaded") ||
+              msg.includes("temporarily") ||
+              msg.includes("unavailable") ||
+              msg.includes("not found") ||
+              msg.includes("no longer available") ||
+              msg.includes("is not supported");
+            if (retryable) continue;
+            return { fatalStatus: response.status, error: lastError };
+          }
 
-          if (retryable) continue;
+          const reply = data?.candidates?.[0]?.content?.parts
+            ?.map(p => p.text || "")
+            .join("")
+            .trim();
 
-          return res.status(response.status).json({ error: lastError });
+          if (!reply) {
+            lastError = "AI tidak mengembalikan jawaban.";
+            continue;
+          }
+
+          return { reply, model };
+        } catch (err) {
+          lastError = err?.name === "AbortError" ? "Timeout koneksi ke Gemini API." : (err?.message || "Network error");
+          console.error("GEMINI CHAT FETCH ERROR:", model, lastError);
         }
+      }
+      return null;
+    };
 
-        const reply = data?.candidates?.[0]?.content?.parts
-          ?.map(p => p.text || "")
-          .join("")
-          .trim();
+    let result = await tryCandidateModels([...modelSet]);
 
-        if (!reply) {
-          lastError = "AI tidak mengembalikan jawaban.";
-          continue;
+    // Auto-discovery jika daftar model statis terkena depresiasi versi baru dari Google
+    if (!result) {
+      try {
+        const listResp = await fetch(
+          "https://generativelanguage.googleapis.com/v1beta/models?key=" + encodeURIComponent(process.env.GEMINI_API_KEY)
+        );
+        if (listResp.ok) {
+          const listData = await listResp.json();
+          const discovered = (listData.models || [])
+            .filter(m => Array.isArray(m.supportedGenerationMethods) && m.supportedGenerationMethods.includes("generateContent"))
+            .map(m => String(m.name || "").replace(/^models\//, ""))
+            .filter(name => name.includes("flash") && !modelSet.has(name))
+            .slice(0, 4);
+          if (discovered.length > 0) {
+            result = await tryCandidateModels(discovered);
+          }
         }
-
-        return res.json({ reply });
-      } catch (err) {
-        lastError = err?.message || "Network error";
-        console.error("GEMINI CHAT FETCH ERROR:", model, err);
+      } catch (discErr) {
+        console.error("GEMINI MODEL DISCOVERY ERROR:", discErr?.message || discErr);
       }
     }
 
+    if (result?.fatalStatus) {
+      return res.status(result.fatalStatus).json({ error: result.error });
+    }
+
+    if (result?.reply) {
+      return res.json({
+        reply: result.reply,
+        provider: "Gemini",
+        model: result.model,
+        creditsDeducted: 0
+      });
+    }
+
     return res.status(503).json({
-      error: lastError || "Semua model CH Chat AI sedang sibuk. Coba lagi beberapa saat."
+      error: lastError || (triedAny ? "Semua model CH Chat AI sedang sibuk. Coba lagi beberapa saat." : "Model AI tidak tersedia.")
     });
   } catch (err) {
     console.error("CH CHAT ERROR:", err);
@@ -778,6 +831,9 @@ const wrapStRoute = (relPath) => async (req, res) => {
   }
 };
 
+registerAffiliateStoryboardRoute(app, { getClerkUserId, supabase });
+registerAffiliateRenderRoute(app, { getClerkUserId });
+
 app.post("/api/storytelling/generate-script", wrapStRoute("./api/storytelling/generate-script.js"));
 app.post("/api/storytelling/generate-scene-images", wrapStRoute("./api/storytelling/generate-scene-images.js"));
 app.post("/api/storytelling/generate-scene-video", wrapStRoute("./api/storytelling/generate-scene-video.js"));
@@ -788,5 +844,13 @@ app.use((err, req, res, next) => {
   if (res.headersSent) return next(err);
   res.status(500).json({ error: err?.message || "Terjadi kesalahan pada server." });
 });
+
+
+if (!process.env.VERCEL) {
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT, "0.0.0.0", () => {
+    console.log("CH AI STUDIO berjalan di http://127.0.0.1:" + PORT);
+  });
+}
 
 export default app;
